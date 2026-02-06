@@ -1,0 +1,27 @@
+/* RESET EVERYTHING TO FULL WIDTH */
+:root {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  
+  /* The Fix: Force the root to be the size of the browser */
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 100vw;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden; /* Prevent side-scroll bars */
+}
+
+#root {
+  width: 100%;
+  max-width: none; /* DESTROY the 1280px limit */
+  margin: 0;
+  padding: 0;
+  text-align: left; /* Stop centering everything */
+}
