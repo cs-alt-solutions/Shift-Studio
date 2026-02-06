@@ -1,21 +1,20 @@
 import os
 import random
-import time
 from dotenv import load_dotenv
 from supabase import create_client, Client
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional, List
 
-# 1. Load Keys
+# 1. Load Secrets
 load_dotenv()
-
-# 2. Setup Supabase
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 
+# 2. Connect to Database
 if not url or not key:
-    print("❌ WARNING: Supabase keys missing! App running in simulation mode.")
+    print("❌ ERROR: Supabase keys not found. Check your .env file!")
     supabase = None
 else:
     print("✅ Supabase Credentials Loaded")
@@ -23,7 +22,7 @@ else:
 
 app = FastAPI()
 
-# --- Keep your CORS and classes below this ---
+# 3. Allow Frontend to Talk to Backend
 origins = ["http://localhost:5173"]
 app.add_middleware(
     CORSMiddleware,
@@ -33,6 +32,57 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class ItemQuery(BaseModel):
+# 4. Define Data Models
+class AnalysisRequest(BaseModel):
     query: str
-# ---------------------------------------------
+
+# 5. The Endpoints (The Actions)
+
+@app.get("/")
+def read_root():
+    return {"status": "MarketLens API is running 🟢"}
+
+@app.get("/api/projects")
+def get_projects():
+    """Fetch all saved projects from Supabase"""
+    if not supabase:
+        return []
+    response = supabase.table("projects").select("*").order("created_at", desc=True).execute()
+    return response.data
+
+@app.post("/api/analyze")
+def analyze_market(request: AnalysisRequest):
+    """
+    1. Receive a search term.
+    2. Simulate data (Math Engine).
+    3. SAVE it to Supabase (Memory).
+    """
+    print(f"🔎 Analyzing: {request.query}")
+    
+    # --- SIMULATION LOGIC (Placeholder for Etsy API) ---
+    demand = random.randint(20, 100)
+    competition = random.choice(["Low", "Medium", "High", "Very High"])
+    profit = round(random.uniform(5.00, 50.00), 2)
+    # ---------------------------------------------------
+
+    # Prepare the data for the Vault
+    new_project = {
+        "name": request.query,
+        "status": "draft",
+        "demand_score": demand,
+        "competition_score": competition,
+        "profit_estimate": profit,
+        "source": "Simulation"
+    }
+
+    # Save to Supabase
+    if supabase:
+        try:
+            data = supabase.table("projects").insert(new_project).execute()
+            print("✅ Saved to Database!")
+            return data.data[0] # Return the saved row
+        except Exception as e:
+            print(f"❌ Database Error: {e}")
+            return new_project # Fallback if DB fails
+    
+    return new_project
