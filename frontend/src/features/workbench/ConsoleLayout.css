@@ -209,3 +209,46 @@
 .ticker-wrap { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; }
 .ticker-move { display: inline-block; animation: ticker 30s linear infinite; padding-left: 100%; }
 @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+/* src/features/workbench/ConsoleLayout.css */
+
+/* --- ADD TO EXISTING FILE --- */
+
+/* Profit Matrix Specifics */
+.profit-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px; /* Main Calculator | Stats Sidebar */
+  gap: 30px;
+  height: 100%;
+}
+
+/* Input Styling for Industrial Look */
+.tag-row input {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-family: 'Inter', monospace;
+  width: 100%;
+  outline: none;
+  font-size: 1rem;
+}
+
+/* Mission Modal Fixes */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  padding: 30px;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}

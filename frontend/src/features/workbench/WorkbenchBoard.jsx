@@ -1,8 +1,8 @@
+/* src/features/workbench/WorkbenchBoard.jsx */
 import React, { useState } from 'react';
 import { ProjectCard } from '../../components/ProjectCard';
 import { MOCK_PROJECTS, MOCK_SECTOR_INTEL } from '../../data/mockData';
 
-// Styles - Reusing the Console Layout for consistency
 import './ConsoleLayout.css'; 
 import './MissionModal.css';
 
@@ -38,58 +38,38 @@ export const WorkbenchBoard = () => {
   };
 
   return (
-    <div>
-      {/* 1. HEADER SECTION */}
-      <div className="module-header">
-        <span>🧪 MY WORKSPACE // LABORATORY</span>
-        <span>ACTIVE PROJECTS: <span className="text-success">{projects.length}</span></span>
+    <div className="radar-scroll-area">
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'30px'}}>
+        <div>
+          <h2 style={{margin:0, color:'white', fontSize:'2rem', letterSpacing:'-1px'}}>LABORATORY</h2>
+          <span style={{color: 'var(--text-muted)', fontSize: '0.8rem'}}>ACTIVE MISSIONS: {projects.length}</span>
+        </div>
+        <button className="btn-ghost" onClick={() => setIsModalOpen(true)}>+ INITIALIZE PROJECT</button>
       </div>
 
-      {/* 2. INTEL TICKER */}
-      <div style={{ 
-          background: 'rgba(255, 255, 255, 0.05)', 
-          padding: '15px', 
-          borderLeft: '4px solid var(--accent-primary)',
-          marginBottom: '30px',
-          fontSize: '0.9rem',
-          color: 'var(--text-muted)'
-      }}>
-        <strong style={{ color: 'white' }}>SECTOR INTEL:</strong> {sectorIntel.seasonal} 
-        <span style={{ marginLeft: '15px', color: 'var(--accent-primary)' }}>
-           Trending: {sectorIntel.trending.join(', ')}
-        </span>
+      <div style={{ marginBottom: '30px', background: 'rgba(0,0,0,0.2)', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}>
+        <div className="ticker-wrap">
+          <div className="ticker-move" style={{color:'var(--neon-orange)', fontSize:'0.85rem', fontWeight:'600'}}>
+            SECTOR INTEL: {sectorIntel.seasonal} • TRENDING: {sectorIntel.trending.join(', ')} •
+          </div>
+        </div>
       </div>
 
-      {/* 3. NEW PROJECT BUTTON */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-         <button className="btn-primary" style={{ width: 'auto', padding: '10px 24px' }} onClick={() => setIsModalOpen(true)}>
-            + Initialize Project
-         </button>
-      </div>
-
-      {/* 4. THE CARDS (This was missing!) */}
-      {/* We use a specific wrapper style here to handle the 3D flip height issues */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
-        gap: '25px',
-        paddingBottom: '50px' 
-      }}>
+      <div className="ops-grid">
         {projects.map((project) => (
           <div key={project.id} className="project-card-wrapper">
              <ProjectCard 
-               project={project}
-               onDelete={() => handleDeleteProject(project.id)}
+               project={project} 
+               onDelete={() => handleDeleteProject(project.id)} 
              />
           </div>
         ))}
       </div>
 
-      {/* 5. MODAL (Pop-up) */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h2 style={{ color: 'var(--accent-primary)', marginTop: 0 }}>New Research Mission</h2>
+            <h2 style={{ color: 'var(--neon-orange)', marginTop: 0 }}>NEW RESEARCH MISSION</h2>
             <form onSubmit={handleCreateProject}>
               <input 
                 type="text" 
@@ -97,12 +77,12 @@ export const WorkbenchBoard = () => {
                 value={newProjectTitle}
                 onChange={(e) => setNewProjectTitle(e.target.value)}
                 autoFocus
-                className="cost-input" 
-                style={{ marginBottom: '20px' }}
+                className="tag-row" 
+                style={{ width: '100%', marginBottom: '20px', background: 'transparent', border: '1px solid var(--border-subtle)', color: 'white' }}
               />
               <div className="modal-actions">
-                <button type="button" className="btn-ghost" onClick={() => setIsModalOpen(false)}>Cancel</button>
-                <button type="submit" className="btn-primary">Initialize</button>
+                <button type="button" className="btn-ghost" onClick={() => setIsModalOpen(false)}>CANCEL</button>
+                <button type="submit" className="btn-primary" style={{width: 'auto', padding: '10px 20px'}}>INITIALIZE</button>
               </div>
             </form>
           </div>

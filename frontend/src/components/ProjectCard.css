@@ -1,166 +1,38 @@
-/* --- CONTAINER (Perspective Wrapper) --- */
-.project-card-wrapper {
-  perspective: 1000px;
-  width: 100%;
-  height: 220px; /* Fixed height to prevent overlapping */
-  position: relative;
-  z-index: 1;
-}
-
-/* --- THE ROTATING CARD --- */
-.project-card {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
-  transform-style: preserve-3d;
-  border-radius: 12px;
-}
-
-/* The Flip Action (Matches your JS 'flipped' class) */
-.project-card.flipped {
-  transform: rotateY(180deg);
-}
-
-/* --- COMMON FACE STYLES --- */
-.card-front, .card-back {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden; /* Safari support */
-  backface-visibility: hidden;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-  background: var(--bg-subtle, #18181b); /* Matches Console Theme */
-  border: 1px solid var(--border-subtle, #333);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-/* --- FRONT FACE STYLING --- */
-.card-front {
-  /* Status Strip on the left */
-  border-left: 4px solid var(--accent-primary, #00f3ff); 
-}
-
-/* Header Area */
-.card-header h3 {
-  margin: 0 0 10px 0;
-  font-size: 1.1rem;
-  color: white;
-  font-weight: 700;
-}
-
-/* Status Badges */
-.status-badge {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-muted, #aaa);
-  display: inline-block;
-  margin-bottom: 15px;
-}
-.status-badge.active { color: var(--accent-success, #00ff9d); border: 1px solid var(--accent-success); }
-.status-badge.draft { color: var(--accent-warn, #ffbd00); border: 1px solid var(--accent-warn); }
-.status-badge.completed { color: var(--accent-primary, #00f3ff); border: 1px solid var(--accent-primary); }
-
-/* Metrics Grid */
-.card-metrics {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
-  background: rgba(0,0,0,0.2);
-  padding: 10px;
-  border-radius: 6px;
-}
-
-.metric {
-  display: flex;
-  flex-direction: column;
-}
-.metric label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
-.metric span { font-size: 0.9rem; color: white; font-weight: 600; }
-
-/* Action Buttons */
-.card-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-}
-
-.btn-secondary {
-  background: transparent;
-  border: 1px solid var(--text-muted);
-  color: var(--text-muted);
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  transition: all 0.2s;
-}
-.btn-secondary:hover {
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-}
-
-.btn-icon.delete {
-  background: transparent;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  opacity: 0.5;
-  transition: opacity 0.2s;
-}
-.btn-icon.delete:hover { opacity: 1; transform: scale(1.1); }
-
-
-/* --- BACK FACE (Missions) --- */
-.card-back {
-  transform: rotateY(180deg);
-  background: #1a1a1d; /* Slightly lighter for contrast */
-}
-
-.card-back h4 {
-  color: var(--text-muted);
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  border-bottom: 1px solid #333;
-  padding-bottom: 10px;
-  margin-top: 0;
-}
+/* src/components/ProjectCard.css */
 
 .mission-list {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 10px 0;
   flex-grow: 1;
 }
 
 .mission-list li {
   font-size: 0.85rem;
-  padding: 6px 0;
-  color: white;
-  border-bottom: 1px dashed #333;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-main);
 }
-.mission-list li.completed { text-decoration: line-through; color: #555; }
-.mission-list li.empty { color: #555; font-style: italic; }
 
-.btn-text {
-  background: none;
-  border: none;
-  color: var(--accent-primary);
-  cursor: pointer;
-  text-align: left;
-  padding: 0;
-  margin-top: 10px;
-  font-size: 0.8rem;
+.mission-list li.completed {
+  color: var(--neon-teal);
+  text-decoration: line-through;
+  opacity: 0.6;
 }
-.btn-text:hover { text-decoration: underline; }
+
+.uplink-badge.active { color: var(--neon-teal); border-color: var(--neon-teal); }
+.uplink-badge.draft { color: var(--neon-orange); border-color: var(--neon-orange); }
+.uplink-badge.completed { color: var(--neon-blue); border-color: var(--neon-blue); }
+
+.btn-icon.delete {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  filter: grayscale(1);
+  transition: filter 0.2s;
+}
+
+.btn-icon.delete:hover {
+  filter: grayscale(0);
+}
