@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useWorkbench } from '../../context/WorkbenchContext';
 import './ConsoleLayout.css'; 
 import { StatCard } from '../../components/StatCard';
+import { Plus } from '../../components/Icons';
 
-// --- SIMPLE SVG CHART ---
+// --- VISUAL CHART (Placeholder) ---
 const RevenueChart = () => {
   const data = [20, 45, 30, 60, 55, 80, 75];
   const max = Math.max(...data);
@@ -23,31 +25,66 @@ const RevenueChart = () => {
         </defs>
         <path d={`M0,100 ${points} 100,100`} fill="url(#grad1)" stroke="none" />
         <polyline points={points} fill="none" stroke="var(--neon-teal)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-        {data.map((val, i) => {
-           const x = (i / (data.length - 1)) * 100;
-           const y = 100 - (val / max) * 100;
-           return <circle key={i} cx={x} cy={y} r="1.5" fill="#fff" vectorEffect="non-scaling-stroke" />
-        })}
       </svg>
-      <div className="flex-between" style={{marginTop:'5px', fontSize:'0.6rem', color:'var(--text-muted)'}}>
-        <span>JAN</span><span>FEB</span><span>MAR</span><span>APR</span><span>MAY</span><span>JUN</span><span>JUL</span>
-      </div>
     </div>
   )
 }
 
-const TRANSACTIONS = [
-  { id: 1, date: '2026-02-10', item: 'Vintage Candle Holder', platform: 'ETSY', rev: 45.00, cost: 12.50, fees: 4.50, status: 'CLEARED' },
-  { id: 2, date: '2026-02-10', item: 'Vintage Candle Holder', platform: 'ETSY', rev: 45.00, cost: 12.50, fees: 4.50, status: 'CLEARED' },
-  { id: 3, date: '2026-02-09', item: 'Custom Wood Sign', platform: 'SHOPIFY', rev: 120.00, cost: 35.00, fees: 3.20, status: 'PENDING' },
-  { id: 4, date: '2026-02-08', item: 'Vintage Candle Holder', platform: 'ETSY', rev: 45.00, cost: 12.50, fees: 4.50, status: 'CLEARED' },
-];
-
 export const ProfitMatrix = () => {
-  const totalRev = TRANSACTIONS.reduce((acc, t) => acc + t.rev, 0);
-  const totalCost = TRANSACTIONS.reduce((acc, t) => acc + t.cost + t.fees, 0);
+  const { transactions, addTransaction, projects } = useWorkbench();
+  const [isTxnFormOpen, setIsTxnFormOpen] = useState(false);
+  
+  // Form State
+  const [txnForm, setTxnForm] = useState({ 
+    item: '', 
+    amount: '', 
+    type: 'SALE', 
+    platform: 'Direct',
+    relatedProjectId: '' 
+  });
+
+  // Calculate Real Metrics
+  const totalRev = transactions.filter(t => t.amount > 0).reduce((acc, t) => acc + t.amount, 0);
+  const totalCost = transactions.filter(t => t.amount < 0).reduce((acc, t) => acc + Math.abs(t.amount), 0);
   const netProfit = totalRev - totalCost;
-  const margin = (netProfit / totalRev) * 100;
+  const margin = totalRev > 0 ? (netProfit / totalRev) * 100 : 0;
+
+  // Smart Handler: When selecting a project, auto-fill details
+  const handleProjectSelect = (e) => {
+    const pid = e.target.value;
+    if (!pid) {
+        setTxnForm({ ...txnForm, relatedProjectId: '', item: '', amount: '' });
+        return;
+    }
+    const proj = projects.find(p => p.id === pid);
+    if (proj) {
+        setTxnForm({ 
+            ...txnForm, 
+            relatedProjectId: pid, 
+            item: `Sold Unit: ${proj.title}`, 
+            amount: proj.retailPrice || '' 
+        });
+    }
+  };
+
+  const handleLogTransaction = (e) => {
+    e.preventDefault();
+    if (!txnForm.item || !txnForm.amount) return;
+    
+    const finalAmount = txnForm.type === 'SALE' ? parseFloat(txnForm.amount) : -parseFloat(txnForm.amount);
+    
+    addTransaction({
+      item: txnForm.item,
+      amount: finalAmount,
+      type: txnForm.type,
+      status: 'CLEARED',
+      platform: txnForm.platform,
+      relatedProjectId: txnForm.relatedProjectId // Links to stock deduction
+    });
+    
+    setTxnForm({ item: '', amount: '', type: 'SALE', platform: 'Direct', relatedProjectId: '' });
+    setIsTxnFormOpen(false);
+  };
 
   return (
     <div className="radar-grid-layout">
@@ -59,23 +96,19 @@ export const ProfitMatrix = () => {
             <h2 className="header-title">PROFIT MATRIX</h2>
             <span style={{color: 'var(--text-muted)', fontSize: '0.8rem'}}>FINANCIAL HEALTH & REAL MARGINS</span>
           </div>
-          <div className="filter-group">
-            <button className="filter-btn active">THIS MONTH</button>
-            <button className="filter-btn">Q1</button>
-            <button className="filter-btn">YTD</button>
-          </div>
+          <button className="btn-primary" onClick={() => setIsTxnFormOpen(true)}>
+             <Plus /> LOG TRANSACTION
+          </button>
         </div>
 
-        {/* Chart Card */}
         <div className="panel-industrial" style={{padding:'20px', marginBottom:'30px'}}>
             <div className="flex-between">
               <span className="label-industrial">REVENUE TREND</span>
-              <span style={{color:'var(--neon-teal)', fontSize:'0.7rem'}}>+12% vs last month</span>
+              <span style={{color:'var(--neon-teal)', fontSize:'0.7rem'}}>Live Data Active</span>
             </div>
             <RevenueChart />
         </div>
 
-        {/* Transaction Ledger */}
         <div className="panel-industrial">
            <div className="panel-header">
              <h3 style={{margin:0, fontSize:'1rem'}}>TRANSACTION LEDGER</h3>
@@ -86,50 +119,97 @@ export const ProfitMatrix = () => {
                <thead>
                  <tr>
                    <th>DATE</th>
-                   <th>ITEM SOLD</th>
-                   <th className="td-right">REVENUE</th>
-                   <th className="td-right">COST</th>
-                   <th className="td-right">NET PROFIT</th>
+                   <th>DESCRIPTION</th>
+                   <th>TYPE</th>
+                   <th className="td-right">AMOUNT</th>
                    <th className="td-right">STATUS</th>
                  </tr>
                </thead>
                <tbody>
-                 {TRANSACTIONS.map(t => {
-                   const profit = t.rev - t.cost - t.fees;
-                   return (
+                 {transactions.length === 0 ? (
+                    <tr><td colSpan="5" style={{padding:'20px', textAlign:'center', color:'var(--text-muted)'}}>No transactions recorded yet.</td></tr>
+                 ) : (
+                   transactions.map(t => (
                      <tr key={t.id} className="inventory-row">
                        <td className="td-cell text-muted" style={{fontSize:'0.75rem'}}>{t.date}</td>
                        <td className="td-cell cell-name" style={{fontSize:'0.9rem'}}>{t.item}</td>
-                       <td className="td-cell td-right glow-teal">${t.rev.toFixed(2)}</td>
-                       <td className="td-cell td-right text-muted">-${(t.cost + t.fees).toFixed(2)}</td>
-                       <td className="td-cell td-right" style={{fontWeight:700, color: profit > 0 ? 'var(--neon-purple)' : 'red'}}>
-                         ${profit.toFixed(2)}
+                       <td className="td-cell">
+                          <span className="label-industrial" style={{color: t.amount > 0 ? 'var(--neon-teal)' : 'var(--neon-orange)'}}>{t.type}</span>
+                       </td>
+                       <td className="td-cell td-right" style={{fontWeight:700, color: t.amount > 0 ? 'var(--neon-teal)' : 'var(--text-muted)'}}>
+                         {t.amount > 0 ? '+' : ''}{Math.abs(t.amount).toFixed(2)}
                        </td>
                        <td className="td-cell td-right">
-                         <span style={{fontSize:'0.65rem', color: t.status === 'CLEARED' ? 'var(--neon-teal)' : 'var(--neon-orange)'}}>{t.status}</span>
+                         <span style={{fontSize:'0.65rem', color: 'var(--neon-purple)'}}>{t.status || 'CLEARED'}</span>
                        </td>
                      </tr>
-                   )
-                 })}
+                   ))
+                 )}
                </tbody>
              </table>
            </div>
         </div>
-
       </div>
 
-      {/* RIGHT SIDEBAR: METRICS (REFACTORED) */}
       <div className="sidebar-col" style={{padding:'15px'}}>
          <div className="keyword-header" style={{padding:'0 0 15px 0'}}>
             <h3 className="label-industrial glow-purple" style={{ margin: 0 }}>FINANCIALS</h3>
          </div>
          <div style={{display:'flex', flexDirection:'column', gap:'15px', paddingTop:'15px'}}>
-            <StatCard label="GROSS REVENUE" value={`$${totalRev.toFixed(0)}`} glowColor="teal" />
-            <StatCard label="NET PROFIT" value={`$${netProfit.toFixed(0)}`} glowColor="purple" />
-            <StatCard label="EXPENSES (COGS)" value={`$${totalCost.toFixed(0)}`} glowColor="orange" />
+            <StatCard label="GROSS REVENUE" value={`$${totalRev.toFixed(2)}`} glowColor="teal" />
+            <StatCard label="NET PROFIT" value={`$${netProfit.toFixed(2)}`} glowColor={netProfit >= 0 ? "purple" : "red"} />
+            <StatCard label="TOTAL EXPENSES" value={`$${totalCost.toFixed(2)}`} glowColor="orange" />
             <StatCard label="AVG MARGIN" value={`${margin.toFixed(1)}%`} glowColor="cyan" />
          </div>
       </div>
+
+      {isTxnFormOpen && (
+        <div className="blueprint-overlay" style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.8)', display:'flex', justifyContent:'center', alignItems:'center', zIndex:2000}}>
+          <div className="panel-industrial" style={{width:'400px', padding:'30px'}}>
+            <h2 style={{ color: 'var(--neon-teal)', marginTop: 0, fontSize:'1.2rem' }}>LOG TRANSACTION</h2>
+            <form onSubmit={handleLogTransaction}>
+              
+              <div className="lab-form-group">
+                <label className="label-industrial">Transaction Type</label>
+                <select className="input-industrial" value={txnForm.type} onChange={e => setTxnForm({...txnForm, type: e.target.value})}>
+                  <option value="SALE">Revenue (Sale)</option>
+                  <option value="EXPENSE">Misc Expense</option>
+                </select>
+              </div>
+
+              {/* NEW: Project Link */}
+              {txnForm.type === 'SALE' && (
+                <div className="lab-form-group" style={{background:'rgba(34, 211, 238, 0.05)', padding:'10px', border:'1px dashed var(--neon-teal)'}}>
+                   <label className="label-industrial" style={{color:'var(--neon-teal)'}}>Select Stock Item (Optional)</label>
+                   <select className="input-industrial" value={txnForm.relatedProjectId} onChange={handleProjectSelect}>
+                      <option value="">-- Manual Entry --</option>
+                      {projects.map(p => (
+                          <option key={p.id} value={p.id}>
+                              {p.title} (Stock: {p.stockQty || 0})
+                          </option>
+                      ))}
+                   </select>
+                </div>
+              )}
+
+              <div className="lab-form-group">
+                <label className="label-industrial">Description</label>
+                <input className="input-industrial" placeholder="e.g. Sold Candle #001" value={txnForm.item} onChange={e => setTxnForm({...txnForm, item: e.target.value})} />
+              </div>
+
+              <div className="lab-form-group">
+                <label className="label-industrial">Amount ($)</label>
+                <input type="number" step="0.01" className="input-industrial" placeholder="0.00" value={txnForm.amount} onChange={e => setTxnForm({...txnForm, amount: e.target.value})} />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop:'20px' }}>
+                <button type="button" className="btn-ghost" onClick={() => setIsTxnFormOpen(false)}>CANCEL</button>
+                <button type="submit" className="btn-primary">RECORD</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

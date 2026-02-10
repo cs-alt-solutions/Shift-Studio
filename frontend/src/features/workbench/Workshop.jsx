@@ -1,8 +1,24 @@
 import React, { useState } from 'react';
 import { useWorkbench } from '../../context/WorkbenchContext'; 
 import { ProjectCard } from '../../components/ProjectCard';
-// NEW IMPORTS
-import { Plus, Back, Save } from '../../components/Icons';
+import { Plus, Back, Save, Finance } from '../../components/Icons'; // <--- Added Finance Icon
+
+// --- UNIT CATEGORY DEFINITIONS ---
+const UNIT_GROUPS = {
+  'Weight': ['lbs', 'oz', 'kg', 'g'],
+  'Volume': ['gal', 'fl oz', 'L', 'ml'],
+  'Length': ['ft', 'in', 'yd', 'cm'],
+  'Count': ['count', 'ea', 'box']
+};
+
+const getUnitOptions = (currentUnit) => {
+  for (const group in UNIT_GROUPS) {
+    if (UNIT_GROUPS[group].includes(currentUnit)) {
+      return UNIT_GROUPS[group];
+    }
+  }
+  return [currentUnit]; 
+};
 
 export const Workshop = () => {
   const { projects, addProject, deleteProject, updateProject, materials, manufactureProduct } = useWorkbench();
@@ -35,8 +51,11 @@ export const Workshop = () => {
   const closeStudio = () => setActiveProject(null);
 
   const handleCompleteProject = () => {
+    // 1. Manufacture (Deduct Stock & Log Cost)
     const result = manufactureProduct(activeProject.id, recipe);
+    
     if (result.success) {
+      // 2. Save Tags & Price updates explicitly on complete (Double Safety)
       updateProject({ ...activeProject, status: 'completed', tags });
       alert(result.message);
       closeStudio();
@@ -45,15 +64,35 @@ export const Workshop = () => {
     }
   };
 
+  // --- LIVE UPDATES ---
+  const handlePriceChange = (val) => {
+    const numVal = parseFloat(val);
+    // Update Local View
+    const updated = { ...activeProject, retailPrice: isNaN(numVal) ? 0 : numVal };
+    setActiveProject(updated);
+    // Sync to Global Context immediately
+    updateProject(updated);
+  };
+
   // Recipe Handlers 
   const addIngredient = () => {
     const mat = materials.find(m => m.id === parseInt(newIngredientId));
     if (mat) {
-      setRecipe([...recipe, { id: crypto.randomUUID(), matId: mat.id, name: mat.name, reqPerUnit: 0, unit: mat.unit }]);
+      setRecipe([...recipe, { 
+        id: crypto.randomUUID(), 
+        matId: mat.id, 
+        name: mat.name, 
+        reqPerUnit: 0, 
+        unit: mat.unit 
+      }]);
       setNewIngredientId('');
     }
   };
-  const updateRecipeUsage = (id, val) => setRecipe(recipe.map(r => r.id === id ? { ...r, reqPerUnit: val } : r));
+
+  const updateRecipeUsage = (id, field, val) => {
+    setRecipe(recipe.map(r => r.id === id ? { ...r, [field]: val } : r));
+  };
+
   const removeIngredient = (id) => setRecipe(recipe.filter(r => r.id !== id));
 
   const addTag = (e) => {
@@ -127,7 +166,10 @@ export const Workshop = () => {
             </div>
 
             <div className="studio-container">
+               {/* --- LEFT COLUMN: METADATA --- */}
                <div className="studio-col">
+                  
+                  {/* TAGS PANEL */}
                   <div className="panel-industrial" style={{padding:'20px', marginTop:0}}>
                      <div className="floating-manifest-label" style={{color:'var(--neon-orange)', borderColor:'var(--neon-orange)'}}>MARKETING DATA</div>
                      <label className="lab-label">TAG ARRAY ({tags.length}/13)</label>
@@ -136,8 +178,31 @@ export const Workshop = () => {
                         <input className="input-industrial" placeholder="Add tag..." value={newTagInput} onChange={e => setNewTagInput(e.target.value)} onKeyDown={addTag} />
                      </div>
                   </div>
+
+                  {/* NEW: FINANCIAL TARGETS PANEL */}
+                  <div className="panel-industrial" style={{padding:'20px'}}>
+                     <div className="floating-manifest-label" style={{color:'var(--neon-teal)', borderColor:'var(--neon-teal)'}}>FINANCIAL TARGETS</div>
+                     <label className="lab-label">RETAIL PRICE ($)</label>
+                     <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+                        <Finance />
+                        <input 
+                           className="input-industrial" 
+                           type="number" 
+                           step="0.01" 
+                           placeholder="0.00" 
+                           value={activeProject.retailPrice || ''} 
+                           onChange={(e) => handlePriceChange(e.target.value)}
+                           style={{fontSize:'1.1rem', fontWeight:'bold', color:'var(--neon-teal)'}}
+                        />
+                     </div>
+                     <div className="lab-note" style={{marginTop:'10px', fontSize:'0.65rem'}}>
+                        * Setting this now auto-fills the Sales Terminal when you sell this item.
+                     </div>
+                  </div>
+
                </div>
 
+               {/* --- RIGHT COLUMN: RECIPE --- */}
                <div className="studio-col">
                   <div className="panel-industrial" style={{padding:'0', marginTop:0, display:'flex', flexDirection:'column'}}>
                      <div className="floating-manifest-label" style={{color:'var(--neon-purple)', borderColor:'var(--neon-purple)'}}>COMPOSITION MATRIX</div>
@@ -150,16 +215,35 @@ export const Workshop = () => {
                      </div>
                      <div style={{padding:'0'}}>
                        {recipe.length === 0 && <div style={{padding:'20px', color:'var(--text-muted)', fontStyle:'italic'}}>No materials added yet.</div>}
-                       {recipe.map(r => (
-                         <div key={r.id} className="recipe-row">
-                           <div style={{flex:2}}><div className="recipe-name">{r.name}</div></div>
-                           <div style={{flex:1, display:'flex', alignItems:'center', gap:'5px'}}>
-                             <input className="input-industrial" type="number" placeholder="0" value={r.reqPerUnit} onChange={e => updateRecipeUsage(r.id, e.target.value)} style={{textAlign:'center'}} />
-                             <span style={{fontSize:'0.7rem', color:'var(--text-muted)'}}>{r.unit}</span>
+                       {recipe.map(r => {
+                         const unitOptions = getUnitOptions(r.unit);
+                         return (
+                           <div key={r.id} className="recipe-row">
+                             <div style={{flex:2}}>
+                               <div className="recipe-name">{r.name}</div>
+                             </div>
+                             <div style={{flex:1.5, display:'flex', alignItems:'center', gap:'5px'}}>
+                               <input 
+                                 className="input-industrial" 
+                                 type="number" 
+                                 placeholder="0" 
+                                 value={r.reqPerUnit} 
+                                 onChange={e => updateRecipeUsage(r.id, 'reqPerUnit', e.target.value)} 
+                                 style={{textAlign:'center'}} 
+                               />
+                               <select 
+                                 className="input-industrial" 
+                                 value={r.unit} 
+                                 onChange={e => updateRecipeUsage(r.id, 'unit', e.target.value)}
+                                 style={{padding:'8px 4px', fontSize:'0.75rem', width:'60px'}}
+                               >
+                                 {unitOptions.map(u => <option key={u} value={u}>{u}</option>)}
+                               </select>
+                             </div>
+                             <button onClick={() => removeIngredient(r.id)} className="btn-icon" style={{color:'red', marginLeft:'10px'}}>×</button>
                            </div>
-                           <button onClick={() => removeIngredient(r.id)} className="btn-icon" style={{color:'red', marginLeft:'10px'}}>×</button>
-                         </div>
-                       ))}
+                         );
+                       })}
                      </div>
                   </div>
                </div>
