@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import './ConsoleLayout.css'; 
-import { WorkbenchBoard } from './WorkbenchBoard';
 import { MarketRadar } from './MarketRadar';
 import { ProfitMatrix } from './ProfitMatrix';
 import { InventoryManager } from './InventoryManager';
-import { Laboratory } from './Laboratory'; // <--- NEW MODULE
+import { Workshop } from './Workshop';
 
 // --- ICONS ---
 const Icons = {
@@ -34,14 +33,6 @@ const Icons = {
       <line x1="12" y1="22.08" x2="12" y2="12"></line>
     </svg>
   ),
-  // NEW FLASK ICON FOR LABORATORY
-  Flask: () => (
-    <svg className="nav-icon" viewBox="0 0 24 24">
-      <path d="M10 2v7.31l-4.5 9A2 2 0 0 0 7.28 22h9.44a2 2 0 0 0 1.78-2.69l-4.5-9V2"></path>
-      <line x1="8" y1="2" x2="16" y2="2"></line>
-      <line x1="9" y1="14" x2="15" y2="14"></line>
-    </svg>
-  ),
   Menu: () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <line x1="3" y1="12" x2="21" y2="12" />
@@ -57,7 +48,8 @@ const Icons = {
 };
 
 export const ConsoleLayout = () => {
-  const [activeView, setActiveView] = useState('radar');
+  // Defaulting to 'radar' (Market Pulse) since it's now top of the list
+  const [activeView, setActiveView] = useState('radar'); 
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
@@ -69,7 +61,7 @@ export const ConsoleLayout = () => {
         {/* Header & Toggle */}
         <div className="sidebar-header">
           <div className="app-title">
-            <span>MARKETLENS v1.0</span>
+            <span>MARKETLENS v2.0</span>
           </div>
           <button 
             className="toggle-btn" 
@@ -80,7 +72,7 @@ export const ConsoleLayout = () => {
           </button>
         </div>
         
-        {/* Nav Links */}
+        {/* Nav Links - REORDERED */}
         <div className="nav-group">
           <div className="section-label">Main Modules</div>
           
@@ -94,12 +86,12 @@ export const ConsoleLayout = () => {
           </div>
 
           <div 
-            className={`nav-link ${activeView === 'workspace' ? 'active' : ''}`}
-            onClick={() => setActiveView('workspace')}
-            title="Workbench"
+            className={`nav-link ${activeView === 'workshop' ? 'active' : ''}`}
+            onClick={() => setActiveView('workshop')}
+            title="Workshop"
           >
             <Icons.Workshop />
-            <span className="nav-text">The Workbench</span>
+            <span className="nav-text">Workshop</span>
           </div>
 
           <div 
@@ -109,16 +101,6 @@ export const ConsoleLayout = () => {
           >
             <Icons.Box />
             <span className="nav-text">Inventory</span>
-          </div>
-
-          {/* NEW LABORATORY NAV */}
-          <div 
-            className={`nav-link ${activeView === 'lab' ? 'active' : ''}`}
-            onClick={() => setActiveView('lab')}
-            title="Laboratory"
-          >
-            <Icons.Flask />
-            <span className="nav-text">Laboratory</span>
           </div>
 
           <div 
@@ -136,9 +118,8 @@ export const ConsoleLayout = () => {
       {/* --- MAIN CONTENT AREA --- */}
       <div className="console-main">
         {activeView === 'radar' && <MarketRadar />}
-        {activeView === 'workspace' && <WorkbenchBoard />}
+        {activeView === 'workshop' && <Workshop />}
         {activeView === 'inventory' && <InventoryManager />}
-        {activeView === 'lab' && <Laboratory />} {/* <--- ROUTE ADDED */}
         {activeView === 'matrix' && <ProfitMatrix />}
       </div>
     </div>
