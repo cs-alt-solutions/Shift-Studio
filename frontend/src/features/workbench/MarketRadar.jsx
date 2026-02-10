@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { MOCK_PROJECTS } from '../../data/mockData';
+import { useWorkbench } from '../../context/WorkbenchContext';
 import './ConsoleLayout.css'; 
 
-// --- SUB-COMPONENT: PERFORMANCE DIAL ---
 const PerformanceDial = ({ label, value, subtext, color, percent }) => {
-  const radius = 35; // Compact for high-density dashboard
+  const radius = 35;
   const circumference = 2 * Math.PI * radius;
   const [offset, setOffset] = useState(circumference);
 
@@ -44,33 +43,27 @@ const PerformanceDial = ({ label, value, subtext, color, percent }) => {
 };
 
 export const MarketRadar = () => {
+  const { projects } = useWorkbench(); 
+
+  const completedProjects = projects.filter(p => p.status === 'completed');
+  const activeProjects = projects.filter(p => p.status === 'active');
   
-  // --- MOCK GLOBAL DATA ---
+  const completionRate = projects.length > 0 
+    ? Math.round((completedProjects.length / projects.length) * 100) 
+    : 0;
+
   const sections = {
     viral: { title: "VIRAL VECTORS", color: 'neon-teal', data: [
-      { id: 'tm1', name: "Pet Architecture", growth: "+210%", score: 98, vol: "18k", status: "HOT", desc: "Modern furniture for pets." },
-      { id: 'tm2', name: "Gothic Home Decor", growth: "+125%", score: 85, vol: "45k", status: "STEADY", desc: "Dark aesthetic pieces." },
-    ]},
-    main: { title: "SUSTAINED DEMAND", color: 'neon-blue', data: [
-      { id: 'ht1', name: "Digital Planners", growth: "-12%", score: 30, vol: "120k", status: "SATURATED", desc: "Productivity templates." },
-    ]},
+      { id: 'tm1', name: "Pet Architecture", growth: "+210%", score: 98, desc: "Modern furniture for pets." },
+      { id: 'tm2', name: "Gothic Home Decor", growth: "+125%", score: 85, desc: "Dark aesthetic pieces." },
+    ]}
   };
-
-  // --- INTERNAL INTEL ---
-  const myIntel = {
-    completed: MOCK_PROJECTS.filter(p => p.status === 'completed'),
-    active: MOCK_PROJECTS.filter(p => p.status === 'active'),
-  };
-  
-  const completionRate = MOCK_PROJECTS.length > 0 
-    ? Math.round((myIntel.completed.length / MOCK_PROJECTS.length) * 100) 
-    : 0;
 
   return (
     <div className="radar-grid-layout">
+      {/* LEFT COLUMN: MARKET PULSE */}
       <div className="radar-scroll-area">
         
-        {/* HEADER */}
         <div className="inventory-header" style={{marginBottom: '20px'}}>
            <div>
              <h2 className="header-title">MARKET PULSE</h2>
@@ -81,16 +74,11 @@ export const MarketRadar = () => {
            </div>
         </div>
 
-        {/* --- SPLIT SCREEN GRID --- */}
-        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', alignItems: 'start'}}>
-          
-          {/* === LEFT: GLOBAL SIGNAL === */}
-          <div className="animate-fade-in">
+        <div className="animate-fade-in">
              <div className="flex-between" style={{marginBottom:'15px', borderBottom:'1px solid var(--border-subtle)', paddingBottom:'10px'}}>
                 <h3 style={{fontSize:'0.9rem', margin:0, letterSpacing:'1px', color:'var(--neon-blue)'}}>GLOBAL SIGNAL</h3>
              </div>
 
-             {/* Live Ticker Row */}
              <div className="panel-industrial" style={{padding:'15px', marginBottom:'20px', display:'flex', justifyContent:'space-between'}}>
                 <div style={{textAlign:'center'}}>
                    <div style={{fontSize:'1.1rem', fontWeight:800, color:'var(--neon-teal)'}}>+219%</div>
@@ -108,7 +96,6 @@ export const MarketRadar = () => {
                 </div>
              </div>
 
-             {/* Sections */}
              {Object.entries(sections).map(([key, config]) => (
               <React.Fragment key={key}>
                 <div className="label-industrial" style={{marginTop:'20px', marginBottom:'10px', color: `var(--${config.color})`}}>
@@ -129,32 +116,31 @@ export const MarketRadar = () => {
                 </div>
               </React.Fragment>
             ))}
-          </div>
+        </div>
+      </div>
 
-          {/* === RIGHT: INTERNAL OPS === */}
-          <div className="animate-fade-in" style={{animationDelay:'0.1s'}}>
-            <div className="flex-between" style={{marginBottom:'15px', borderBottom:'1px solid var(--border-subtle)', paddingBottom:'10px'}}>
-               <h3 style={{fontSize:'0.9rem', margin:0, letterSpacing:'1px', color:'var(--neon-purple)'}}>INTERNAL OPS</h3>
+      {/* RIGHT SIDEBAR: INTERNAL OPS */}
+      <div className="sidebar-col" style={{padding:'15px'}}>
+            <div className="keyword-header" style={{padding:'0 0 15px 0'}}>
+               <h3 className="label-industrial glow-purple" style={{ margin: 0 }}>INTERNAL OPS</h3>
             </div>
 
-            {/* Dials */}
-            <div className="cockpit-grid" style={{borderColor: 'var(--neon-purple)', background:'rgba(167, 139, 250, 0.02)', gap:'5px', padding:'15px'}}>
-              <PerformanceDial label="ACTIVE" value={myIntel.active.length} subtext="Missions" color="neon-teal" percent={50} />
-              <PerformanceDial label="READY" value={myIntel.completed.length} subtext="To Launch" color="neon-purple" percent={completionRate} />
-              <PerformanceDial label="REVENUE" value="$4.2k" subtext="Gross" color="neon-cyan" percent={80} />
+            <div className="cockpit-grid" style={{borderColor: 'var(--neon-purple)', background:'rgba(167, 139, 250, 0.02)', gap:'5px', padding:'15px', display:'flex', marginBottom:'20px'}}>
+              <PerformanceDial label="ACTIVE" value={activeProjects.length} subtext="Missions" color="neon-teal" percent={50} />
+              <PerformanceDial label="READY" value={completedProjects.length} subtext="To Launch" color="neon-purple" percent={completionRate} />
             </div>
 
-            <div className="label-industrial" style={{marginTop:'20px', marginBottom:'10px', color:'var(--neon-purple)'}}>
+            <div className="label-industrial" style={{marginBottom:'10px', color:'var(--neon-purple)'}}>
                ● RECENT COMPLETIONS
             </div>
 
-            <div style={{display:'flex', flexDirection:'column', gap:'10px'}}>
-               {myIntel.completed.length === 0 ? (
+            <div style={{display:'flex', flexDirection:'column', gap:'10px', flex:1, overflowY:'auto'}}>
+               {completedProjects.length === 0 ? (
                  <div style={{color:'var(--text-muted)', fontStyle:'italic', padding:'20px', textAlign:'center', border:'1px dashed var(--border-subtle)'}}>
                     No Data.
                  </div>
                ) : (
-                 myIntel.completed.map(p => (
+                 completedProjects.map(p => (
                    <div key={p.id} className="panel-industrial" style={{minHeight:'auto'}}>
                       <div className="panel-content" style={{padding:'15px'}}>
                         <div className="flex-between">
@@ -170,17 +156,13 @@ export const MarketRadar = () => {
                )}
             </div>
             
-            {/* ACTION BUTTON (The "Effectiveness" Link) */}
             <div style={{marginTop:'20px'}}>
                <button className="btn-primary" style={{width:'100%', background:'var(--neon-purple)', color:'#fff'}}>
-                 + GENERATE WEEKLY REPORT
+                 GENERATE REPORT
                </button>
             </div>
-
-          </div>
-
-        </div>
       </div>
+
     </div>
   );
 };

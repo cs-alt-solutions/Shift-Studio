@@ -1,7 +1,7 @@
 import React from 'react';
 import './ConsoleLayout.css'; 
 
-// --- SIMPLE SVG CHART (No Library Needed) ---
+// --- SIMPLE SVG CHART ---
 const RevenueChart = () => {
   const data = [20, 45, 30, 60, 55, 80, 75];
   const max = Math.max(...data);
@@ -12,7 +12,7 @@ const RevenueChart = () => {
   }).join(' ');
 
   return (
-    <div style={{width:'100%', height:'100px', position:'relative', marginTop:'20px'}}>
+    <div style={{width:'100%', height:'150px', position:'relative', marginTop:'20px'}}>
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{width:'100%', height:'100%', overflow:'visible'}}>
         <defs>
           <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -35,7 +35,6 @@ const RevenueChart = () => {
   )
 }
 
-// --- MOCK FINANCIAL DATA ---
 const TRANSACTIONS = [
   { id: 1, date: '2026-02-10', item: 'Vintage Candle Holder', platform: 'ETSY', rev: 45.00, cost: 12.50, fees: 4.50, status: 'CLEARED' },
   { id: 2, date: '2026-02-10', item: 'Vintage Candle Holder', platform: 'ETSY', rev: 45.00, cost: 12.50, fees: 4.50, status: 'CLEARED' },
@@ -51,6 +50,7 @@ export const ProfitMatrix = () => {
 
   return (
     <div className="radar-grid-layout">
+      {/* MAIN COLUMN */}
       <div className="radar-scroll-area">
         
         <div className="inventory-header">
@@ -65,41 +65,16 @@ export const ProfitMatrix = () => {
           </div>
         </div>
 
-        {/* TOP ROW: VISUALS & METRICS */}
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px', marginBottom:'30px'}}>
-           
-           {/* Chart Card */}
-           <div className="panel-industrial" style={{padding:'20px'}}>
-              <div className="flex-between">
-                <span className="label-industrial">REVENUE TREND</span>
-                <span style={{color:'var(--neon-teal)', fontSize:'0.7rem'}}>+12% vs last month</span>
-              </div>
-              <RevenueChart />
-           </div>
-
-           {/* Metrics Grid */}
-           <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'15px'}}>
-              <div className="panel-industrial" style={{padding:'20px', justifyContent:'center'}}>
-                 <span className="label-industrial">GROSS REVENUE</span>
-                 <div className="metric-value glow-teal">${totalRev.toFixed(0)}</div>
-              </div>
-              <div className="panel-industrial" style={{padding:'20px', justifyContent:'center'}}>
-                 <span className="label-industrial">NET PROFIT</span>
-                 <div className="metric-value glow-purple">${netProfit.toFixed(0)}</div>
-              </div>
-              <div className="panel-industrial" style={{padding:'20px', justifyContent:'center'}}>
-                 <span className="label-industrial">EXPENSES (COGS)</span>
-                 <div className="metric-value" style={{color:'var(--neon-orange)'}}>${totalCost.toFixed(0)}</div>
-              </div>
-              <div className="panel-industrial" style={{padding:'20px', justifyContent:'center'}}>
-                 <span className="label-industrial">AVG MARGIN</span>
-                 <div className="metric-value glow-cyan">{margin.toFixed(1)}%</div>
-              </div>
-           </div>
-
+        {/* Chart Card */}
+        <div className="panel-industrial" style={{padding:'20px', marginBottom:'30px'}}>
+            <div className="flex-between">
+              <span className="label-industrial">REVENUE TREND</span>
+              <span style={{color:'var(--neon-teal)', fontSize:'0.7rem'}}>+12% vs last month</span>
+            </div>
+            <RevenueChart />
         </div>
 
-        {/* MAIN PANEL: TRANSACTION LEDGER */}
+        {/* Transaction Ledger */}
         <div className="panel-industrial">
            <div className="panel-header">
              <h3 style={{margin:0, fontSize:'1rem'}}>TRANSACTION LEDGER</h3>
@@ -141,6 +116,32 @@ export const ProfitMatrix = () => {
         </div>
 
       </div>
+
+      {/* RIGHT SIDEBAR: METRICS */}
+      <div className="sidebar-col" style={{padding:'15px'}}>
+         <div className="keyword-header" style={{padding:'0 0 15px 0'}}>
+            <h3 className="label-industrial glow-purple" style={{ margin: 0 }}>FINANCIALS</h3>
+         </div>
+         <div style={{display:'flex', flexDirection:'column', gap:'15px', paddingTop:'15px'}}>
+              <div className="panel-industrial" style={{padding:'20px', justifyContent:'center'}}>
+                 <span className="label-industrial">GROSS REVENUE</span>
+                 <div className="metric-value glow-teal">${totalRev.toFixed(0)}</div>
+              </div>
+              <div className="panel-industrial" style={{padding:'20px', justifyContent:'center'}}>
+                 <span className="label-industrial">NET PROFIT</span>
+                 <div className="metric-value glow-purple">${netProfit.toFixed(0)}</div>
+              </div>
+              <div className="panel-industrial" style={{padding:'20px', justifyContent:'center'}}>
+                 <span className="label-industrial">EXPENSES (COGS)</span>
+                 <div className="metric-value" style={{color:'var(--neon-orange)'}}>${totalCost.toFixed(0)}</div>
+              </div>
+              <div className="panel-industrial" style={{padding:'20px', justifyContent:'center'}}>
+                 <span className="label-industrial">AVG MARGIN</span>
+                 <div className="metric-value glow-cyan">{margin.toFixed(1)}%</div>
+              </div>
+         </div>
+      </div>
+
     </div>
   );
 };
