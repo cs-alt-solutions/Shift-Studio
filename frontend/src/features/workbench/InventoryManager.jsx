@@ -1,16 +1,15 @@
-/* src/features/workbench/InventoryManager.jsx */
 import React, { useState, useMemo } from 'react';
-import { useInventory } from '../../context/InventoryContext'; // FIXED IMPORT
+import { useInventory } from '../../context/InventoryContext';
 import './InventoryManager.css';
 import { Box, Alert, Plus, History, ChevronDown, ChevronUp } from '../../components/Icons';
 import { StatCard } from '../../components/StatCard';
 import { ImagePlaceholder } from '../../components/ImagePlaceholder';
+import { formatCurrency } from '../../utils/formatters';
 
 const CATEGORIES = ['Raw Material', 'Packaging', 'Shipping', 'Consumables', 'Hardware', 'Electronics', 'Tools'];
 const UNITS = { 'Weight': ['lbs', 'oz', 'kg'], 'Volume': ['gal', 'fl oz', 'L'], 'Length': ['ft', 'yd'], 'Count': ['count', 'box', 'ea'] };
 
 export const InventoryManager = () => {
-  // FIXED: Hook call
   const { materials, addAsset, restockAsset, projects } = useInventory(); 
   const [filter, setFilter] = useState('ALL');
   const [expandedProject, setExpandedProject] = useState(null);
@@ -160,7 +159,7 @@ export const InventoryManager = () => {
         <div className="inventory-metrics">
            <StatCard 
              label="ASSET VALUE" 
-             value={`$${metrics.totalValue.toLocaleString(undefined, {minimumFractionDigits: 0})}`} 
+             value={formatCurrency(metrics.totalValue)} 
              glowColor="purple" 
            />
            <StatCard 
@@ -198,7 +197,6 @@ export const InventoryManager = () => {
                 const isLowStock = m.qty < 10 && m.qty > 0;
                 const isExpanded = expandedRowId === m.id;
                 
-                // REFACTOR: Logic determines status text, CSS determines look
                 let statusClass = 'text-good'; 
                 let StatusIcon = Box; 
                 let statusText = 'STOCKED';
@@ -207,12 +205,10 @@ export const InventoryManager = () => {
                 else if (isLowStock) { statusClass = 'text-warning'; StatusIcon = Alert; statusText = 'LOW STOCK'; } 
                 else if (m.status === 'Dormant') { statusClass = 'text-muted'; StatusIcon = Box; statusText = 'DORMANT'; }
                 
-                // REFACTOR: Row classes
                 const rowStatusClass = isOutOfStock ? 'status-alert' : isLowStock ? 'status-warning' : '';
                 const selectedClass = selectedMaterial?.id === m.id ? 'selected' : '';
                 
-                // REFACTOR: Progress Bar classes
-                const barWidth = Math.min((m.qty / 100) * 100, 100); // capped at 100%
+                const barWidth = Math.min((m.qty / 100) * 100, 100); 
                 const barStatusClass = isOutOfStock ? 'status-alert' : isLowStock ? 'status-warning' : '';
 
                 return (
@@ -228,9 +224,8 @@ export const InventoryManager = () => {
                         </div>
                       </td>
                       <td className="td-cell cell-meta">{m.lastUsed}</td>
-                      <td className="td-cell td-right cell-meta">${m.costPerUnit.toFixed(2)}</td>
+                      <td className="td-cell td-right cell-meta">{formatCurrency(m.costPerUnit)}</td>
                       
-                      {/* QTY CELL WITH REFACTORED HEALTH BAR */}
                       <td className="td-cell td-center">
                         <div className="flex-col" style={{ alignItems: 'center', gap: '2px' }}>
                             <div className={`font-bold ${isOutOfStock ? 'text-alert' : 'text-main'}`}>
@@ -239,7 +234,7 @@ export const InventoryManager = () => {
                             <div className="progress-bar-track">
                                 <div 
                                     className={`progress-bar-fill ${barStatusClass}`} 
-                                    style={{ width: `${barWidth}%` }} // Dynamic width is the ONLY valid inline style
+                                    style={{ width: `${barWidth}%` }} 
                                 ></div>
                             </div>
                         </div>
@@ -280,8 +275,8 @@ export const InventoryManager = () => {
                                        <td>{h.date}</td>
                                        <td>{h.type || 'RESTOCK'}</td>
                                        <td className="text-good">+{h.qty} {m.unit}</td>
-                                       <td>${h.unitCost.toFixed(2)}</td>
-                                       <td>${(h.qty * h.unitCost).toFixed(2)}</td>
+                                       <td>{formatCurrency(h.unitCost)}</td>
+                                       <td>{formatCurrency(h.qty * h.unitCost)}</td>
                                      </tr>
                                    ))}
                                  </tbody>
@@ -301,7 +296,7 @@ export const InventoryManager = () => {
         </div>
       </div>
 
-      {/* SIDEBAR - REFACTORED WITH SEMANTIC CLASSES */}
+      {/* SIDEBAR */}
       <div className="sidebar-col" style={{width:'340px'}}>
          <div className="keyword-header">
            <h3 className="label-industrial glow-purple" style={{ margin: 0, fontSize: '0.9rem' }}>
@@ -328,7 +323,7 @@ export const InventoryManager = () => {
                   </div>
                   <div className="stock-box">
                     <div className="stock-label">AVG COST</div>
-                    <div className="stock-value text-accent">${selectedMaterial.costPerUnit.toFixed(2)}</div>
+                    <div className="stock-value text-accent">{formatCurrency(selectedMaterial.costPerUnit)}</div>
                   </div>
                 </div>
                 <button onClick={handleQuickRestock} className="btn-primary" style={{width:'100%', marginBottom:'20px'}}>
@@ -339,7 +334,6 @@ export const InventoryManager = () => {
             </div>
           )}
           
-          {/* INTAKE FORM REFACTOR */}
           {showIntakeForm && (
              <div className="sidebar-panel" style={{ borderLeftColor: 'var(--neon-purple)' }}>
                <div className="sidebar-inner">
@@ -382,7 +376,7 @@ export const InventoryManager = () => {
                                  <select className="input-industrial" value={formData.unit} onChange={e => setFormData({...formData, unit: e.target.value})}>{UNITS['Weight'].map(u => <option key={u} value={u}>{u}</option>)}</select>
                              </div>
                         )}
-                        {formData.qty && formData.totalCost && <div style={{textAlign:'center', fontSize:'0.7rem', marginTop:'5px'}} className="text-accent">New Unit Cost: <strong>${(formData.totalCost / formData.qty).toFixed(2)}</strong></div>}
+                        {formData.qty && formData.totalCost && <div style={{textAlign:'center', fontSize:'0.7rem', marginTop:'5px'}} className="text-accent">New Unit Cost: <strong>{formatCurrency(formData.totalCost / formData.qty)}</strong></div>}
                      </div>
                      <div style={{display:'flex', gap:'10px', marginTop:'20px'}}>
                          <button type="button" className="btn-ghost" onClick={() => resetForm(false)}>CANCEL</button>

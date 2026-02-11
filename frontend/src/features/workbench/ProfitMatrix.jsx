@@ -1,9 +1,9 @@
-/* src/features/workbench/ProfitMatrix.jsx */
 import React, { useState } from 'react';
-import { useInventory } from '../../context/InventoryContext'; // FOR PROJECTS
-import { useFinancial } from '../../context/FinancialContext'; // FOR TRANSACTIONS
+import { useInventory } from '../../context/InventoryContext'; 
+import { useFinancial } from '../../context/FinancialContext'; 
 import { StatCard } from '../../components/StatCard';
 import { Plus } from '../../components/Icons';
+import { formatCurrency } from '../../utils/formatters';
 
 // --- VISUAL CHART (ANIMATED) ---
 const RevenueChart = () => {
@@ -39,7 +39,6 @@ const RevenueChart = () => {
 }
 
 export const ProfitMatrix = () => {
-  // FIXED: Using split contexts
   const { transactions, addTransaction } = useFinancial();
   const { projects } = useInventory();
   
@@ -58,7 +57,6 @@ export const ProfitMatrix = () => {
   const netProfit = totalRev - totalCost;
   const margin = totalRev > 0 ? (netProfit / totalRev) * 100 : 0;
 
-  // SMART HANDLER: Auto-fills everything for a sale
   const handleProjectSelect = (e) => {
     const pid = e.target.value;
     if (!pid) {
@@ -70,7 +68,7 @@ export const ProfitMatrix = () => {
         setTxnForm({ 
             ...txnForm, 
             relatedProjectId: pid, 
-            type: 'SALE', // AUTOMATICALLY SET TO SALE
+            type: 'SALE', 
             item: `Sold Unit: ${proj.title}`, 
             amount: proj.retailPrice || '' 
         });
@@ -140,7 +138,6 @@ export const ProfitMatrix = () => {
                     <tr><td colSpan="5" style={{padding:'20px', textAlign:'center', color:'var(--text-muted)'}}>No transactions recorded yet.</td></tr>
                  ) : (
                    transactions.map(t => {
-                     // SMART STYLING: Detect "Sold Unit"
                      const isSale = t.item.includes('Sold Unit');
                      
                      return (
@@ -153,7 +150,7 @@ export const ProfitMatrix = () => {
                             <span className="label-industrial" style={{color: t.amount > 0 ? 'var(--neon-teal)' : 'var(--neon-orange)'}}>{t.type}</span>
                          </td>
                          <td className="td-cell td-right" style={{fontWeight:700, color: t.amount > 0 ? 'var(--neon-teal)' : 'var(--text-muted)'}}>
-                           {t.amount > 0 ? '+' : ''}{Math.abs(t.amount).toFixed(2)}
+                           {t.amount > 0 ? '+' : ''}{formatCurrency(Math.abs(t.amount))}
                          </td>
                          <td className="td-cell td-right">
                            <span style={{fontSize:'0.65rem', color: 'var(--neon-purple)'}}>{t.status || 'CLEARED'}</span>
@@ -173,9 +170,9 @@ export const ProfitMatrix = () => {
             <h3 className="label-industrial glow-purple" style={{ margin: 0 }}>FINANCIALS</h3>
          </div>
          <div style={{display:'flex', flexDirection:'column', gap:'15px', paddingTop:'15px'}}>
-            <StatCard label="GROSS REVENUE" value={`$${totalRev.toFixed(2)}`} glowColor="teal" />
-            <StatCard label="NET PROFIT" value={`$${netProfit.toFixed(2)}`} glowColor={netProfit >= 0 ? "purple" : "red"} />
-            <StatCard label="TOTAL EXPENSES" value={`$${totalCost.toFixed(2)}`} glowColor="orange" />
+            <StatCard label="GROSS REVENUE" value={formatCurrency(totalRev)} glowColor="teal" />
+            <StatCard label="NET PROFIT" value={formatCurrency(netProfit)} glowColor={netProfit >= 0 ? "purple" : "red"} />
+            <StatCard label="TOTAL EXPENSES" value={formatCurrency(totalCost)} glowColor="orange" />
             <StatCard label="AVG MARGIN" value={`${margin.toFixed(1)}%`} glowColor="cyan" />
          </div>
       </div>

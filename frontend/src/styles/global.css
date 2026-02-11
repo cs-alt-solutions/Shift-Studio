@@ -46,6 +46,19 @@ body {
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 .flex-col { display: flex; flex-direction: column; }
 .flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-end { display: flex; justify-content: flex-end; }
+.flex-between-center { display: flex; justify-content: space-between; align-items: center; }
+
+/* Spacing & Layout */
+.w-full { width: 100%; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.pad-20 { padding: 20px; }
+.pad-30 { padding: 30px; }
+.gap-10 { gap: 10px; }
+.gap-20 { gap: 20px; }
+.mt-20 { margin-top: 20px; }
+.mb-20 { margin-bottom: 20px; }
 
 /* Text Utilities */
 .text-main { color: var(--text-main); }
@@ -179,6 +192,10 @@ body {
 @keyframes blink { 50% { opacity: 0; } }
 
 /* --- INPUTS --- */
+.lab-form-group { margin-bottom: 20px; }
+.lab-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+/* Standard Input */
 .input-industrial {
   background: #09090b; border: 1px solid var(--border-subtle); color: var(--text-main);
   padding: 10px; border-radius: 2px; font-family: var(--font-mono); font-size: 0.9rem;
@@ -186,6 +203,21 @@ body {
 }
 .input-industrial:focus { border-color: var(--neon-cyan); background: rgba(34, 211, 238, 0.05); }
 
+/* Input Group / Prefix Handling */
+.input-prefix {
+  position: absolute; 
+  left: 10px; 
+  color: var(--neon-teal); 
+  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  pointer-events: none; /* Click passes through to input */
+  z-index: 10;
+}
+.input-industrial.has-prefix {
+  padding-left: 25px; /* Make room for the prefix */
+}
+
+/* Select Styling */
 select.input-industrial {
   appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -198,11 +230,7 @@ select.input-industrial {
 }
 select.input-industrial option { background-color: #000; color: #fff; padding: 10px; }
 
-.lab-form-group { margin-bottom: 20px; }
-.lab-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
 /* --- 6. SHARED LAYOUT GRIDS --- */
-/* These are high-level grids used by the ConsoleLayout */
 .radar-grid-layout { 
   display: grid; 
   grid-template-columns: 1fr 320px; 

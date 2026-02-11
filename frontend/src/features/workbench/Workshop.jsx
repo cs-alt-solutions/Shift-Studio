@@ -1,9 +1,10 @@
-/* src/features/workbench/Workshop.jsx */
 import React, { useState, useEffect, useMemo } from 'react';
 import { useInventory } from '../../context/InventoryContext'; 
 import { ProjectCard } from '../../components/ProjectCard';
-import { ImagePlaceholder } from '../../components/ImagePlaceholder'; 
+import { ImagePlaceholder } from '../../components/ImagePlaceholder';
+import { InputGroup } from '../../components/InputGroup'; 
 import { Plus, Back, Save, Box } from '../../components/Icons'; 
+import { formatCurrency, formatPercent } from '../../utils/formatters'; 
 import './Workshop.css';
 
 // --- UNIT CATEGORY DEFINITIONS ---
@@ -33,14 +34,13 @@ const calculateRecipeCost = (recipe, materials) => {
 };
 
 export const Workshop = ({ onRequestFullWidth }) => {
-  // FIXED: Using useInventory instead of useWorkbench
   const { projects, addProject, deleteProject, updateProject, materials, manufactureProduct } = useInventory();
   
   const [activeProject, setActiveProject] = useState(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newProjectTitle, setNewProjectTitle] = useState('');
 
-  // --- STUDIO STATE ---
+  // Studio State
   const [recipe, setRecipe] = useState([]);
   const [missions, setMissions] = useState([]); 
   const [tags, setTags] = useState([]); 
@@ -49,24 +49,22 @@ export const Workshop = ({ onRequestFullWidth }) => {
   const [newIngredientId, setNewIngredientId] = useState('');
   const [newMissionTitle, setNewMissionTitle] = useState('');
 
-  // --- FILTER PROJECTS ---
+  // Derived State
   const activeProjects = useMemo(() => projects.filter(p => p.status === 'active'), [projects]);
   const draftProjects = useMemo(() => projects.filter(p => p.status === 'draft'), [projects]);
   const archiveProjects = useMemo(() => projects.filter(p => ['completed', 'on_hold'].includes(p.status)), [projects]);
 
-  // Sync Layout Mode
-  useEffect(() => {
-    if (onRequestFullWidth) {
-      onRequestFullWidth(!!activeProject); 
-    }
-  }, [activeProject, onRequestFullWidth]);
-
-  // --- CALCULATIONS ---
   const totalUnitCost = useMemo(() => calculateRecipeCost(recipe, materials), [recipe, materials]);
   const projectedMargin = activeProject ? (activeProject.retailPrice - totalUnitCost) : 0;
-  const marginPercent = activeProject && activeProject.retailPrice > 0 
-    ? ((projectedMargin / activeProject.retailPrice) * 100).toFixed(1) 
-    : '0.0';
+  
+  // Use Formatter for Margin %
+  const marginPercentValue = activeProject && activeProject.retailPrice > 0 
+    ? (projectedMargin / activeProject.retailPrice) * 100 
+    : 0;
+
+  useEffect(() => {
+    if (onRequestFullWidth) onRequestFullWidth(!!activeProject); 
+  }, [activeProject, onRequestFullWidth]);
 
   // --- ACTIONS ---
   const handleCreateProject = (e) => {
@@ -85,19 +83,10 @@ export const Workshop = ({ onRequestFullWidth }) => {
     setNotes(project.notes || '');
   };
 
-  const closeStudio = () => {
-    setActiveProject(null);
-  };
+  const closeStudio = () => setActiveProject(null);
 
   const handleSaveProject = () => {
-    const updated = { 
-        ...activeProject, 
-        tags, 
-        missions, 
-        notes, 
-        recipe, // Ensure recipe is saved
-        updated_at: new Date().toISOString() 
-    };
+    const updated = { ...activeProject, tags, missions, notes, recipe, updated_at: new Date().toISOString() };
     updateProject(updated);
     alert("FILE SAVED SUCCESSFULLY.");
   };
@@ -113,14 +102,13 @@ export const Workshop = ({ onRequestFullWidth }) => {
     }
   };
 
-  // --- FIELD HANDLERS ---
-  const handlePriceChange = (val) => {
-    const numVal = parseFloat(val);
-    const updated = { ...activeProject, retailPrice: isNaN(numVal) ? 0 : numVal };
+  // Field Handlers
+  const handlePriceChange = (e) => {
+    const val = parseFloat(e.target.value);
+    const updated = { ...activeProject, retailPrice: isNaN(val) ? 0 : val };
     setActiveProject(updated);
   };
 
-  // Recipe Logic
   const addIngredient = () => {
     const mat = materials.find(m => m.id === parseInt(newIngredientId));
     if (mat) {
@@ -134,17 +122,16 @@ export const Workshop = ({ onRequestFullWidth }) => {
       setNewIngredientId('');
     }
   };
+
   const updateRecipeUsage = (id, field, val) => {
     setRecipe(recipe.map(r => r.id === id ? { ...r, [field]: val } : r));
   };
   const removeIngredient = (id) => setRecipe(recipe.filter(r => r.id !== id));
 
-  // Mission Logic
   const addMission = (e) => {
-    if ((e.key === 'Enter') && newMissionTitle.trim()) {
+    if (e.key === 'Enter' && newMissionTitle.trim()) {
         e.preventDefault();
-        const newMission = { id: Date.now(), title: newMissionTitle, status: 'pending' };
-        setMissions([...missions, newMission]);
+        setMissions([...missions, { id: Date.now(), title: newMissionTitle, status: 'pending' }]);
         setNewMissionTitle('');
     }
   };
@@ -153,7 +140,6 @@ export const Workshop = ({ onRequestFullWidth }) => {
   };
   const deleteMission = (id) => setMissions(missions.filter(m => m.id !== id));
 
-  // Tag Logic
   const addTag = (e) => {
     if ((e.key === 'Enter' || e.key === ',') && newTagInput.trim()) {
       e.preventDefault();
@@ -172,24 +158,20 @@ export const Workshop = ({ onRequestFullWidth }) => {
             <div className="inventory-header">
               <div>
                 <h2 className="header-title">WORKSHOP</h2>
-                <span style={{color: 'var(--text-muted)', fontSize: '0.8rem'}}>R&D OPERATIONS</span>
+                <span className="header-subtitle">R&D OPERATIONS</span>
               </div>
               <button className="btn-primary" onClick={() => setIsCreateOpen(true)}><Plus /> NEW PROJECT</button>
             </div>
 
-            {/* --- SECTION 1: ACTIVE OPERATIONS --- */}
+            {/* SECTION 1: ACTIVE */}
             <div className="section-separator">
                <span className="separator-label">ACTIVE OPERATIONS</span>
-               <div style={{height:'1px', background:'var(--border-subtle)', flex:1}}></div>
-               <span style={{fontSize:'0.7rem', color:'var(--neon-teal)', marginLeft:'10px', fontWeight:700}}>
-                  {activeProjects.length} ACTIVE
-               </span>
+               <div className="separator-line"></div>
+               <span className="separator-count active">{activeProjects.length} ACTIVE</span>
             </div>
             
             {activeProjects.length === 0 ? (
-                <div style={{padding:'30px', textAlign:'center', border:'1px dashed var(--border-subtle)', borderRadius:'4px', color:'var(--text-muted)', marginBottom:'20px'}}>
-                   No active operations. Initiate a protocol above.
-                </div>
+                <div className="workshop-empty-state">No active operations. Initiate a protocol above.</div>
             ) : (
                 <div className="workshop-grid">
                   {activeProjects.map(p => (
@@ -200,21 +182,17 @@ export const Workshop = ({ onRequestFullWidth }) => {
                 </div>
             )}
 
-            {/* --- SECTION 2: CONCEPT BLUEPRINTS --- */}
-            <div className="section-separator" style={{marginTop: '40px'}}>
-               <span className="separator-label" style={{color:'var(--neon-blue)'}}>CONCEPT BLUEPRINTS</span>
-               <div style={{height:'1px', background:'var(--border-subtle)', flex:1}}></div>
-               <span style={{fontSize:'0.7rem', color:'var(--text-muted)', marginLeft:'10px'}}>
-                  {draftProjects.length} DRAFTS
-               </span>
+            {/* SECTION 2: DRAFTS */}
+            <div className="section-separator mt-20">
+               <span className="separator-label draft">CONCEPT BLUEPRINTS</span>
+               <div className="separator-line"></div>
+               <span className="separator-count">{draftProjects.length} DRAFTS</span>
             </div>
 
             {draftProjects.length === 0 ? (
-                <div style={{padding:'30px', textAlign:'center', opacity: 0.5, fontStyle:'italic', color:'var(--text-muted)'}}>
-                   Draft queue empty.
-                </div>
+                <div className="workshop-empty-state muted">Draft queue empty.</div>
             ) : (
-                <div className="workshop-grid" style={{opacity: 0.9}}>
+                <div className="workshop-grid opacity-90">
                   {draftProjects.map(p => (
                     <div key={p.id} onClick={() => openStudio(p)}>
                       <ProjectCard project={p} onDelete={(e) => { e.stopPropagation(); deleteProject(p.id); }} />
@@ -225,12 +203,17 @@ export const Workshop = ({ onRequestFullWidth }) => {
             
             {/* CREATE MODAL */}
             {isCreateOpen && (
-              <div className="blueprint-overlay" style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.8)', display:'flex', justifyContent:'center', alignItems:'center', zIndex:2000}}>
-                <div className="panel-industrial" style={{width:'400px', padding:'30px'}}>
-                  <h2 style={{ color: 'var(--neon-orange)', marginTop: 0, fontSize:'1.2rem' }}>INITIATE PROTOCOL</h2>
+              <div className="blueprint-overlay">
+                <div className="panel-industrial modal-panel">
+                  <h2 className="modal-title">INITIATE PROTOCOL</h2>
                   <form onSubmit={handleCreateProject}>
-                    <input autoFocus type="text" placeholder="Project Title..." value={newProjectTitle} onChange={e => setNewProjectTitle(e.target.value)} className="input-industrial" style={{ marginBottom: '20px' }} />
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                    <InputGroup 
+                      autoFocus 
+                      placeholder="Project Title..." 
+                      value={newProjectTitle} 
+                      onChange={e => setNewProjectTitle(e.target.value)} 
+                    />
+                    <div className="flex-end gap-10 mt-20">
                       <button type="button" className="btn-ghost" onClick={() => setIsCreateOpen(false)}>CANCEL</button>
                       <button type="submit" className="btn-primary">CREATE</button>
                     </div>
@@ -244,74 +227,70 @@ export const Workshop = ({ onRequestFullWidth }) => {
 
       {/* --- VIEW 2: THE STUDIO (EDITOR) --- */}
       {activeProject && (
-        <div className="studio-animate-enter" style={{height:'100%', padding:'20px 30px', display:'flex', flexDirection:'column', overflow:'hidden', background: '#000'}}>
+        <div className="studio-animate-enter studio-container">
             
-            {/* 1. FILE HEADER */}
+            {/* FILE HEADER */}
             <div className="file-header-strip">
-                <button onClick={closeStudio} className="btn-icon" style={{borderRight:'1px solid var(--border-subtle)', paddingRight:'15px', marginRight:'15px'}}>
-                    <Back /> <span style={{fontSize:'0.8rem', fontWeight:700, marginLeft:'5px'}}>CLOSE FILE</span>
+                <button onClick={closeStudio} className="btn-icon header-close-btn">
+                    <Back /> <span className="ml-5 font-bold">CLOSE FILE</span>
                 </button>
-                <div style={{flex:1}}>
-                   <div style={{fontSize:'0.65rem', color:'var(--neon-cyan)', letterSpacing:'1px'}}>PROJECT ID: {activeProject.id}</div>
-                   <div style={{fontSize:'1.2rem', fontWeight:800, color:'#fff', textTransform:'uppercase'}}>{activeProject.title}</div>
+                <div className="flex-1">
+                   <div className="project-id">PROJECT ID: {activeProject.id}</div>
+                   <div className="project-title-large">{activeProject.title}</div>
                 </div>
-                <div style={{display:'flex', gap:'10px'}}>
-                    <button onClick={handleSaveProject} className="btn-ghost" style={{borderColor:'var(--neon-teal)', color:'var(--neon-teal)'}}>
+                <div className="flex-gap-10">
+                    <button onClick={handleSaveProject} className="btn-ghost btn-save">
                         <Save /> SAVE PROGRESS
                     </button>
-                    <button onClick={handleCompleteProject} className="btn-primary" style={{background:'var(--neon-purple)', color:'#fff'}}>
+                    <button onClick={handleCompleteProject} className="btn-primary btn-finalize">
                         <Box /> FINALIZE
                     </button>
                 </div>
             </div>
 
-            {/* 2. CONTENT GRID */}
+            {/* CONTENT GRID */}
             <div className="studio-layout-wrapper">
                 <div className="studio-grid">
                     
-                    {/* --- COL 1: VISUALS & SPECS --- */}
+                    {/* LEFT COL */}
                     <div className="studio-col left-col">
-                        
-                        {/* REFERENCE IMAGE */}
-                        <div className="panel-industrial studio-panel" style={{padding:0, overflow:'hidden', minHeight:'200px'}}>
+                        <div className="panel-industrial studio-panel no-pad overflow-hidden min-h-200">
                              <ImagePlaceholder height="100%" label="REFERENCE VISUAL" />
                         </div>
 
-                        {/* FINANCIAL CALCULATOR */}
-                        <div className="panel-industrial studio-panel" style={{padding:'20px'}}>
-                             <div className="floating-manifest-label" style={{color:'var(--neon-teal)', borderColor:'var(--neon-teal)'}}>MARKET CALIBRATION</div>
+                        <div className="panel-industrial studio-panel pad-20">
+                             <div className="floating-manifest-label text-teal border-teal">MARKET CALIBRATION</div>
                              
-                             <div className="flex-between" style={{marginBottom:'15px'}}>
+                             <div className="flex-between mb-20">
                                  <div>
                                      <div className="label-industrial">TARGET RETAIL</div>
-                                     <div style={{display:'flex', alignItems:'center', gap:'5px'}}>
-                                         <span style={{color:'var(--neon-teal)', fontSize:'1.1rem'}}>$</span>
+                                     <div className="flex-center gap-5">
+                                         <span className="currency-symbol">$</span>
                                          <input 
                                             className="input-chromeless" 
                                             type="number" 
                                             step="0.01" 
                                             placeholder="0.00"
                                             value={activeProject.retailPrice || ''}
-                                            onChange={(e) => handlePriceChange(e.target.value)}
+                                            onChange={handlePriceChange}
                                          />
                                      </div>
                                  </div>
-                                 <div style={{textAlign:'right'}}>
+                                 <div className="text-right">
                                      <div className="label-industrial">UNIT COST</div>
-                                     <div style={{fontSize:'1.1rem', color:'var(--neon-orange)', fontWeight:700}}>${totalUnitCost.toFixed(2)}</div>
+                                     <div className="cost-display">{formatCurrency(totalUnitCost)}</div>
                                  </div>
                              </div>
 
-                             <div style={{background:'rgba(255,255,255,0.05)', padding:'10px', borderRadius:'2px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                                 <span className="label-industrial" style={{margin:0}}>PROJ. MARGIN</span>
-                                 <span style={{fontSize:'1.1rem', fontWeight:800, color: projectedMargin > 0 ? 'var(--neon-teal)' : 'var(--neon-red)'}}>
-                                     {marginPercent}%
+                             <div className="margin-indicator">
+                                 <span className="label-industrial no-margin">PROJ. MARGIN</span>
+                                 <span className={`margin-value ${projectedMargin > 0 ? 'text-teal' : 'text-alert'}`}>
+                                     {formatPercent(marginPercentValue)}
                                  </span>
                              </div>
                         </div>
 
-                        {/* FIELD NOTES */}
-                        <div className="panel-industrial studio-panel" style={{padding:'20px', flex:1}}>
+                        <div className="panel-industrial studio-panel pad-20 flex-1">
                              <div className="floating-manifest-label">FIELD NOTES</div>
                              <textarea 
                                 className="input-area-industrial" 
@@ -321,14 +300,12 @@ export const Workshop = ({ onRequestFullWidth }) => {
                              ></textarea>
                         </div>
 
-                        {/* TAGS */}
-                        <div className="panel-industrial studio-panel" style={{padding:'20px'}}>
-                            <div className="floating-manifest-label" style={{color:'var(--neon-cyan)', borderColor:'var(--neon-cyan)'}}>TAGS</div>
-                            <div className="tag-input-area" style={{display:'flex', flexWrap:'wrap', gap:'5px'}}>
+                        <div className="panel-industrial studio-panel pad-20">
+                            <div className="floating-manifest-label text-cyan border-cyan">TAGS</div>
+                            <div className="tag-input-area">
                                 {tags.map(t => <div key={t} className="unit-badge"><span>{t}</span></div>)}
                                 <input 
-                                    className="input-chromeless" 
-                                    style={{fontSize:'0.75rem', width:'100px'}} 
+                                    className="input-chromeless tag-input"
                                     placeholder="+ Add tag..." 
                                     value={newTagInput} 
                                     onChange={e => setNewTagInput(e.target.value)} 
@@ -336,16 +313,15 @@ export const Workshop = ({ onRequestFullWidth }) => {
                                 />
                             </div>
                         </div>
-
                     </div>
 
-                    {/* --- COL 2: BLUEPRINT & RECIPE --- */}
+                    {/* RIGHT COL */}
                     <div className="studio-col right-col">
                         
-                        {/* MISSION PARAMETERS (MILESTONES) */}
-                        <div className="panel-industrial studio-panel" style={{padding:'0', minHeight:'250px'}}>
-                            <div className="floating-manifest-label" style={{color:'var(--neon-blue)', borderColor:'var(--neon-blue)'}}>MISSION OBJECTIVES</div>
-                            <div style={{padding:'15px', borderBottom:'1px solid var(--border-subtle)'}}>
+                        {/* MISSIONS */}
+                        <div className="panel-industrial studio-panel no-pad min-h-250">
+                            <div className="floating-manifest-label text-blue border-blue">MISSION OBJECTIVES</div>
+                            <div className="mission-input-area">
                                 <input 
                                     className="input-industrial" 
                                     placeholder="+ Add new milestone (Press Enter)" 
@@ -358,38 +334,35 @@ export const Workshop = ({ onRequestFullWidth }) => {
                                 {missions.length === 0 && <div className="empty-state">No active missions.</div>}
                                 {missions.map(m => (
                                     <div key={m.id} className={`checklist-item ${m.status === 'completed' ? 'completed' : ''}`}>
-                                        <div onClick={() => toggleMission(m.id)} style={{cursor:'pointer', display:'flex', alignItems:'center', gap:'10px', flex:1}}>
+                                        <div onClick={() => toggleMission(m.id)} className="checklist-click-area">
                                             <div className="checkbox-industrial">{m.status === 'completed' && <div className="check-mark"/>}</div>
                                             <span className="mission-text">{m.title}</span>
                                         </div>
-                                        <button onClick={() => deleteMission(m.id)} className="btn-icon-hover" style={{fontSize:'1rem'}}>×</button>
+                                        <button onClick={() => deleteMission(m.id)} className="btn-icon-hover remove-mission">×</button>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* COMPOSITION MATRIX (RECIPE) */}
-                        <div className="panel-industrial studio-panel" style={{padding:'0', flex:1, display:'flex', flexDirection:'column'}}>
-                            <div className="floating-manifest-label" style={{color:'var(--neon-purple)', borderColor:'var(--neon-purple)'}}>BILL OF MATERIALS</div>
+                        {/* BOM */}
+                        <div className="panel-industrial studio-panel no-pad flex-col flex-1">
+                            <div className="floating-manifest-label text-purple border-purple">BILL OF MATERIALS</div>
                             
-                            {/* Toolbar */}
-                            <div style={{padding:'15px', borderBottom:'1px solid var(--border-subtle)', display:'flex', gap:'10px'}}>
-                                <select className="input-industrial" style={{fontSize:'0.8rem', padding:'8px'}} value={newIngredientId} onChange={e => setNewIngredientId(e.target.value)}>
+                            <div className="bom-toolbar">
+                                <select className="input-industrial bom-select" value={newIngredientId} onChange={e => setNewIngredientId(e.target.value)}>
                                 <option value="">+ Select Material...</option>
-                                {materials.map(m => <option key={m.id} value={m.id}>{m.name} (${m.costPerUnit}/{m.unit})</option>)}
+                                {materials.map(m => <option key={m.id} value={m.id}>{m.name} ({formatCurrency(m.costPerUnit)}/{m.unit})</option>)}
                                 </select>
-                                <button onClick={addIngredient} className="btn-primary" style={{padding:'5px 12px', fontSize:'0.7rem'}}>ADD</button>
+                                <button onClick={addIngredient} className="btn-primary bom-add-btn">ADD</button>
                             </div>
 
-                            {/* Table Header */}
                             <div className="bom-header">
-                                <div style={{flex:2}}>ITEM</div>
-                                <div style={{flex:1, textAlign:'center'}}>QTY</div>
-                                <div style={{flex:1, textAlign:'right'}}>EST COST</div>
-                                <div style={{width:'30px'}}></div>
+                                <div className="flex-2">ITEM</div>
+                                <div className="flex-1 text-center">QTY</div>
+                                <div className="flex-1 text-right">EST COST</div>
+                                <div className="w-30"></div>
                             </div>
 
-                            {/* Table Body */}
                             <div className="bom-body">
                                 {recipe.length === 0 && <div className="empty-state">No materials defined.</div>}
                                 {recipe.map(r => {
@@ -398,61 +371,56 @@ export const Workshop = ({ onRequestFullWidth }) => {
                                     const unitOptions = getUnitOptions(r.unit);
                                     return (
                                         <div key={r.id} className="bom-row">
-                                            <div style={{flex:2, fontWeight:700, fontSize:'0.85rem', color:'#fff'}}>{r.name}</div>
-                                            <div style={{flex:1, display:'flex', alignItems:'center', gap:'5px', justifyContent:'center'}}>
+                                            <div className="bom-name">{r.name}</div>
+                                            <div className="bom-qty-group">
                                                 <input 
-                                                    className="input-chromeless" 
+                                                    className="input-chromeless bom-qty-input" 
                                                     type="number" 
                                                     value={r.reqPerUnit} 
                                                     onChange={e => updateRecipeUsage(r.id, 'reqPerUnit', e.target.value)} 
-                                                    style={{textAlign:'right', width:'40px', color:'var(--neon-cyan)'}} 
                                                 />
                                                 <select 
-                                                    className="input-chromeless" 
+                                                    className="input-chromeless bom-unit-select" 
                                                     value={r.unit} 
                                                     onChange={e => updateRecipeUsage(r.id, 'unit', e.target.value)}
-                                                    style={{fontSize:'0.7rem', width:'auto', padding:0, border:'none', textAlign:'center', color:'var(--text-muted)'}}
                                                 >
                                                     {unitOptions.map(u => <option key={u} value={u}>{u}</option>)}
                                                 </select>
                                             </div>
-                                            <div style={{flex:1, textAlign:'right', fontFamily:'monospace', color:'var(--text-muted)'}}>
-                                                ${cost.toFixed(2)}
+                                            <div className="bom-cost">
+                                                {formatCurrency(cost)}
                                             </div>
-                                            <div style={{width:'30px', textAlign:'right'}}>
-                                                <button onClick={() => removeIngredient(r.id)} className="btn-icon" style={{color:'var(--neon-red)', fontSize:'0.8rem'}}>×</button>
+                                            <div className="text-right w-30">
+                                                <button onClick={() => removeIngredient(r.id)} className="btn-icon text-alert font-small">×</button>
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
           </div>
         )}
 
-      {/* --- SIDEBAR: ARCHIVE & VAULT --- */}
+      {/* --- SIDEBAR --- */}
       {!activeProject && (
         <div className="sidebar-col">
-             <div className="keyword-header" style={{padding:'15px', background:'var(--bg-panel-header)'}}>
-                <h3 className="label-industrial glow-purple" style={{ margin: 0 }}>THE VAULT</h3>
-                <span style={{fontSize:'0.65rem', color:'var(--text-muted)'}}>ARCHIVED & HALTED</span>
+             <div className="keyword-header sidebar-header-pad">
+                <h3 className="label-industrial glow-purple no-margin">THE VAULT</h3>
+                <span className="sidebar-subtitle">ARCHIVED & HALTED</span>
              </div>
              
              <div className="folder-stack">
                 {archiveProjects.length === 0 ? (
-                    <div style={{color:'var(--text-muted)', fontStyle:'italic', fontSize:'0.8rem', textAlign:'center', marginTop:'20px'}}>
-                        Vault empty.
-                    </div>
+                    <div className="vault-empty">Vault empty.</div>
                 ) : (
                     archiveProjects.map((p, index) => (
                         <div 
                           key={p.id} 
                           className="folder-stack-item" 
-                          style={{ zIndex: index + 1 }}
+                          style={{ zIndex: index + 1 }} // Dynamic Z-index is allowed
                           onClick={() => openStudio(p)}
                         >
                             <ProjectCard 
