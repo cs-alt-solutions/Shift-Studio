@@ -7,24 +7,18 @@ import { Workshop } from './Workshop';
 import { Radar, WorkshopIcon, Box, Finance, Menu, ChevronLeft } from '../../components/Icons';
 
 export const ConsoleLayout = () => {
-  // Defaulting to 'radar' (Market Pulse)
   const [activeView, setActiveView] = useState('radar'); 
   const [isCollapsed, setIsCollapsed] = useState(false);
-  
-  // State to track if the sub-view needs full width (e.g. Workshop Studio)
   const [isFullWidthMode, setIsFullWidthMode] = useState(false);
 
-  // Helper to determine sidebar state: Manual Collapse OR Auto-Collapse (Focus Mode)
   const sidebarCollapsed = isCollapsed || isFullWidthMode;
 
   return (
     <div className="console-container">
       
       {/* --- LEFT NAVIGATION RAIL --- */}
-      {/* FIXED: Now uses isFullWidthMode to auto-collapse the sidebar in Studio Mode */}
       <div className={`console-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         
-        {/* Header & Toggle */}
         <div className="sidebar-header">
           <div className="app-title">
             <span>MARKETLENS v2.0</span>
@@ -38,7 +32,6 @@ export const ConsoleLayout = () => {
           </button>
         </div>
         
-        {/* Nav Links */}
         <div className="nav-group">
           <div className="section-label">Main Modules</div>
           
@@ -79,11 +72,18 @@ export const ConsoleLayout = () => {
           </div>
         </div>
 
+        {/* --- MANDATORY ETSY COMPLIANCE FOOTER --- */}
+        {!sidebarCollapsed && (
+          <div className="sidebar-compliance-footer">
+            <p className="compliance-text">
+              The term 'Etsy' is a trademark of Etsy, Inc. This application uses the Etsy API but is not endorsed or certified by Etsy, Inc.
+            </p>
+          </div>
+        )}
+
       </div>
 
-      {/* --- MAIN CONTENT AREA --- */}
       <div className="console-main">
-        {/* Pass the setFullWidth setter to Workshop so it can request full space when entering a project */}
         {activeView === 'radar' && <MarketRadar />}
         {activeView === 'workshop' && <Workshop onRequestFullWidth={setIsFullWidthMode} />}
         {activeView === 'inventory' && <InventoryManager />}

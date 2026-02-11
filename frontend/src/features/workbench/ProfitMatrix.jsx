@@ -24,7 +24,6 @@ const RevenueChart = () => {
           </linearGradient>
         </defs>
         <path d={`M0,100 ${points} 100,100`} fill="url(#grad1)" stroke="none" />
-        {/* ADDED: CLASSNAME FOR ANIMATION */}
         <polyline 
             className="chart-line-animate"
             points={points} 
@@ -42,7 +41,6 @@ export const ProfitMatrix = () => {
   const { transactions, addTransaction, projects } = useWorkbench();
   const [isTxnFormOpen, setIsTxnFormOpen] = useState(false);
   
-  // Form State
   const [txnForm, setTxnForm] = useState({ 
     item: '', 
     amount: '', 
@@ -51,13 +49,12 @@ export const ProfitMatrix = () => {
     relatedProjectId: '' 
   });
 
-  // Calculate Real Metrics
   const totalRev = transactions.filter(t => t.amount > 0).reduce((acc, t) => acc + t.amount, 0);
   const totalCost = transactions.filter(t => t.amount < 0).reduce((acc, t) => acc + Math.abs(t.amount), 0);
   const netProfit = totalRev - totalCost;
   const margin = totalRev > 0 ? (netProfit / totalRev) * 100 : 0;
 
-  // Smart Handler: When selecting a project, auto-fill details AND set type to SALE
+  // SMART HANDLER: Auto-fills everything for a sale
   const handleProjectSelect = (e) => {
     const pid = e.target.value;
     if (!pid) {
@@ -69,7 +66,7 @@ export const ProfitMatrix = () => {
         setTxnForm({ 
             ...txnForm, 
             relatedProjectId: pid, 
-            type: 'SALE', // Force Sale
+            type: 'SALE', // AUTOMATICALLY SET TO SALE
             item: `Sold Unit: ${proj.title}`, 
             amount: proj.retailPrice || '' 
         });
@@ -88,7 +85,7 @@ export const ProfitMatrix = () => {
       type: txnForm.type,
       status: 'CLEARED',
       platform: txnForm.platform,
-      relatedProjectId: txnForm.relatedProjectId // Links to stock deduction
+      relatedProjectId: txnForm.relatedProjectId 
     });
     
     setTxnForm({ item: '', amount: '', type: 'SALE', platform: 'Direct', relatedProjectId: '' });
@@ -138,21 +135,28 @@ export const ProfitMatrix = () => {
                  {transactions.length === 0 ? (
                     <tr><td colSpan="5" style={{padding:'20px', textAlign:'center', color:'var(--text-muted)'}}>No transactions recorded yet.</td></tr>
                  ) : (
-                   transactions.map(t => (
-                     <tr key={t.id} className="inventory-row">
-                       <td className="td-cell text-muted" style={{fontSize:'0.75rem'}}>{t.date}</td>
-                       <td className="td-cell cell-name" style={{fontSize:'0.9rem'}}>{t.item}</td>
-                       <td className="td-cell">
-                          <span className="label-industrial" style={{color: t.amount > 0 ? 'var(--neon-teal)' : 'var(--neon-orange)'}}>{t.type}</span>
-                       </td>
-                       <td className="td-cell td-right" style={{fontWeight:700, color: t.amount > 0 ? 'var(--neon-teal)' : 'var(--text-muted)'}}>
-                         {t.amount > 0 ? '+' : ''}{Math.abs(t.amount).toFixed(2)}
-                       </td>
-                       <td className="td-cell td-right">
-                         <span style={{fontSize:'0.65rem', color: 'var(--neon-purple)'}}>{t.status || 'CLEARED'}</span>
-                       </td>
-                     </tr>
-                   ))
+                   transactions.map(t => {
+                     // SMART STYLING: Detect "Sold Unit"
+                     const isSale = t.item.includes('Sold Unit');
+                     
+                     return (
+                       <tr key={t.id} className="inventory-row">
+                         <td className="td-cell text-muted" style={{fontSize:'0.75rem'}}>{t.date}</td>
+                         <td className="td-cell cell-name" style={{fontSize:'0.9rem', color: isSale ? 'var(--neon-teal)' : '#fff'}}>
+                            {t.item}
+                         </td>
+                         <td className="td-cell">
+                            <span className="label-industrial" style={{color: t.amount > 0 ? 'var(--neon-teal)' : 'var(--neon-orange)'}}>{t.type}</span>
+                         </td>
+                         <td className="td-cell td-right" style={{fontWeight:700, color: t.amount > 0 ? 'var(--neon-teal)' : 'var(--text-muted)'}}>
+                           {t.amount > 0 ? '+' : ''}{Math.abs(t.amount).toFixed(2)}
+                         </td>
+                         <td className="td-cell td-right">
+                           <span style={{fontSize:'0.65rem', color: 'var(--neon-purple)'}}>{t.status || 'CLEARED'}</span>
+                         </td>
+                       </tr>
+                     );
+                   })
                  )}
                </tbody>
              </table>
@@ -186,9 +190,9 @@ export const ProfitMatrix = () => {
                 </select>
               </div>
 
-              {/* NEW: Project Link */}
+              {/* AUTOMATION DROPDOWN */}
               <div className="lab-form-group" style={{background:'rgba(34, 211, 238, 0.05)', padding:'10px', border:'1px dashed var(--neon-teal)'}}>
-                   <label className="label-industrial" style={{color:'var(--neon-teal)'}}>Select Stock Item (Optional)</label>
+                   <label className="label-industrial" style={{color:'var(--neon-teal)'}}>Select Stock Item (Auto-Fill)</label>
                    <select className="input-industrial" value={txnForm.relatedProjectId} onChange={handleProjectSelect}>
                       <option value="">-- Manual Entry --</option>
                       {projects.map(p => (

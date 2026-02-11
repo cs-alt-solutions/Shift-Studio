@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { MOCK_PROJECTS } from '../data/mockData';
 
 // --- INITIAL DATA ---
@@ -16,46 +16,60 @@ const INITIAL_INSIGHTS = [
   { id: 'tm2', name: "Gothic Home Decor", growth: "+125%", score: 85, desc: "Dark aesthetic pieces." },
 ];
 
-// --- LOGIC ENGINE (Unit Conversion) ---
 const convertToStockUnit = (qty, fromUnit, toUnit) => {
   if (fromUnit === toUnit) return parseFloat(qty);
   const val = parseFloat(qty);
-  // Weight
   if (fromUnit === 'oz' && toUnit === 'lbs') return val / 16;
   if (fromUnit === 'lbs' && toUnit === 'oz') return val * 16;
   if (fromUnit === 'kg' && toUnit === 'lbs') return val * 2.20462;
   if (fromUnit === 'g' && toUnit === 'oz') return val * 0.035274;
-  // Volume
   if (fromUnit === 'fl oz' && toUnit === 'gal') return val / 128;
   if (fromUnit === 'gal' && toUnit === 'fl oz') return val * 128;
   if (fromUnit === 'ml' && toUnit === 'fl oz') return val / 29.5735;
   if (fromUnit === 'L' && toUnit === 'gal') return val * 0.264172;
-  // Length
   if (fromUnit === 'in' && toUnit === 'ft') return val / 12;
   if (fromUnit === 'ft' && toUnit === 'in') return val * 12;
   if (fromUnit === 'cm' && toUnit === 'in') return val * 0.393701;
-  
-  console.warn(`Mismatch conversion: ${fromUnit} -> ${toUnit}. Assuming 1:1.`);
   return val;
 };
 
 const WorkbenchContext = createContext();
 
 export const WorkbenchProvider = ({ children }) => {
-  // SCHEMA: Projects now implicitly have 'stockQty' and 'retailPrice'
   const [projects, setProjects] = useState(MOCK_PROJECTS.map(p => ({ ...p, stockQty: 0, retailPrice: 0 })));
   const [materials, setMaterials] = useState(INITIAL_MATERIALS);
   const [transactions, setTransactions] = useState([]);
   const [marketInsights, setMarketInsights] = useState(INITIAL_INSIGHTS);
+  
+  // NEW: Track the last Etsy API pulse
+  const [lastEtsyPulse, setLastEtsyPulse] = useState(localStorage.getItem('lastEtsyPulse') || null);
 
-  // --- ACTIONS: PROJECTS ---
+  // --- SILENT ETSY KEEP-ALIVE LOGIC ---
+  useEffect(() => {
+    const triggerKeepAlivePulse = () => {
+      const thirtyDays = 30 * 24 * 60 * 60 * 1000; 
+      const now = Date.now();
+      const lastPulseTime = lastEtsyPulse ? new Date(lastEtsyPulse).getTime() : 0;
+
+      if (now - lastPulseTime > thirtyDays) {
+        console.log("SYSTEM: Executing Etsy Keep-Alive Pulse...");
+        // This will be replaced with a real fetch to Etsy's API v3 endpoint
+        const today = new Date().toISOString();
+        localStorage.setItem('lastEtsyPulse', today);
+        setLastEtsyPulse(today);
+      }
+    };
+    triggerKeepAlivePulse();
+  }, [lastEtsyPulse]);
+
+  // ACTIONS: PROJECTS
   const addProject = (title) => {
     const newProj = {
       id: crypto.randomUUID(),
       title,
       status: 'active',
-      stockQty: 0,      // <--- NEW: Finished Goods Inventory
-      retailPrice: 0,   // <--- NEW: Target Price
+      stockQty: 0,
+      retailPrice: 0,
       demand: 'Unknown',
       competition: 'Unknown',
       created_at: new Date().toISOString(),
@@ -73,7 +87,7 @@ export const WorkbenchProvider = ({ children }) => {
     setProjects(prev => prev.filter(p => p.id !== id));
   };
 
-  // --- ACTIONS: INVENTORY ---
+  // ACTIONS: INVENTORY
   const addAsset = (asset) => setMaterials(prev => [asset, ...prev]);
   const updateAsset = (id, updates) => setMaterials(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
   
@@ -84,7 +98,6 @@ export const WorkbenchProvider = ({ children }) => {
         const oldTotalValue = (parseFloat(m.qty) || 0) * m.costPerUnit;
         const newTotalValue = oldTotalValue + parseFloat(totalCost);
         const newUnitCost = newTotalQty > 0 ? newTotalValue / newTotalQty : m.costPerUnit;
-        
         const historyEntry = { date: new Date().toISOString().split('T')[0], qty: addedQty, unitCost: (totalCost/addedQty) };
         return { ...m, qty: newTotalQty, costPerUnit: newUnitCost, lastUsed: new Date().toISOString().split('T')[0], history: [historyEntry, ...(m.history || [])] };
       }
@@ -92,38 +105,29 @@ export const WorkbenchProvider = ({ children }) => {
     }));
   };
 
-  // --- ACTIONS: FINANCIALS (LEDGER) ---
+  // ACTIONS: FINANCIALS
   const addTransaction = (txn) => {
-    // If this transaction is a SALE of a specific project, deduct stock
     if (txn.relatedProjectId && txn.type === 'SALE') {
         setProjects(prev => prev.map(p => {
             if (p.id === txn.relatedProjectId) {
-                return { ...p, stockQty: Math.max(0, p.stockQty - 1) }; // Deduct 1 unit
+                return { ...p, stockQty: Math.max(0, p.stockQty - 1) };
             }
             return p;
         }));
     }
-
-    const newTxn = {
-      id: Date.now(),
-      date: new Date().toISOString().split('T')[0],
-      ...txn
-    };
+    const newTxn = { id: Date.now(), date: new Date().toISOString().split('T')[0], ...txn };
     setTransactions(prev => [newTxn, ...prev]);
   };
 
-  // --- ACTIONS: WORKSHOP (MANUFACTURING) ---
+  // ACTIONS: WORKSHOP
   const manufactureProduct = (projectId, recipe, batchSize = 1) => {
     let sufficientStock = true;
     let missingItem = '';
     
-    // 1. Check Stock (x Batch Size)
     recipe.forEach(item => {
       const mat = materials.find(m => m.id === parseInt(item.matId));
       if (mat) {
-        const singleUnitReq = convertToStockUnit(item.reqPerUnit, item.unit, mat.unit);
-        const totalReq = singleUnitReq * batchSize;
-        
+        const totalReq = convertToStockUnit(item.reqPerUnit, item.unit, mat.unit) * batchSize;
         if (mat.qty < totalReq) {
           sufficientStock = false;
           missingItem = `${mat.name} (Need ${totalReq.toFixed(2)} ${mat.unit})`;
@@ -133,27 +137,22 @@ export const WorkbenchProvider = ({ children }) => {
 
     if (!sufficientStock) return { success: false, message: `Insufficient Inventory: ${missingItem}` };
 
-    // 2. Deduct Stock & Calculate Cost
     let batchCost = 0;
     const today = new Date().toISOString().split('T')[0];
-
     setMaterials(prev => prev.map(m => {
       const ingredient = recipe.find(r => r.matId === m.id);
       if (ingredient) {
-        const singleUnitReq = convertToStockUnit(ingredient.reqPerUnit, ingredient.unit, m.unit);
-        const totalDeduct = singleUnitReq * batchSize;
+        const totalDeduct = convertToStockUnit(ingredient.reqPerUnit, ingredient.unit, m.unit) * batchSize;
         batchCost += (totalDeduct * m.costPerUnit);
         return { ...m, qty: m.qty - totalDeduct, lastUsed: today };
       }
       return m;
     }));
 
-    // 3. Update Project (Increment Finished Stock)
     setProjects(prev => prev.map(p => 
       p.id === projectId ? { ...p, status: 'active', stockQty: (p.stockQty || 0) + batchSize } : p
     ));
 
-    // 4. Log Transaction (Internal Production Cost)
     const projectTitle = projects.find(p => p.id === projectId)?.title || 'Unknown Project';
     setTransactions(prev => [{
       id: Date.now(),
@@ -173,8 +172,9 @@ export const WorkbenchProvider = ({ children }) => {
       projects, addProject, updateProject, deleteProject,
       materials, addAsset, updateAsset, restockAsset,
       transactions, addTransaction,
-      marketInsights, setMarketInsights, // <--- EXPOSED FOR RADAR
-      manufactureProduct
+      marketInsights, setMarketInsights,
+      manufactureProduct,
+      lastEtsyPulse
     }}>
       {children}
     </WorkbenchContext.Provider>

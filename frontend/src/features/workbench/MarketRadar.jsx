@@ -108,17 +108,17 @@ export const MarketRadar = () => {
 
              <div className="panel-industrial" style={{padding:'15px', marginBottom:'20px', display:'flex', justifyContent:'space-between'}}>
                 <div style={{textAlign:'center'}}>
-                   <div style={{fontSize:'1.1rem', fontWeight:800, color:'var(--neon-teal)'}}>+219%</div>
+                   <div className="animate-pulse" style={{fontSize:'1.1rem', fontWeight:800, color:'var(--neon-teal)'}}>+219%</div>
                    <div className="label-industrial">VELOCITY</div>
                 </div>
                 <div style={{width:'1px', background:'var(--border-subtle)'}}></div>
                 <div style={{textAlign:'center'}}>
-                   <div style={{fontSize:'1.1rem', fontWeight:800, color:'var(--neon-blue)'}}>120k</div>
+                   <div className="animate-pulse" style={{fontSize:'1.1rem', fontWeight:800, color:'var(--neon-blue)'}}>120k</div>
                    <div className="label-industrial">VOLUME</div>
                 </div>
                 <div style={{width:'1px', background:'var(--border-subtle)'}}></div>
                 <div style={{textAlign:'center'}}>
-                   <div style={{fontSize:'1.1rem', fontWeight:800, color:'var(--neon-orange)'}}>HIGH</div>
+                   <div className="animate-pulse" style={{fontSize:'1.1rem', fontWeight:800, color:'var(--neon-orange)'}}>HIGH</div>
                    <div className="label-industrial">MOOD</div>
                 </div>
              </div>

@@ -20,7 +20,6 @@ const getUnitOptions = (currentUnit) => {
   return [currentUnit]; 
 };
 
-// Accept the new prop `onRequestFullWidth` to control layout mode
 export const Workshop = ({ onRequestFullWidth }) => {
   const { projects, addProject, deleteProject, updateProject, materials, manufactureProduct } = useWorkbench();
   
@@ -37,11 +36,11 @@ export const Workshop = ({ onRequestFullWidth }) => {
   // Sync Layout Mode
   useEffect(() => {
     if (onRequestFullWidth) {
-      onRequestFullWidth(!!activeProject); // TRUE if activeProject exists (Full Width), FALSE if Hub (Sidebar visible)
+      onRequestFullWidth(!!activeProject); 
     }
   }, [activeProject, onRequestFullWidth]);
 
-  // --- ACTIONS: HUB ---
+  // --- ACTIONS ---
   const handleCreateProject = (e) => {
     e.preventDefault();
     if (!newProjectTitle.trim()) return;
@@ -69,7 +68,6 @@ export const Workshop = ({ onRequestFullWidth }) => {
     }
   };
 
-  // --- LIVE UPDATES ---
   const handlePriceChange = (val) => {
     const numVal = parseFloat(val);
     const updated = { ...activeProject, retailPrice: isNaN(numVal) ? 0 : numVal };
@@ -77,7 +75,6 @@ export const Workshop = ({ onRequestFullWidth }) => {
     updateProject(updated);
   };
 
-  // Recipe Handlers 
   const addIngredient = () => {
     const mat = materials.find(m => m.id === parseInt(newIngredientId));
     if (mat) {
@@ -107,26 +104,23 @@ export const Workshop = ({ onRequestFullWidth }) => {
   };
 
   return (
-    // Apply dynamic class based on activeProject presence
     <div className={`radar-grid-layout ${activeProject ? 'layout-full-width' : ''}`}>
       <style>{`
         .workshop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding-bottom: 40px; }
         
-        /* UPDATED: FLEXBOX LAYOUT FOR STUDIO */
-        /* This ensures the container fills the parent flex space exactly, without overflowing the bottom */
         .studio-layout-wrapper {
             display: flex;
             flex-direction: column;
             height: 100%;
-            overflow: hidden; /* Prevent double scrollbars */
+            overflow: hidden; 
         }
         
         .studio-container { 
             display: grid; 
             grid-template-columns: 350px 1fr; 
             gap: 25px; 
-            flex: 1; /* Take remaining height */
-            min-height: 0; /* Critical for Flex children to scroll internally */
+            flex: 1; 
+            min-height: 0; 
             padding-bottom: 20px; 
         }
         
@@ -135,15 +129,11 @@ export const Workshop = ({ onRequestFullWidth }) => {
             flex-direction: column; 
             gap: 20px; 
             overflow-y: auto; 
-            height: 100%; /* Fill the grid track */
+            height: 100%; 
             padding-right: 5px; 
-            padding-bottom: 40px; /* Extra breathing room at bottom */
+            padding-bottom: 40px; 
         }
       `}</style>
-
-      {/* If activeProject is null, we render the Scroll Area normally.
-         If activeProject is SET, we remove the scroll area wrapper so we can control flex layout precisely. 
-      */}
       
       {/* --- VIEW 1: PROJECT HUB --- */}
       {!activeProject && (
@@ -185,10 +175,9 @@ export const Workshop = ({ onRequestFullWidth }) => {
 
       {/* --- VIEW 2: THE STUDIO --- */}
       {activeProject && (
-        // We use a specific wrapper here that is NOT .radar-scroll-area to control the layout manually
         <div className="animate-fade-in" style={{height:'100%', padding:'30px 40px', display:'flex', flexDirection:'column', overflow:'hidden'}}>
             
-            {/* 1. HEADER (Fixed Height, does not shrink) */}
+            {/* 1. HEADER */}
             <div className="inventory-header" style={{marginBottom:'20px', flexShrink: 0}}>
                <div style={{display:'flex', alignItems:'center', gap:'15px'}}>
                  <button onClick={closeStudio} className="btn-icon" style={{border:'1px solid var(--border-subtle)', padding:'8px'}}><Back /></button>
@@ -202,7 +191,7 @@ export const Workshop = ({ onRequestFullWidth }) => {
                </button>
             </div>
 
-            {/* 2. CONTENT (Flex Grow, handles internal scroll) */}
+            {/* 2. CONTENT */}
             <div className="studio-layout-wrapper">
                 <div className="studio-container">
                 {/* --- LEFT COLUMN: METADATA --- */}

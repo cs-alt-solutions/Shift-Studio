@@ -3,6 +3,8 @@
   --bg-app: #09090b;        /* Deepest Black */
   --bg-panel: #121214;      /* Panel Surface */
   --bg-panel-header: #18181b; 
+  --bg-row-odd: rgba(255, 255, 255, 0.02); /* Zebra Stripe 1 */
+  --bg-row-even: rgba(255, 255, 255, 0.04); /* Zebra Stripe 2 */
   
   --border-subtle: #27272a; 
   
@@ -19,7 +21,7 @@
   --text-muted: #a1a1aa;   
   
   /* FONTS */
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace; /* Technical Data Font */
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace; 
 }
 
 /* --- RESET --- */
@@ -40,9 +42,15 @@ body {
 @keyframes blink { 50% { opacity: 0; } }
 .cursor-blink { animation: blink 1s step-end infinite; }
 
-/* --- 1. CONTAINERS --- */
+/* NEW: Heartbeat Pulse for Market Stats */
+@keyframes heartbeat {
+  0% { transform: scale(1); text-shadow: 0 0 10px rgba(34, 211, 238, 0); }
+  50% { transform: scale(1.05); text-shadow: 0 0 15px rgba(34, 211, 238, 0.4); }
+  100% { transform: scale(1); text-shadow: 0 0 10px rgba(34, 211, 238, 0); }
+}
+.animate-pulse { animation: heartbeat 3s infinite ease-in-out; }
 
-/* The Universal Panel */
+/* --- 1. CONTAINERS --- */
 .panel-industrial {
   background: var(--bg-panel); 
   border: 1px solid var(--border-subtle);
@@ -69,12 +77,13 @@ body {
   padding: 20px;
 }
 
-/* Standard View Header */
 .inventory-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  /* Fixed height to prevent layout jumps */
+  min-height: 40px; 
 }
 
 .header-title {
@@ -85,8 +94,6 @@ body {
   letter-spacing: -0.5px;
 }
 
-/* --- 2. LAYOUT COLUMNS --- */
-/* New standard class for the right-side void */
 .sidebar-col {
   background: var(--bg-app);
   border-left: 1px solid var(--border-subtle);
@@ -108,8 +115,7 @@ body {
   margin-bottom: 6px;
 }
 
-.floating-manifest-label,
-.label-floating {
+.floating-manifest-label {
   position: absolute;
   top: -12px;
   left: 20px;
@@ -132,7 +138,7 @@ body {
   color: var(--text-main);
   padding: 10px;
   border-radius: 2px;
-  font-family: var(--font-mono); /* CHANGED: Tech Font */
+  font-family: var(--font-mono);
   font-size: 0.9rem;
   width: 100%;
   outline: none;
@@ -144,36 +150,25 @@ body {
   background: rgba(34, 211, 238, 0.05);
 }
 
-/* CUSTOM DROPDOWN ARROW */
+/* FIXED: DROPDOWN STYLING & CONTRAST */
 select.input-industrial {
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 16px;
   padding-right: 30px;
+  background-color: #000; /* Force black background */
+  color: #fff; /* Force white text */
 }
-/* FIXED: Dropdown contrast options */
 select.input-industrial option {
-  background-color: #09090b;
+  background-color: #000;
   color: #fff;
+  padding: 10px;
 }
 
 .lab-form-group { margin-bottom: 20px; }
 .lab-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.lab-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px; }
-.lab-note {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  line-height: 1.4;
-  margin-top: 30px;
-  padding: 15px;
-  background: rgba(34, 211, 238, 0.05);
-  border: 1px solid rgba(34, 211, 238, 0.2);
-  border-radius: 2px;
-}
 
 /* --- 5. BUTTONS --- */
 .btn-ghost { 
@@ -253,7 +248,7 @@ select.input-industrial option {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
-  border-spacing: 0 2px; /* NEW: Spacing between rows */
+  border-spacing: 0;
 }
 .inventory-table th {
   padding: 0 20px;
@@ -266,21 +261,24 @@ select.input-industrial option {
   text-transform: uppercase;
   height: 50px;
   border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-panel-header); /* Fixed header bg */
 }
+
+/* FIXED: ZEBRA STRIPING & BACKGROUNDS */
 .inventory-row {
-  border-bottom: 1px solid rgba(0,0,0,0.2); /* Subtle separator */
+  border-bottom: 1px solid rgba(0,0,0,0.3);
   transition: all 0.1s;
   cursor: pointer;
-  height: 70px; 
+  height: 60px; 
   border-left: 3px solid transparent;
-  /* FIXED: Background for rows so they don't float */
-  background: rgba(255, 255, 255, 0.02);
 }
-.inventory-row:hover { background: rgba(255, 255, 255, 0.06); border-left-color: rgba(255, 255, 255, 0.3); }
-.inventory-row.selected { background: rgba(45, 212, 191, 0.08) !important; border-left-color: var(--neon-cyan); }
-.inventory-row.out-of-stock { opacity: 0.8; background: rgba(239, 68, 68, 0.05); }
-.inventory-row.out-of-stock:hover { border-left-color: red; }
-.inventory-row.dormant { opacity: 0.5; }
+/* Alternating Colors - Fixes "floating text" issue */
+.inventory-row:nth-child(odd) { background-color: var(--bg-row-odd); }
+.inventory-row:nth-child(even) { background-color: var(--bg-row-even); }
+
+.inventory-row:hover { background: rgba(34, 211, 238, 0.05); border-left-color: var(--neon-cyan); }
+.inventory-row.selected { background: rgba(45, 212, 191, 0.1) !important; border-left-color: var(--neon-teal); }
+.inventory-row.out-of-stock { opacity: 0.8; border-left-color: var(--neon-red); }
 
 .td-cell { padding: 0 20px; vertical-align: middle; }
 .td-right { text-align: right; }
@@ -302,7 +300,6 @@ select.input-industrial option {
 
 .recipe-name { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
 .recipe-meta { font-family: monospace; font-size: 0.7rem; color: var(--text-muted); }
-.yield-value { font-size: 1.6rem; font-weight: 800; line-height: 1; }
 
 .unit-badge {
   background: var(--bg-panel);
@@ -335,4 +332,5 @@ select.input-industrial option {
 }
 
 .animate-fade-in { animation: fadeIn 0.4s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+/* FIXED: Remove Y-translation to stop "Push Up" effect in Workshop */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
