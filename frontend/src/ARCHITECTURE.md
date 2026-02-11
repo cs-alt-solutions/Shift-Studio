@@ -1,25 +1,28 @@
-# MARKETLENS v2.0 - ARCHITECTURAL STANDARDS
+# MARKETLENS v2.0 - ARCHITECTURAL STANDARDS (STRICT MODE)
 
-## 1. FILE STRUCTURE PROTOCOL
-* **`src/styles/global.css`**: THE TRUTH. Contains all variables, typography, reset, buttons, inputs, panels, and shared tables.
-* **`src/components/`**: Reusable UI atoms (Icons, StatCards, ProjectCards). If it's used in >1 place, it goes here.
-* **`src/features/[feature_name]/`**: 
-    * `[Feature].jsx`: Logic and View.
-    * `[Feature].css`: strictly for **Grid Layouts** and **Feature-Specific Widgets**. NO global styles here.
+## 1. THE "NO-INLINE" PROTOCOL
+* **Strict Ban:** Do NOT use `style={{ ... }}` for static styling (colors, padding, margins, fonts).
+* **Exception:** Inline styles are permitted ONLY for dynamic, calculated values (e.g., `width: ${progress}%`, `transform: translate(x, y)`).
+* **Enforcement:** If you are typing a hex code (`#`) or `px` value in a `.jsx` file, you are wrong. Stop. Put it in the CSS.
 
-## 2. CSS "ZERO REDUNDANCY" RULES
-* **Tables:** ALWAYS use `.inventory-table`, `.inventory-row`, `.td-cell`.
-* **Panels:** ALWAYS use `.panel-industrial`, `.panel-header`, `.panel-content`.
-* **Text:** ALWAYS use `.text-main`, `.text-muted`, `.label-industrial`.
-* **Inputs:** ALWAYS use `.input-industrial`.
-* **Grid:** ALWAYS use `.radar-grid-layout` for main views.
+## 2. THE SINGLE SOURCE OF TRUTH (CSS VARIABLES)
+* **Variables Only:** We never use raw hex codes in components.
+    * ❌ BAD: `color: '#22d3ee'`
+    * ✅ GOOD: `color: 'var(--neon-cyan)'` (or better, use a class).
+* **Opacity:** Do not use `rgba` manually. If we need transparent colors, define them as variables (e.g., `--bg-row-odd`) in `global.css`.
 
-## 3. COLOR SYSTEM (Theme: Industrial Dark)
-* Backgrounds: `var(--bg-app)` (Black), `var(--bg-panel)` (Dark Grey).
-* Accents: `var(--neon-cyan)`, `var(--neon-teal)`, `var(--neon-purple)`.
-* **Rule:** Never use hex codes for these colors in local files. Always use the variables.
+## 3. COMPONENT COMPOSITION
+* **Props over Style:** Do not pass style objects to components. Pass **Intent**.
+    * ❌ BAD: `<StatCard style={{ borderColor: 'red' }} />`
+    * ✅ GOOD: `<StatCard variant="alert" />`
+* **Logic Separation:** Styles should not live in JavaScript logic variables (e.g., `const color = isError ? 'red' : 'blue'`). Instead, calculate a `className` (e.g., `status-error` or `status-active`) and let CSS handle the color.
 
-## 4. EXPANSION LOGIC
-* **New Feature?** Create a new folder in `features/`.
-* **New Global Pattern?** (e.g., a new type of Modal) -> Add to `global.css`.
-* **New Widget?** (e.g., a User Avatar) -> Add to `components/`.
+## 4. CSS CLASS NAMING CONVENTION (BEM-ISH)
+* **Blocks:** `.panel-industrial`, `.inventory-table`
+* **Elements:** `.panel-header` (not `.header`), `.inventory-row`
+* **Modifiers:** `.panel-industrial.collapsed`, `.inventory-row.selected`
+* **Utility:** Use the specific utility classes defined in `global.css` (e.g., `.text-muted`, `.flex-between`, `.text-alert`).
+
+## 5. FILE STRUCTURE
+* **`src/styles/global.css`**: Contains ALL variables, typography, and shared component classes.
+* **`src/features/[feature]/[Feature].css`**: strictly for Grid Layouts and positioning specific to that feature.

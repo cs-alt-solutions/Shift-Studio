@@ -161,7 +161,6 @@ export const InventoryManager = () => {
              value={`$${metrics.totalValue.toLocaleString(undefined, {minimumFractionDigits: 0})}`} 
              glowColor="purple" 
            />
-           
            <StatCard 
              label="OUT OF STOCK" 
              value={metrics.outOfStockCount} 
@@ -169,7 +168,6 @@ export const InventoryManager = () => {
              isAlert={metrics.outOfStockCount > 0}
              onClick={() => metrics.outOfStockCount > 0 && setFilter('OUT_OF_STOCK')}
            />
-           
            <StatCard 
              label="LOW STOCK" 
              value={metrics.lowStockCount} 
@@ -198,57 +196,70 @@ export const InventoryManager = () => {
                 const isLowStock = m.qty < 10 && m.qty > 0;
                 const isExpanded = expandedRowId === m.id;
                 
-                let statusClass = 'glow-teal'; let StatusIcon = Box; let statusText = 'STOCKED';
-                if (isOutOfStock) { statusClass = 'glow-red'; StatusIcon = Alert; statusText = 'OUT OF STOCK'; }
-                else if (isLowStock) { statusClass = 'glow-orange'; StatusIcon = Alert; statusText = 'LOW STOCK'; } 
+                // REFACTOR: Logic determines status text, CSS determines look
+                let statusClass = 'text-good'; 
+                let StatusIcon = Box; 
+                let statusText = 'STOCKED';
+
+                if (isOutOfStock) { statusClass = 'text-alert'; StatusIcon = Alert; statusText = 'OUT OF STOCK'; }
+                else if (isLowStock) { statusClass = 'text-warning'; StatusIcon = Alert; statusText = 'LOW STOCK'; } 
                 else if (m.status === 'Dormant') { statusClass = 'text-muted'; StatusIcon = Box; statusText = 'DORMANT'; }
                 
-                const maxStock = 100;
-                const barWidth = Math.min((m.qty / maxStock) * 100, 100);
-                const barColor = isOutOfStock ? 'var(--neon-red)' : isLowStock ? 'var(--neon-orange)' : 'var(--neon-teal)';
+                // REFACTOR: Row classes
+                const rowStatusClass = isOutOfStock ? 'status-alert' : isLowStock ? 'status-warning' : '';
+                const selectedClass = selectedMaterial?.id === m.id ? 'selected' : '';
+                
+                // REFACTOR: Progress Bar classes
+                const barWidth = Math.min((m.qty / 100) * 100, 100); // capped at 100%
+                const barStatusClass = isOutOfStock ? 'status-alert' : isLowStock ? 'status-warning' : '';
 
                 return (
                   <React.Fragment key={m.id}>
-                    <tr className={`inventory-row ${selectedMaterial?.id === m.id ? 'selected' : ''} ${isOutOfStock ? 'out-of-stock' : ''}`} onClick={() => handleSelectMaterial(m)}>
+                    <tr className={`inventory-row ${selectedClass} ${rowStatusClass}`} onClick={() => handleSelectMaterial(m)}>
                       <td className="td-cell">
-                        <div className={`cell-name ${isOutOfStock ? 'glow-red' : ''}`}>{m.name}</div>
+                        <div className={`cell-name ${isOutOfStock ? 'text-alert' : ''}`}>{m.name}</div>
                         <div className="cell-meta">{m.brand}</div>
                       </td>
                       <td className="td-cell">
-                        <div className={`status-cell ${statusClass}`} style={{display:'flex', alignItems:'center', gap:'5px', fontSize:'0.75rem', fontWeight:700}}><StatusIcon /> {statusText}</div>
+                        <div className={`flex-center ${statusClass}`} style={{ gap: '5px', fontSize: '0.75rem', fontWeight: 700, justifyContent: 'flex-start' }}>
+                            <StatusIcon /> {statusText}
+                        </div>
                       </td>
                       <td className="td-cell cell-meta">{m.lastUsed}</td>
                       <td className="td-cell td-right cell-meta">${m.costPerUnit.toFixed(2)}</td>
                       
-                      {/* QTY CELL WITH HEALTH BAR */}
+                      {/* QTY CELL WITH REFACTORED HEALTH BAR */}
                       <td className="td-cell td-center">
-                        <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap:'2px'}}>
-                            <div style={{fontWeight: 700}} className={isOutOfStock ? 'glow-red' : 'text-main'}>
-                                {m.qty} <span style={{fontSize:'0.7rem', color:'var(--text-muted)'}}>{m.unit}</span>
+                        <div className="flex-col" style={{ alignItems: 'center', gap: '2px' }}>
+                            <div className={`font-bold ${isOutOfStock ? 'text-alert' : 'text-main'}`}>
+                                {m.qty} <span className="text-muted" style={{ fontSize: '0.7rem' }}>{m.unit}</span>
                             </div>
-                            <div style={{width:'60px', height:'3px', background:'rgba(255,255,255,0.1)', borderRadius:'2px', overflow:'hidden'}}>
-                                <div style={{width: `${barWidth}%`, height:'100%', background: barColor, transition:'width 0.5s ease'}}></div>
+                            <div className="progress-bar-track">
+                                <div 
+                                    className={`progress-bar-fill ${barStatusClass}`} 
+                                    style={{ width: `${barWidth}%` }} // Dynamic width is the ONLY valid inline style
+                                ></div>
                             </div>
                         </div>
                       </td>
 
                       <td className="td-cell">
                         <div className="cell-actions">
-                           <button onClick={(e) => toggleHistoryRow(e, m.id)} className="btn-icon" style={{color: isExpanded ? 'var(--neon-cyan)' : 'var(--text-muted)'}}>
+                           <button onClick={(e) => toggleHistoryRow(e, m.id)} className={`btn-icon ${isExpanded ? 'text-accent' : ''}`}>
                              {isExpanded ? <ChevronUp /> : <Plus />}
                            </button>
                         </div>
                       </td>
                     </tr>
                     
-                    {/* EXPANSION ROW (HISTORY) */}
+                    {/* EXPANSION ROW */}
                     {isExpanded && (
                       <tr className="history-expansion">
                         <td colSpan="6" style={{padding:0}}>
                           <div className="history-inner">
                              <div className="flex-between" style={{marginBottom:'10px'}}>
-                               <span className="label-industrial" style={{margin:0, color:'var(--neon-cyan)'}}><History /> PURCHASE HISTORY LOG</span>
-                               <span style={{fontSize:'0.65rem', color:'var(--text-muted)'}}>ID: {m.id}</span>
+                               <span className="label-industrial text-accent" style={{margin:0}}><History /> PURCHASE HISTORY LOG</span>
+                               <span className="text-muted" style={{fontSize:'0.65rem'}}>ID: {m.id}</span>
                              </div>
                              {m.history && m.history.length > 0 ? (
                                <table className="mini-history-table">
@@ -266,7 +277,7 @@ export const InventoryManager = () => {
                                      <tr key={idx}>
                                        <td>{h.date}</td>
                                        <td>{h.type || 'RESTOCK'}</td>
-                                       <td style={{color:'#fff'}}>+{h.qty} {m.unit}</td>
+                                       <td className="text-good">+{h.qty} {m.unit}</td>
                                        <td>${h.unitCost.toFixed(2)}</td>
                                        <td>${(h.qty * h.unitCost).toFixed(2)}</td>
                                      </tr>
@@ -274,7 +285,7 @@ export const InventoryManager = () => {
                                  </tbody>
                                </table>
                              ) : (
-                               <div style={{color:'var(--text-muted)', fontStyle:'italic', fontSize:'0.75rem', padding:'10px 0'}}>No detailed history records found.</div>
+                               <div className="text-muted" style={{fontStyle:'italic', fontSize:'0.75rem', padding:'10px 0'}}>No detailed history records found.</div>
                              )}
                           </div>
                         </td>
@@ -288,7 +299,7 @@ export const InventoryManager = () => {
         </div>
       </div>
 
-      {/* SIDEBAR */}
+      {/* SIDEBAR - REFACTORED WITH SEMANTIC CLASSES */}
       <div className="sidebar-col" style={{width:'340px'}}>
          <div className="keyword-header">
            <h3 className="label-industrial glow-purple" style={{ margin: 0, fontSize: '0.9rem' }}>
@@ -297,47 +308,42 @@ export const InventoryManager = () => {
         </div>
         <div className="keyword-list">
           {!showIntakeForm && selectedMaterial && (
-            <div className="sidebar-panel" style={{ borderLeftColor: selectedMaterial.qty === 0 ? 'red' : 'var(--neon-purple)' }}>
+            <div className="sidebar-panel" style={{ borderLeftColor: selectedMaterial.qty === 0 ? 'var(--status-alert)' : 'var(--neon-purple)' }}>
               
-              {/* NEW: IMAGE PLACEHOLDER FOR INVENTORY */}
-              <ImagePlaceholder 
-                 height="180px" 
-                 label="ITEM PHOTO" 
-                 onUpload={() => alert('Inventory Photo Upload')} 
-              />
+              <ImagePlaceholder height="180px" label="ITEM PHOTO" onUpload={() => alert('Inventory Photo Upload')} />
 
               <div className="sidebar-inner">
                 <div className="detail-header">
                   <h3 className="detail-title">{selectedMaterial.name}</h3>
                   <div className="detail-brand">Brand: {selectedMaterial.brand || 'N/A'}</div>
-                  {selectedMaterial.qty === 0 && <div style={{color:'red', fontWeight:800, marginTop:'10px'}}>⚠️ ITEM OUT OF STOCK</div>}
+                  {selectedMaterial.qty === 0 && <div className="text-alert font-bold" style={{marginTop:'10px'}}>⚠️ ITEM OUT OF STOCK</div>}
                 </div>
                 <div className="stock-grid">
                   <div className="stock-box">
                     <div className="stock-label">STOCK LEVEL</div>
-                    <div className={`stock-value ${selectedMaterial.qty === 0 ? 'glow-red' : ''}`}>{selectedMaterial.qty}</div>
+                    <div className={`stock-value ${selectedMaterial.qty === 0 ? 'text-alert' : ''}`}>{selectedMaterial.qty}</div>
                     <div className="stock-label">{selectedMaterial.unit.toUpperCase()}</div>
                   </div>
                   <div className="stock-box">
                     <div className="stock-label">AVG COST</div>
-                    <div className="stock-value glow-purple">${selectedMaterial.costPerUnit.toFixed(2)}</div>
+                    <div className="stock-value text-accent">${selectedMaterial.costPerUnit.toFixed(2)}</div>
                   </div>
                 </div>
                 <button onClick={handleQuickRestock} className="btn-primary" style={{width:'100%', marginBottom:'20px'}}>
                     {selectedMaterial.qty === 0 ? '⚡ URGENT RESTOCK' : '+ RESTOCK THIS ITEM'}
                 </button>
-                <button onClick={() => setSelectedMaterial(null)} className="btn-ghost" style={{width:'100%', marginTop:'15px', fontSize:'0.75rem'}}>CLOSE DETAIL</button>
+                <button onClick={() => setSelectedMaterial(null)} className="btn-ghost" style={{width:'100%', marginTop:'15px'}}>CLOSE DETAIL</button>
               </div>
             </div>
           )}
           
-          {/* INTAKE FORM */}
+          {/* INTAKE FORM REFACTOR */}
           {showIntakeForm && (
              <div className="sidebar-panel" style={{ borderLeftColor: 'var(--neon-purple)' }}>
                <div className="sidebar-inner">
                  <form onSubmit={handleSubmitIntake}>
-                   <div style={{marginBottom:'15px', display:'flex', alignItems:'center', gap:'10px'}}>
-                       <input type="checkbox" checked={isExistingItem} onChange={(e) => { setIsExistingItem(e.target.checked); if(!e.target.checked) resetForm(true); }} style={{accentColor:'var(--neon-purple)'}} />
+                   <div style={{marginBottom:'15px'}} className="flex-center">
+                       <input type="checkbox" checked={isExistingItem} onChange={(e) => { setIsExistingItem(e.target.checked); if(!e.target.checked) resetForm(true); }} style={{accentColor:'var(--neon-purple)', marginRight: '10px'}} />
                        <label className="label-industrial" style={{margin:0, cursor:'pointer'}}>Item already in Locker?</label>
                    </div>
                    {isExistingItem && (
@@ -351,8 +357,8 @@ export const InventoryManager = () => {
                    {isExistingItem && currentItemSnapshot && (
                      <div className="animate-fade-in" style={{background: '#18181b', padding:'15px', borderRadius:'2px', marginBottom:'15px', border:'1px solid #27272a'}}>
                        <div className="flex-between" style={{marginBottom:'10px'}}>
-                        <div style={{fontSize:'0.75rem', color:'var(--text-muted)'}}>CURRENT STOCK</div>
-                        <div style={{fontSize:'0.75rem', color:'var(--neon-teal)', fontWeight:700}}>{currentItemSnapshot.qty} {currentItemSnapshot.unit}</div>
+                        <div className="text-muted" style={{fontSize:'0.75rem'}}>CURRENT STOCK</div>
+                        <div className="text-good font-bold" style={{fontSize:'0.75rem'}}>{currentItemSnapshot.qty} {currentItemSnapshot.unit}</div>
                        </div>
                      </div>
                    )}
@@ -374,7 +380,7 @@ export const InventoryManager = () => {
                                  <select className="input-industrial" value={formData.unit} onChange={e => setFormData({...formData, unit: e.target.value})}>{UNITS['Weight'].map(u => <option key={u} value={u}>{u}</option>)}</select>
                              </div>
                         )}
-                        {formData.qty && formData.totalCost && <div style={{textAlign:'center', fontSize:'0.7rem', color:'var(--neon-purple)', marginTop:'5px'}}>New Unit Cost: <strong>${(formData.totalCost / formData.qty).toFixed(2)}</strong></div>}
+                        {formData.qty && formData.totalCost && <div style={{textAlign:'center', fontSize:'0.7rem', marginTop:'5px'}} className="text-accent">New Unit Cost: <strong>${(formData.totalCost / formData.qty).toFixed(2)}</strong></div>}
                      </div>
                      <div style={{display:'flex', gap:'10px', marginTop:'20px'}}>
                          <button type="button" className="btn-ghost" onClick={() => resetForm(false)}>CANCEL</button>
@@ -385,14 +391,15 @@ export const InventoryManager = () => {
                </div>
              </div>
           )}
-          {/* READINESS */}
+          
           {!showIntakeForm && !selectedMaterial && (
             <div>
-               {projectReadiness.length === 0 && <div style={{padding:'20px', color:'var(--text-muted)', textAlign:'center'}}>All Systems Normal.</div>}
+               {projectReadiness.length === 0 && <div className="text-muted" style={{padding:'20px', textAlign:'center'}}>All Systems Normal.</div>}
                {projectReadiness.map(p => {
-                  let statusColor = 'var(--neon-teal)'; let statusLabel = 'READY';
-                  if (p.status === 'LOW STOCK') { statusColor = 'var(--neon-orange)'; statusLabel = 'LOW'; }
-                  if (p.status === 'HALTED') { statusColor = 'red'; statusLabel = 'HALTED'; }
+                  let statusLabel = 'READY';
+                  let statusClass = 'text-good';
+                  if (p.status === 'LOW STOCK') { statusClass = 'text-warning'; statusLabel = 'LOW'; }
+                  if (p.status === 'HALTED') { statusClass = 'text-alert'; statusLabel = 'HALTED'; }
                   const isExpanded = expandedProject === p.title;
 
                   return (
@@ -400,18 +407,16 @@ export const InventoryManager = () => {
                       <div className="readiness-header" onClick={() => toggleProject(p.title)}>
                          <div style={{flex:1}}>
                            <div className="readiness-title">{p.title}</div>
-                           <div style={{fontSize:'0.65rem', color: statusColor}}>{statusLabel}</div>
+                           <div style={{fontSize:'0.65rem'}} className={statusClass}>{statusLabel}</div>
                          </div>
-                         <div>
-                           {isExpanded ? <ChevronUp /> : <ChevronDown />} 
-                         </div>
+                         <div>{isExpanded ? <ChevronUp /> : <ChevronDown />}</div>
                       </div>
                       {isExpanded && (
                         <div className="readiness-grid">
                            {p.materials.map(mat => (
                              <div key={mat.id} className="readiness-item">
-                                <span style={{color: mat.health === 'GOOD' ? 'var(--text-muted)' : 'var(--text-main)'}}>{mat.name}</span>
-                                <span style={{color: mat.health === 'CRITICAL' ? 'red' : 'var(--text-muted)'}}>{mat.qty} {mat.unit}</span>
+                                <span className={mat.health === 'GOOD' ? 'text-muted' : 'text-main'}>{mat.name}</span>
+                                <span className={mat.health === 'CRITICAL' ? 'text-alert' : 'text-muted'}>{mat.qty} {mat.unit}</span>
                              </div>
                            ))}
                         </div>
