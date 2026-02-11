@@ -261,7 +261,7 @@ export const Workshop = ({ onRequestFullWidth }) => {
                         <div className="panel-industrial studio-panel pad-20">
                              <div className="floating-manifest-label text-teal border-teal">MARKET CALIBRATION</div>
                              
-                             <div className="flex-between mb-20">
+                             <div className="flex-between mb-20 mt-10">
                                  <div>
                                      <div className="label-industrial">TARGET RETAIL</div>
                                      <div className="flex-center gap-5">
@@ -292,17 +292,19 @@ export const Workshop = ({ onRequestFullWidth }) => {
 
                         <div className="panel-industrial studio-panel pad-20 flex-1">
                              <div className="floating-manifest-label">FIELD NOTES</div>
-                             <textarea 
-                                className="input-area-industrial" 
-                                placeholder="Enter project details, dimensions, or observations..."
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                             ></textarea>
+                             <div className="mt-10 h-full">
+                               <textarea 
+                                  className="input-area-industrial" 
+                                  placeholder="Enter project details, dimensions, or observations..."
+                                  value={notes}
+                                  onChange={(e) => setNotes(e.target.value)}
+                               ></textarea>
+                             </div>
                         </div>
 
                         <div className="panel-industrial studio-panel pad-20">
                             <div className="floating-manifest-label text-cyan border-cyan">TAGS</div>
-                            <div className="tag-input-area">
+                            <div className="tag-input-area mt-10">
                                 {tags.map(t => <div key={t} className="unit-badge"><span>{t}</span></div>)}
                                 <input 
                                     className="input-chromeless tag-input"
@@ -321,7 +323,7 @@ export const Workshop = ({ onRequestFullWidth }) => {
                         {/* MISSIONS */}
                         <div className="panel-industrial studio-panel no-pad min-h-250">
                             <div className="floating-manifest-label text-blue border-blue">MISSION OBJECTIVES</div>
-                            <div className="mission-input-area">
+                            <div className="mission-input-area mt-10">
                                 <input 
                                     className="input-industrial" 
                                     placeholder="+ Add new milestone (Press Enter)" 
@@ -348,7 +350,7 @@ export const Workshop = ({ onRequestFullWidth }) => {
                         <div className="panel-industrial studio-panel no-pad flex-col flex-1">
                             <div className="floating-manifest-label text-purple border-purple">BILL OF MATERIALS</div>
                             
-                            <div className="bom-toolbar">
+                            <div className="bom-toolbar mt-10">
                                 <select className="input-industrial bom-select" value={newIngredientId} onChange={e => setNewIngredientId(e.target.value)}>
                                 <option value="">+ Select Material...</option>
                                 {materials.map(m => <option key={m.id} value={m.id}>{m.name} ({formatCurrency(m.costPerUnit)}/{m.unit})</option>)}
@@ -420,7 +422,7 @@ export const Workshop = ({ onRequestFullWidth }) => {
                         <div 
                           key={p.id} 
                           className="folder-stack-item" 
-                          style={{ zIndex: index + 1 }} // Dynamic Z-index is allowed
+                          style={{ zIndex: index + 1 }}
                           onClick={() => openStudio(p)}
                         >
                             <ProjectCard 

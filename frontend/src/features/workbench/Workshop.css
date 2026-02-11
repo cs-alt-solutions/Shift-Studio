@@ -48,7 +48,11 @@
 .studio-panel {
   animation: slideUpFade 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   opacity: 0; 
+  margin-top: 15px; /* BUFFER: Space for floating labels */
+  position: relative;
+  overflow: visible !important; /* ALLOW: Labels to float outside border */
 }
+
 .studio-panel:nth-child(1) { animation-delay: 0.1s; }
 .studio-panel:nth-child(2) { animation-delay: 0.2s; }
 .studio-panel:nth-child(3) { animation-delay: 0.3s; }
@@ -174,21 +178,29 @@
 }
 
 /* --- SIDEBAR FOLDER STACK --- */
+.sidebar-col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-left: 1px solid var(--border-subtle);
+  background: var(--bg-app);
+  overflow: hidden;
+}
+
 .folder-stack {
   display: flex;
   flex-direction: column;
-  padding: 20px 15px;
-  padding-top: 50px; 
+  padding: 80px 15px 20px 25px; /* BUFFER: Space for the first folder tab */
   overflow-y: auto;
   overflow-x: visible; 
   height: 100%;
-  padding-left: 20px; 
+  flex: 1;
 }
 
 .folder-stack-item {
   transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.3s ease;
   position: relative;
-  margin-top: -260px; 
+  margin-top: -220px; /* STACKING: Adjusted for better density */
   cursor: pointer;
   filter: brightness(0.7) grayscale(0.4);
   transform-origin: center left;
@@ -232,7 +244,7 @@
 .modal-title { color: var(--neon-orange); margin-top: 0; font-size: 1.2rem; margin-bottom: 20px; }
 
 /* --- STUDIO GRID --- */
-.studio-container { height: 100%; padding: 20px 30px; display: flex; flex-direction: column; overflow: hidden; background: #000; }
+.studio-container { height: 100%; padding: 30px; display: flex; flex-direction: column; overflow: hidden; background: #000; }
 .header-close-btn { border-right: 1px solid var(--border-subtle); padding-right: 15px; margin-right: 15px; }
 .btn-save { border-color: var(--neon-teal); color: var(--neon-teal); }
 .btn-finalize { background: var(--neon-purple); color: #fff; }
