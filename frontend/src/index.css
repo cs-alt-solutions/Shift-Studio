@@ -1,10 +1,8 @@
-/* RESET EVERYTHING TO FULL WIDTH */
+/* --- UNIVERSAL RESET --- */
+/* We defer all styling to src/styles/global.css */
+
 :root {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  
-  /* The Fix: Force the root to be the size of the browser */
+  /* Ensure full browser width/height for the app container */
   width: 100%;
   height: 100%;
 }
@@ -12,16 +10,14 @@
 body {
   margin: 0;
   padding: 0;
-  min-width: 100vw;
-  min-height: 100vh;
   width: 100%;
-  overflow-x: hidden; /* Prevent side-scroll bars */
+  height: 100%;
+  overflow: hidden; /* Prevent native scrollbars, we use our own containers */
 }
 
 #root {
   width: 100%;
-  max-width: none; /* DESTROY the 1280px limit */
+  height: 100%;
   margin: 0;
   padding: 0;
-  text-align: left; /* Stop centering everything */
 }

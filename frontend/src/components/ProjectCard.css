@@ -1,3 +1,4 @@
+/* uploaded file: src/components/ProjectCard.css */
 /* --- FOLDER ARCHITECTURE --- */
 .folder-container {
   display: flex;
@@ -23,7 +24,6 @@
 }
 
 .folder-tab-text {
-  /* USE GLOBAL FONT VARIABLE */
   font-family: var(--font-mono); 
   font-size: 0.6rem;
   color: var(--text-muted);
@@ -41,8 +41,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  
-  /* Layout Logic */
   overflow: visible; 
   box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
   transition: transform 0.2s ease, border-color 0.2s ease;
@@ -57,16 +55,11 @@
 /* Catalog Mode Clipping */
 .folder-body.catalog-mode {
   overflow: hidden !important; 
-  /* Use a subtle mix for the border or just the muted purple var if available. 
-     Since --neon-purple is solid, we use a thin border or opacity in the component. 
-     Here we stick to the subtle border to keep it clean. */
   border-color: var(--border-subtle); 
 }
-/* Optional: Hover state for catalog items can glow purple */
 .folder-body.catalog-mode:hover {
   border-color: var(--neon-purple);
 }
-
 
 .folder-content {
   padding: 24px;
@@ -75,72 +68,50 @@
   flex: 1;
 }
 
-/* --- STAMPS (Standardized) --- */
+/* --- STAMPS --- */
 .status-stamp {
   position: absolute;
   top: -15px;
   right: -10px; 
   z-index: 20;
-  
-  /* USE GLOBAL FONT */
   font-family: var(--font-mono); 
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: 0.8rem;
-  
   padding: 8px 14px;
   border: 3px double currentColor; 
   border-radius: 2px; 
-  
-  transform: rotate(12deg);
   background: var(--bg-panel); 
   box-shadow: 4px 4px 10px rgba(0,0,0,0.5); 
 }
 
-.status-stamp.active { 
-  color: var(--neon-teal); 
-  border-color: var(--neon-teal); 
-  text-shadow: 0 0 5px rgba(45, 212, 191, 0.4); 
-}
+.status-stamp.active { transform: rotate(12deg); color: var(--neon-teal); border-color: var(--neon-teal); text-shadow: 0 0 5px rgba(45, 212, 191, 0.4); }
+.status-stamp.draft { transform: rotate(-5deg); color: var(--neon-blue); border-color: var(--neon-blue); border-style: solid; }
+.status-stamp.halted { transform: rotate(8deg); color: var(--neon-red); border-color: var(--neon-red); border-style: solid; }
 
-.status-stamp.draft { 
-  color: var(--neon-orange); 
-  border-color: var(--neon-orange); 
-  border-style: dashed; 
-  transform: rotate(-5deg); 
-}
-
-/* --- CATALOG WATERMARK --- */
 .catalog-stamp-large {
   position: absolute;
   bottom: 25px;
   right: 20px;
   z-index: 15;
-  
-  /* USE GLOBAL FONT */
   font-family: var(--font-mono); 
   font-weight: 900;
   font-size: 2rem; 
-  
-  color: var(--neon-blue);
-  opacity: 0.2; 
-  
+  color: var(--neon-purple);
+  opacity: 0.15; 
   transform: rotate(-10deg); 
-  
-  border: 4px solid var(--neon-blue);
+  border: 4px solid var(--neon-purple);
   padding: 5px 15px;
   border-radius: 4px;
   pointer-events: none; 
   white-space: nowrap;
-  
-  /* Keep the mask for the distressed look, it's a good visual effect */
   mask-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,1));
 }
 
-
 /* --- ELEMENTS --- */
-.card-title {
+/* RENAMED from .card-title to prevent conflicts */
+.folder-title {
   margin: 0;
   font-size: 1.3rem; 
   font-weight: 800;
@@ -155,36 +126,17 @@
   gap: 6px;
   font-size: 0.75rem;
   color: var(--text-muted);
-  
-  /* USE GLOBAL BACKGROUND VARS */
   background: var(--bg-row-odd); 
   border: 1px solid var(--border-subtle);
-  
   padding: 6px 10px;
   border-radius: 4px;
-}
-
-.subtle-tag {
-  font-size: 0.65rem;
-  color: var(--text-muted); /* Fallback */
-  
-  /* USE GLOBAL BACKGROUND VARS */
-  background: var(--bg-row-odd);
-  border: 1px solid var(--border-subtle);
-  
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 /* --- PROGRESS BAR --- */
 .progress-track {
   width: 100%;
   height: 4px; 
-  background: var(--bg-row-even); /* Use global variable */
+  background: var(--bg-row-even); 
   border-radius: 2px;
   overflow: hidden;
 }
@@ -207,7 +159,6 @@
   padding: 0 0 0 10px;
   transition: all 0.2s;
 }
-
 .btn-icon-hover:hover { 
   color: var(--neon-red); 
   transform: scale(1.1); 

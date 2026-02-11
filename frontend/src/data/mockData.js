@@ -14,20 +14,6 @@ export const MOCK_PROJECTS = [
     ]
   },
   { 
-    id: 'proj-002', 
-    title: 'Walnut Device Stand', 
-    status: 'completed',
-    demand: 'Very High',
-    competition: 'Low',
-    created_at: '2026-01-15T14:30:00Z',
-    tags: ['Woodworking', 'Office', 'Premium', 'Eco-Friendly'],
-    missions: [
-      { id: 201, title: 'CAD Design Finalization', status: 'completed' },
-      { id: 202, title: 'Stain Compatibility Test', status: 'completed' },
-      { id: 203, title: 'Market Listing Photos', status: 'completed' }
-    ]
-  },
-  { 
     id: 'proj-003', 
     title: 'Botanical Reed Diffuser', 
     status: 'active',
@@ -48,6 +34,68 @@ export const MOCK_PROJECTS = [
     competition: 'Unknown',
     created_at: '2026-02-11T11:00:00Z',
     tags: ['Metalwork', 'Plants', 'Modern'],
+    missions: []
+  },
+  { 
+    id: 'proj-006', 
+    title: 'Neon Wall Sign', 
+    status: 'draft',
+    demand: 'High',
+    competition: 'Medium',
+    created_at: '2026-02-12T09:00:00Z',
+    tags: ['Lighting', 'Decor'],
+    missions: []
+  },
+  // --- CATALOGED (COMPLETED) ITEMS ---
+  { 
+    id: 'proj-002', 
+    title: 'Walnut Device Stand', 
+    status: 'completed',
+    demand: 'Very High',
+    competition: 'Low',
+    created_at: '2026-01-15T14:30:00Z',
+    tags: ['Woodworking', 'Office', 'Premium'],
+    missions: []
+  },
+  { 
+    id: 'proj-007', 
+    title: 'Leather Desk Mat', 
+    status: 'completed',
+    demand: 'Medium',
+    competition: 'Medium',
+    created_at: '2025-12-20T10:00:00Z',
+    tags: ['Leather', 'Office'],
+    missions: []
+  },
+  { 
+    id: 'proj-008', 
+    title: 'Concrete Coaster Set', 
+    status: 'completed',
+    demand: 'Low',
+    competition: 'High',
+    created_at: '2025-11-05T09:00:00Z',
+    tags: ['Concrete', 'Home Decor', 'Industrial'],
+    missions: []
+  },
+  { 
+    id: 'proj-009', 
+    title: 'Copper Lamp Base', 
+    status: 'completed',
+    demand: 'High',
+    competition: 'High',
+    created_at: '2025-10-15T11:00:00Z',
+    tags: ['Lighting', 'Metalwork'],
+    missions: []
+  },
+  // --- HALTED ITEMS ---
+  { 
+    id: 'proj-005', 
+    title: 'Cyber-Resin Coaster', 
+    status: 'on_hold', 
+    demand: 'Low',
+    competition: 'High',
+    created_at: '2026-02-01T09:00:00Z',
+    tags: ['Resin', 'Cyberpunk', 'Tabletop'],
     missions: []
   }
 ];

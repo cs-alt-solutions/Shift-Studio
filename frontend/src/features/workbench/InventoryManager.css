@@ -1,3 +1,4 @@
+/* uploaded file: src/features/workbench/InventoryManager.css */
 /* --- LAYOUTS --- */
 .inventory-layout {
   display: grid;
@@ -22,20 +23,6 @@
   margin-bottom: 30px;
 }
 
-.metric-card {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  padding: 20px;
-  border-radius: 2px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-.metric-card.alert { border-color: var(--neon-red); background: rgba(239, 68, 68, 0.05); cursor: pointer; }
-.metric-value { font-size: 2rem; font-weight: 800; color: #fff; margin-top: 5px; }
-
 /* --- SECTIONS --- */
 .blueprint-section {
   position: relative;
@@ -44,6 +31,7 @@
 }
 
 /* --- ACCORDION HISTORY ROW --- */
+/* Specific to Inventory History Expansion */
 .history-expansion {
   background: #000;
   box-shadow: inset 0 6px 12px -4px rgba(0,0,0,0.4);
@@ -52,6 +40,8 @@
   padding: 20px 40px;
   border-left: 3px solid var(--border-subtle);
 }
+
+/* Mini Table for History (Specific to this view) */
 .mini-history-table {
   width: 100%;
   font-size: 0.75rem;
@@ -88,7 +78,7 @@
 }
 .sidebar-inner { padding: 15px; }
 
-/* Detail View */
+/* Detail View Specifics */
 .detail-header { margin-bottom: 20px; text-align: center; }
 .detail-title { font-size: 1.2rem; margin: 0; color: #fff; }
 .detail-brand { font-size: 0.8rem; color: var(--neon-cyan); font-family: monospace; margin-top: 4px; }
@@ -97,12 +87,7 @@
 .stock-value { font-size: 1.2rem; font-weight: 800; color: #fff; }
 .stock-label { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px; }
 
-/* History List (Sidebar version) */
-.history-section { margin-top: 20px; border-top: 1px dashed var(--border-subtle); padding-top: 15px; }
-.history-title { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-.history-item { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-
-/* Readiness Cards */
+/* Readiness Cards (Widget) */
 .readiness-card {
   border: 1px solid var(--border-subtle);
   background: var(--bg-panel);

@@ -26,10 +26,11 @@
 
 /* --- RESET --- */
 * { box-sizing: border-box; }
+/* Ensure this is in src/styles/global.css */
 body {
   margin: 0;
   background-color: var(--bg-app);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif; /* The Industrial Standard Font */
   color: var(--text-main);
   overflow: hidden; 
 }
