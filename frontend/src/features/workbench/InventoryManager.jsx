@@ -146,6 +146,7 @@ export const InventoryManager = () => {
               {filteredMaterials.map(m => {
                 const isOutOfStock = m.qty === 0;
                 const isExpanded = expandedRowId === m.id;
+                // Rule 1 Exception: Dynamic style for progress bar
                 const barWidth = Math.min((m.qty / 100) * 100, 100);
 
                 return (

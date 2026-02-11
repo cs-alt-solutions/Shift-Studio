@@ -92,12 +92,24 @@ export const Workshop = ({ onRequestFullWidth }) => {
     }
   };
 
+  const updateRecipeUsage = (id, field, val) => {
+    setRecipe(recipe.map(r => r.id === id ? { ...r, [field]: val } : r));
+  };
+
+  const removeIngredient = (id) => {
+    setRecipe(recipe.filter(r => r.id !== id));
+  };
+
   const addMission = (e) => {
     if (e.key === 'Enter' && newMissionTitle.trim()) {
         e.preventDefault();
         setMissions([...missions, { id: Date.now(), title: newMissionTitle, status: 'pending' }]);
         setNewMissionTitle('');
     }
+  };
+
+  const toggleMission = (id) => {
+    setMissions(missions.map(m => m.id === id ? { ...m, status: m.status === 'completed' ? 'pending' : 'completed' } : m));
   };
 
   const addTag = (e) => {
@@ -238,7 +250,7 @@ export const Workshop = ({ onRequestFullWidth }) => {
                             <div className="checklist-container">
                                 {missions.map(m => (
                                     <div key={m.id} className={`checklist-item ${m.status === 'completed' ? 'completed' : ''}`}>
-                                        <div onClick={() => setMissions(missions.map(x => x.id === m.id ? {...x, status: x.status === 'completed' ? 'pending' : 'completed'} : x))} className="checklist-click-area">
+                                        <div onClick={() => toggleMission(m.id)} className="checklist-click-area">
                                             <div className="checkbox-industrial">{m.status === 'completed' && <div className="check-mark"/>}</div>
                                             <span className="mission-text">{m.title}</span>
                                         </div>
@@ -263,11 +275,12 @@ export const Workshop = ({ onRequestFullWidth }) => {
                                         <div key={r.id} className="bom-row">
                                             <div className="bom-name">{r.name}</div>
                                             <div className="bom-qty-group">
-                                                <input className="input-chromeless bom-qty-input" type="number" value={r.reqPerUnit} onChange={e => setRecipe(recipe.map(x => x.id === r.id ? {...x, reqPerUnit: e.target.value} : x))} />
-                                                <select className="input-chromeless" value={r.unit} onChange={e => setRecipe(recipe.map(x => x.id === r.id ? {...x, unit: e.target.value} : x))}>
+                                                <input className="input-chromeless bom-qty-input" type="number" value={r.reqPerUnit} onChange={e => updateRecipeUsage(r.id, 'reqPerUnit', e.target.value)} />
+                                                <select className="input-chromeless" value={r.unit} onChange={e => updateRecipeUsage(r.id, 'unit', e.target.value)}>
                                                     {unitOptions.map(u => <option key={u} value={u}>{u}</option>)}
                                                 </select>
                                             </div>
+                                            <button onClick={() => removeIngredient(r.id)} className="btn-icon-hover text-alert">×</button>
                                         </div>
                                     );
                                 })}

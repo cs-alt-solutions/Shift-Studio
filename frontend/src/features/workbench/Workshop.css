@@ -183,29 +183,27 @@
 .folder-stack {
   display: flex;
   flex-direction: column;
-  padding: 80px 15px 20px 25px; /* BUFFER: Space for the first folder tab */
+  padding: 60px 20px;
   overflow-y: auto;
-  overflow-x: visible; 
-  height: 100%;
-  flex: 1;
+  perspective: 1000px; /* Adds depth to the stack */
 }
 
+/* Adjusted from -160px to ensure title visibility and hitbox integrity */
 .folder-stack-item {
   transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.3s ease;
   position: relative;
-  margin-top: -160px; /* IMPROVED: Adjusted from -220px to fix click hitboxes */
+  margin-top: -135px; 
   cursor: pointer;
   filter: brightness(0.7) grayscale(0.4);
   transform-origin: center left;
   z-index: 1;
 }
-.folder-stack-item:first-child { margin-top: 0; }
-.folder-stack-item:last-child { margin-bottom: 100px; }
 
+/* Rule 7 Implementation: Elevate z-index on hover to fix layering conflicts */
 .folder-stack-item:hover {
   transform: translateX(-15px) translateY(-5px) scale(1.02);
   filter: brightness(1.1) grayscale(0);
-  z-index: 1000 !important; /* FIXED: Ensure hovered items are on top */
+  z-index: 1000 !important; 
   box-shadow: -10px 10px 30px rgba(0,0,0,0.8);
 }
 
