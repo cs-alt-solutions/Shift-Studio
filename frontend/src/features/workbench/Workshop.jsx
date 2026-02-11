@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWorkbench } from '../../context/WorkbenchContext'; 
 import { ProjectCard } from '../../components/ProjectCard';
-import { Plus, Back, Save, Finance } from '../../components/Icons'; 
+import { Plus, Back, Save, Finance, Box } from '../../components/Icons'; 
 
 // --- UNIT CATEGORY DEFINITIONS ---
 const UNIT_GROUPS = {
@@ -32,6 +32,10 @@ export const Workshop = ({ onRequestFullWidth }) => {
   const [tags, setTags] = useState([]); 
   const [newTagInput, setNewTagInput] = useState('');
   const [newIngredientId, setNewIngredientId] = useState('');
+
+  // --- FILTER PROJECTS ---
+  const activeProjects = projects.filter(p => p.status !== 'completed');
+  const catalogProjects = projects.filter(p => p.status === 'completed');
 
   // Sync Layout Mode
   useEffect(() => {
@@ -133,6 +137,22 @@ export const Workshop = ({ onRequestFullWidth }) => {
             padding-right: 5px; 
             padding-bottom: 40px; 
         }
+
+        .section-separator {
+           margin: 30px 0 15px 0;
+           border-bottom: 1px solid var(--border-subtle);
+           display: flex;
+           align-items: center;
+        }
+        .separator-label {
+           background: var(--bg-app);
+           padding-right: 15px;
+           color: var(--neon-cyan);
+           font-family: var(--font-mono);
+           font-size: 0.8rem;
+           letter-spacing: 2px;
+           font-weight: 700;
+        }
       `}</style>
       
       {/* --- VIEW 1: PROJECT HUB --- */}
@@ -142,28 +162,55 @@ export const Workshop = ({ onRequestFullWidth }) => {
             <div className="inventory-header">
               <div>
                 <h2 className="header-title">WORKSHOP</h2>
-                <span style={{color: 'var(--text-muted)', fontSize: '0.8rem'}}>ACTIVE MISSIONS: {projects.length}</span>
+                <span style={{color: 'var(--text-muted)', fontSize: '0.8rem'}}>PROJECT MANAGEMENT</span>
               </div>
-              <button className="btn-primary" onClick={() => setIsCreateOpen(true)}><Plus /> NEW MISSION</button>
+              <button className="btn-primary" onClick={() => setIsCreateOpen(true)}><Plus /> NEW PROJECT</button>
             </div>
 
-            <div className="workshop-grid">
-              {projects.map(p => (
-                <div key={p.id} onClick={() => openStudio(p)}>
-                  <ProjectCard project={p} onDelete={(e) => { e.stopPropagation(); deleteProject(p.id); }} />
-                </div>
-              ))}
+            {/* --- ZONE 1: ACTIVE WORKBENCH --- */}
+            <div className="section-separator">
+               <span className="separator-label">// ACTIVE WORKBENCH</span>
             </div>
+            
+            {activeProjects.length === 0 ? (
+                <div style={{padding:'40px', textAlign:'center', border:'1px dashed var(--border-subtle)', borderRadius:'4px', color:'var(--text-muted)', marginBottom:'20px'}}>
+                   No active projects. Start a new one to begin R&D.
+                </div>
+            ) : (
+                <div className="workshop-grid">
+                  {activeProjects.map(p => (
+                    <div key={p.id} onClick={() => openStudio(p)}>
+                      <ProjectCard project={p} onDelete={(e) => { e.stopPropagation(); deleteProject(p.id); }} />
+                    </div>
+                  ))}
+                </div>
+            )}
+
+            {/* --- ZONE 2: PRODUCT CATALOG --- */}
+            {catalogProjects.length > 0 && (
+                <>
+                    <div className="section-separator" style={{marginTop:'10px'}}>
+                       <span className="separator-label" style={{color:'var(--neon-purple)'}}>// CATALOG ARCHIVE</span>
+                    </div>
+                    <div className="workshop-grid">
+                      {catalogProjects.map(p => (
+                        <div key={p.id} onClick={() => openStudio(p)}>
+                          <ProjectCard project={p} onDelete={(e) => { e.stopPropagation(); deleteProject(p.id); }} />
+                        </div>
+                      ))}
+                    </div>
+                </>
+            )}
             
             {isCreateOpen && (
               <div className="blueprint-overlay" style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.8)', display:'flex', justifyContent:'center', alignItems:'center', zIndex:2000}}>
                 <div className="panel-industrial" style={{width:'400px', padding:'30px'}}>
-                  <h2 style={{ color: 'var(--neon-orange)', marginTop: 0, fontSize:'1.2rem' }}>NEW MISSION</h2>
+                  <h2 style={{ color: 'var(--neon-orange)', marginTop: 0, fontSize:'1.2rem' }}>INITIATE PROJECT</h2>
                   <form onSubmit={handleCreateProject}>
                     <input autoFocus type="text" placeholder="Project Title..." value={newProjectTitle} onChange={e => setNewProjectTitle(e.target.value)} className="input-industrial" style={{ marginBottom: '20px' }} />
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                       <button type="button" className="btn-ghost" onClick={() => setIsCreateOpen(false)}>CANCEL</button>
-                      <button type="submit" className="btn-primary">INITIALIZE</button>
+                      <button type="submit" className="btn-primary">CREATE</button>
                     </div>
                   </form>
                 </div>
@@ -174,6 +221,7 @@ export const Workshop = ({ onRequestFullWidth }) => {
       )}
 
       {/* --- VIEW 2: THE STUDIO --- */}
+      {/* (Same Studio Code as before) */}
       {activeProject && (
         <div className="animate-fade-in" style={{height:'100%', padding:'30px 40px', display:'flex', flexDirection:'column', overflow:'hidden'}}>
             
@@ -187,7 +235,7 @@ export const Workshop = ({ onRequestFullWidth }) => {
                  </div>
                </div>
                <button onClick={handleCompleteProject} className="btn-primary" style={{background:'var(--neon-purple)', color:'#fff'}}>
-                 <Save /> COMPLETE & POST
+                 <Save /> FINALIZE & CATALOG
                </button>
             </div>
 
@@ -285,11 +333,11 @@ export const Workshop = ({ onRequestFullWidth }) => {
       {!activeProject && (
         <div className="sidebar-col" style={{padding:'15px'}}>
              <div className="keyword-header" style={{padding:'0 0 15px 0'}}>
-                <h3 className="label-industrial glow-purple" style={{ margin: 0 }}>MISSION CONTROL</h3>
+                <h3 className="label-industrial glow-purple" style={{ margin: 0 }}>PROJECT CONTROL</h3>
              </div>
              <div style={{padding:'15px', background:'rgba(255,255,255,0.02)', borderRadius:'2px', border:'1px solid var(--border-subtle)', marginBottom:'10px'}}>
                 <div className="flex-between" style={{marginBottom:'5px'}}>
-                   <span className="label-industrial">ACTIVE</span>
+                   <span className="label-industrial">WIP (Active)</span>
                    <span className="glow-teal" style={{fontWeight:800}}>{projects.filter(p=>p.status==='active').length}</span>
                 </div>
                 <div className="flex-between" style={{marginBottom:'5px'}}>
@@ -297,7 +345,7 @@ export const Workshop = ({ onRequestFullWidth }) => {
                    <span className="glow-orange" style={{fontWeight:800}}>{projects.filter(p=>p.status==='draft').length}</span>
                 </div>
                 <div className="flex-between">
-                   <span className="label-industrial">COMPLETED</span>
+                   <span className="label-industrial">CATALOG (Ready)</span>
                    <span className="glow-purple" style={{fontWeight:800}}>{projects.filter(p=>p.status==='completed').length}</span>
                 </div>
              </div>

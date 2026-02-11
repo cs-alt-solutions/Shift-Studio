@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useWorkbench } from '../../context/WorkbenchContext';
 import './InventoryManager.css';
-// NEW IMPORTS
 import { Box, Alert, Plus, History, ChevronDown, ChevronUp } from '../../components/Icons';
 import { StatCard } from '../../components/StatCard';
+import { ImagePlaceholder } from '../../components/ImagePlaceholder';
 
 const CATEGORIES = ['Raw Material', 'Packaging', 'Shipping', 'Consumables', 'Hardware', 'Electronics', 'Tools'];
 const UNITS = { 'Weight': ['lbs', 'oz', 'kg'], 'Volume': ['gal', 'fl oz', 'L'], 'Length': ['ft', 'yd'], 'Count': ['count', 'box', 'ea'] };
@@ -154,7 +154,7 @@ export const InventoryManager = () => {
           </div>
         </div>
 
-        {/* METRICS ROW (Replaced with StatCard) */}
+        {/* METRICS ROW */}
         <div className="inventory-metrics">
            <StatCard 
              label="ASSET VALUE" 
@@ -203,8 +203,7 @@ export const InventoryManager = () => {
                 else if (isLowStock) { statusClass = 'glow-orange'; StatusIcon = Alert; statusText = 'LOW STOCK'; } 
                 else if (m.status === 'Dormant') { statusClass = 'text-muted'; StatusIcon = Box; statusText = 'DORMANT'; }
                 
-                // NEW: Calculate visual bar width (capped at 100%)
-                const maxStock = 100; // Arbitrary "full" amount for visualization
+                const maxStock = 100;
                 const barWidth = Math.min((m.qty / maxStock) * 100, 100);
                 const barColor = isOutOfStock ? 'var(--neon-red)' : isLowStock ? 'var(--neon-orange)' : 'var(--neon-teal)';
 
@@ -221,7 +220,7 @@ export const InventoryManager = () => {
                       <td className="td-cell cell-meta">{m.lastUsed}</td>
                       <td className="td-cell td-right cell-meta">${m.costPerUnit.toFixed(2)}</td>
                       
-                      {/* UPDATED: QTY CELL WITH HEALTH BAR */}
+                      {/* QTY CELL WITH HEALTH BAR */}
                       <td className="td-cell td-center">
                         <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap:'2px'}}>
                             <div style={{fontWeight: 700}} className={isOutOfStock ? 'glow-red' : 'text-main'}>
@@ -251,7 +250,6 @@ export const InventoryManager = () => {
                                <span className="label-industrial" style={{margin:0, color:'var(--neon-cyan)'}}><History /> PURCHASE HISTORY LOG</span>
                                <span style={{fontSize:'0.65rem', color:'var(--text-muted)'}}>ID: {m.id}</span>
                              </div>
-                             {/* ... (History table content remains same) ... */}
                              {m.history && m.history.length > 0 ? (
                                <table className="mini-history-table">
                                  <thead>
@@ -290,7 +288,7 @@ export const InventoryManager = () => {
         </div>
       </div>
 
-      {/* SIDEBAR REMAINS UNCHANGED */}
+      {/* SIDEBAR */}
       <div className="sidebar-col" style={{width:'340px'}}>
          <div className="keyword-header">
            <h3 className="label-industrial glow-purple" style={{ margin: 0, fontSize: '0.9rem' }}>
@@ -298,9 +296,16 @@ export const InventoryManager = () => {
            </h3>
         </div>
         <div className="keyword-list">
-          {/* ... Sidebar content (Detail view, Intake form, Readiness) is fine as is ... */}
           {!showIntakeForm && selectedMaterial && (
             <div className="sidebar-panel" style={{ borderLeftColor: selectedMaterial.qty === 0 ? 'red' : 'var(--neon-purple)' }}>
+              
+              {/* NEW: IMAGE PLACEHOLDER FOR INVENTORY */}
+              <ImagePlaceholder 
+                 height="180px" 
+                 label="ITEM PHOTO" 
+                 onUpload={() => alert('Inventory Photo Upload')} 
+              />
+
               <div className="sidebar-inner">
                 <div className="detail-header">
                   <h3 className="detail-title">{selectedMaterial.name}</h3>
