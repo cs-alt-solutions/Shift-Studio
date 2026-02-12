@@ -8,7 +8,6 @@ const FinancialContext = createContext();
 export const FinancialProvider = ({ children }) => {
   const [transactions, setTransactions] = useState([]);
 
-  // ACTIONS: FINANCIALS
   const addTransaction = (txn) => {
     const newTxn = { id: Date.now(), date: new Date().toISOString().split('T')[0], ...txn };
     setTransactions(prev => [newTxn, ...prev]);
@@ -30,7 +29,6 @@ export const useProjectEconomics = (project) => {
   return useMemo(() => {
     if (!project) return { materialCost: 0, platformFees: 0, totalCost: 0, netProfit: 0, marginPercent: 0 };
 
-    // 1. Calculate Raw Material Cost
     const materialCost = (project.recipe || []).reduce((total, item) => {
       const mat = materials.find(m => m.id === item.matId);
       if (!mat) return total;
@@ -38,14 +36,12 @@ export const useProjectEconomics = (project) => {
       return total + (qtyInStockUnit * mat.costPerUnit);
     }, 0);
 
-    // 2. Calculate Platform Fees
     const retail = project.retailPrice || 0;
     const econ = project.economics || { platformFeePercent: 6.5, platformFixedFee: 0.20 };
     const platformFees = retail > 0 
       ? (retail * (econ.platformFeePercent / 100)) + econ.platformFixedFee 
       : 0;
 
-    // 3. Final Aggregation
     const shipping = parseFloat(project.economics?.shippingCost) || 0;
     const totalCost = materialCost + platformFees + shipping;
     const netProfit = retail - totalCost;

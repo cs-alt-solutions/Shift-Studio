@@ -1,9 +1,11 @@
+/* src/components/cards/ProjectCard.jsx */
 import React from 'react';
 import './ProjectCard.css';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { TERMINOLOGY } from '../../utils/glossary';
 import { StatusBadge } from '../ui/StatusBadge';
 import { ProgressBar } from '../ui/ProgressBar';
+import { CloseIcon } from '../Icons';
 
 export const ProjectCard = ({ project, onClick, onDelete, readOnly = false, showStatus = true }) => {
   const { title, status, retailPrice, updated_at, stockQty } = project;
@@ -18,7 +20,6 @@ export const ProjectCard = ({ project, onClick, onDelete, readOnly = false, show
 
       <div className={`folder-body card-hover-effect ${status === 'completed' ? 'catalog-mode' : ''}`}>
         
-        {/* FIX: showStatus prop now controls visibility */}
         {showStatus && (
           <div className="status-stamp-wrapper">
              <StatusBadge status={status} />
@@ -56,7 +57,6 @@ export const ProjectCard = ({ project, onClick, onDelete, readOnly = false, show
              </div>
           </div>
           
-          {/* FIX: readOnly and onDelete integrated to resolve ESLint warnings */}
           {!readOnly && onDelete && (
             <div className="flex-end mt-20">
               <button 
@@ -67,7 +67,7 @@ export const ProjectCard = ({ project, onClick, onDelete, readOnly = false, show
                 }}
                 title={TERMINOLOGY.GENERAL.DELETE}
               >
-                ×
+                <CloseIcon />
               </button>
             </div>
           )}

@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+/* src/context/InventoryContext.jsx */
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { MOCK_PROJECTS, INITIAL_MATERIALS, INITIAL_INSIGHTS } from '../data/mockData';
 import { convertToStockUnit } from '../utils/units';
+import { APP_CONFIG } from '../utils/glossary';
 
 const InventoryContext = createContext();
 
@@ -8,8 +10,6 @@ export const InventoryProvider = ({ children }) => {
   const [projects, setProjects] = useState(MOCK_PROJECTS.map(p => ({ ...p, stockQty: 0, retailPrice: 0 })));
   const [materials, setMaterials] = useState(INITIAL_MATERIALS);
   const [marketInsights, setMarketInsights] = useState(INITIAL_INSIGHTS);
-  
-  // Migrated from WorkbenchContext
   const [lastEtsyPulse, setLastEtsyPulse] = useState(localStorage.getItem('lastEtsyPulse') || null);
 
   useEffect(() => {
@@ -27,21 +27,26 @@ export const InventoryProvider = ({ children }) => {
     triggerKeepAlivePulse();
   }, [lastEtsyPulse]);
 
-  // ACTIONS: PROJECTS
-  const addProject = (title) => {
+  const activeProjects = useMemo(() => projects.filter(p => p.status === 'active'), [projects]);
+  const draftProjects = useMemo(() => projects.filter(p => p.status === 'draft'), [projects]);
+  const completedProjects = useMemo(() => projects.filter(p => p.status === 'completed'), [projects]);
+
+  const addProject = (overrides = {}) => {
     const newProj = {
       id: crypto.randomUUID(),
-      title,
-      status: 'active',
+      title: "New Untitled Project",
+      status: APP_CONFIG.PROJECT.DEFAULT_STATUS,
       stockQty: 0,
       retailPrice: 0,
-      demand: 'Unknown',
-      competition: 'Unknown',
+      demand: APP_CONFIG.PROJECT.INITIAL_DEMAND,
+      competition: APP_CONFIG.PROJECT.INITIAL_COMPETITION,
       created_at: new Date().toISOString(),
       missions: [],
-      tags: []
+      tags: [],
+      recipe: [],
+      ...overrides
     };
-    setProjects([newProj, ...projects]);
+    setProjects(prev => [newProj, ...prev]);
   };
 
   const updateProject = (updatedProject) => {
@@ -52,7 +57,6 @@ export const InventoryProvider = ({ children }) => {
     setProjects(prev => prev.filter(p => p.id !== id));
   };
 
-  // ACTIONS: INVENTORY
   const addAsset = (asset) => setMaterials(prev => [asset, ...prev]);
   const updateAsset = (id, updates) => setMaterials(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
   
@@ -75,7 +79,6 @@ export const InventoryProvider = ({ children }) => {
     }));
   };
 
-  // ACTIONS: MANUFACTURING
   const manufactureProduct = (projectId, recipe, batchSize = 1) => {
     let sufficientStock = true;
     let missingItem = '';
@@ -115,11 +118,13 @@ export const InventoryProvider = ({ children }) => {
 
   return (
     <InventoryContext.Provider value={{
-      projects, addProject, updateProject, deleteProject,
+      projects, activeProjects, draftProjects, completedProjects,
+      addProject, updateProject, deleteProject,
       materials, addAsset, updateAsset, restockAsset,
       marketInsights, setMarketInsights,
       manufactureProduct,
-      lastEtsyPulse
+      lastEtsyPulse,
+      STOCK_THRESHOLD: APP_CONFIG.PROJECT.STOCK_THRESHOLD
     }}>
       {children}
     </InventoryContext.Provider>

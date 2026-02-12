@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* src/features/workbench/MarketRadar.jsx */
+import React, { useState, useMemo } from 'react';
 import './MarketRadar.css';
 import { InputGroup } from '../../components/ui/InputGroup';
 import { ImagePlaceholder } from '../../components/ui/ImagePlaceholder';
@@ -20,7 +21,9 @@ export const MarketRadar = () => {
     setNewComp({ name: '', price: '' });
   };
 
-  const avgPrice = competitors.reduce((acc, c) => acc + c.price, 0) / competitors.length || 0;
+  const avgPrice = useMemo(() => {
+    return competitors.reduce((acc, c) => acc + c.price, 0) / competitors.length || 0;
+  }, [competitors]);
 
   return (
     <div className="radar-grid-layout">
@@ -30,16 +33,6 @@ export const MarketRadar = () => {
              <div>
                <h2 className="header-title">{TERMINOLOGY.MARKET.HEADER}</h2>
                <span className="header-subtitle">{TERMINOLOGY.MARKET.SUBTITLE}</span>
-             </div>
-          </div>
-
-          <div className="ticker-container">
-             <div className="ticker-wrap">
-                <div className="ticker-move">
-                   {[1,2,3,4].map(i => (
-                     <span key={i} className="ticker-item">{TERMINOLOGY.MARKET.SCANNING} | {TERMINOLOGY.FINANCE.LIVE_STATUS}</span>
-                   ))}
-                </div>
              </div>
           </div>
 
@@ -68,15 +61,12 @@ export const MarketRadar = () => {
              {competitors.map(c => (
                 <div key={c.id} className="panel-industrial">
                    <div className="h-120 overflow-hidden border-bottom-subtle">
-                      <ImagePlaceholder height="100%" label={TERMINOLOGY.INVENTORY.PHOTO_LABEL} />
+                      <ImagePlaceholder text={TERMINOLOGY.INVENTORY.PHOTO_LABEL} />
                    </div>
                    <div className="pad-20">
                       <div className="flex-between mb-20">
                          <span className="font-bold">{c.name}</span>
                          <span className="text-accent font-mono">${c.price.toFixed(2)}</span>
-                      </div>
-                      <div className="text-muted font-italic font-small">
-                         {c.notes || "No observations recorded."}
                       </div>
                       <div className="mt-20 flex-end">
                          <button className="btn-ghost">{TERMINOLOGY.GENERAL.ANALYZE}</button>
@@ -88,20 +78,14 @@ export const MarketRadar = () => {
        </div>
 
        <div className="sidebar-col pad-20">
-          <div className="keyword-header no-pad mb-20 bg-transparent">
-             <h3 className="label-industrial glow-purple">{TERMINOLOGY.MARKET.PULSE_HEADER}</h3>
-          </div>
-          
           <div className="panel-industrial pad-20">
              <div className="label-industrial">{TERMINOLOGY.MARKET.AVG_PRICE}</div>
-             <div className="text-accent font-large font-bold">
-                ${avgPrice.toFixed(2)}
-             </div>
+             <div className="text-accent font-large font-bold">${avgPrice.toFixed(2)}</div>
           </div>
 
           <div className="performance-dials mt-20">
-             <Dial value={78} label="DEMAND" colorVar="--neon-teal" />
-             <Dial value={42} label="SATURATION" colorVar="--neon-purple" />
+             <Dial value={78} label={TERMINOLOGY.MARKET.DEMAND} colorVar="--neon-teal" />
+             <Dial value={42} label={TERMINOLOGY.MARKET.SATURATION} colorVar="--neon-purple" />
           </div>
        </div>
     </div>

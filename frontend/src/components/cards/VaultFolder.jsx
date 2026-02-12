@@ -1,5 +1,7 @@
+/* src/components/cards/VaultFolder.jsx */
 import React, { useState } from 'react';
 import { TERMINOLOGY } from '../../utils/glossary';
+import { ChevronDown } from '../Icons';
 import './VaultFolder.css';
 
 export const VaultFolder = ({ title, count, items, onItemClick, stampText }) => {
@@ -18,7 +20,9 @@ export const VaultFolder = ({ title, count, items, onItemClick, stampText }) => 
             <h3 className="folder-title-reusable">{title}</h3>
             <span className="folder-count">{count} {TERMINOLOGY.GENERAL.UNITS}</span>
           </div>
-          <div className={`folder-chevron ${isOpen ? 'up' : ''}`}>▼</div>
+          <div className={`folder-chevron ${isOpen ? 'up' : ''}`}>
+              <ChevronDown />
+          </div>
         </div>
       </div>
       {isOpen && (

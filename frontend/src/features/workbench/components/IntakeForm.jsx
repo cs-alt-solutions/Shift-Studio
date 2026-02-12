@@ -1,8 +1,8 @@
+/* src/features/workbench/components/IntakeForm.jsx */
 import React, { useState } from 'react';
 import { useInventory } from '../../../context/InventoryContext';
 import { TERMINOLOGY, CATEGORY_KEYWORDS, COMMON_ASSETS } from '../../../utils/glossary';
 
-// Derived from Glossary to ensure Single Source of Truth
 const CATEGORIES = Object.keys(CATEGORY_KEYWORDS);
 
 export const IntakeForm = ({ onClose }) => {
@@ -14,8 +14,8 @@ export const IntakeForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
     name: '', 
     brand: '', 
-    category: 'Raw Material', 
-    unit: 'lbs', 
+    category: CATEGORIES[0], 
+    unit: 'count', 
     qty: '', 
     totalCost: '', 
     status: 'Active'
@@ -24,10 +24,8 @@ export const IntakeForm = ({ onClose }) => {
   const handleNameChange = (e) => {
     const text = e.target.value;
     const lowerText = text.toLowerCase();
-    
     let predictedCategory = formData.category;
 
-    // Auto-predict category based on Glossary keywords
     for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
       if (keywords.some(keyword => lowerText.includes(keyword))) {
         predictedCategory = cat;
@@ -75,8 +73,6 @@ export const IntakeForm = ({ onClose }) => {
       });
     }
     
-    // Reset and Close
-    setFormData({ name: '', brand: '', category: 'Raw Material', unit: 'lbs', qty: '', totalCost: '', status: 'Active' });
     onClose();
   };
 

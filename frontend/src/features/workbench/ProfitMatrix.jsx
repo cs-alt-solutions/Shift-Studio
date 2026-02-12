@@ -8,7 +8,6 @@ import { TERMINOLOGY } from '../../utils/glossary';
 import { formatCurrency } from '../../utils/formatters';
 
 export const ProfitMatrix = () => {
-  // Removed 'netProfit' from destructuring since it wasn't being used in the cards below
   const { totalRev, totalCost, margin, transactions } = useFinancialStats();
 
   return (
@@ -55,9 +54,9 @@ export const ProfitMatrix = () => {
                 <table className="inventory-table">
                    <thead>
                       <tr>
-                        <th>DATE</th>
-                        <th>DESC</th>
-                        <th className="text-right">AMOUNT</th>
+                        <th>{TERMINOLOGY.FINANCE.DATE}</th>
+                        <th>{TERMINOLOGY.FINANCE.DESC}</th>
+                        <th className="text-right">{TERMINOLOGY.FINANCE.AMOUNT}</th>
                       </tr>
                    </thead>
                    <tbody>
@@ -74,7 +73,7 @@ export const ProfitMatrix = () => {
                 </table>
             ) : (
                 <div className="text-muted italic text-center pad-20">
-                    {TERMINOLOGY.UI_FEEDBACK.EMPTY_LEDGER}
+                    {TERMINOLOGY.FINANCE.EMPTY_LEDGER}
                 </div>
             )}
          </div>

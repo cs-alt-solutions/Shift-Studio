@@ -7,15 +7,13 @@ import { ProjectCard } from '../../components/cards/ProjectCard';
 import { StampHeader } from '../../components/ui/StampHeader';
 import { AnimatedNumber } from '../../components/charts/AnimatedNumber';
 import { formatCurrency } from '../../utils/formatters';
-import { TERMINOLOGY } from '../../utils/glossary'; 
-import { MARKET_TICKER_DATA } from '../../data/mockData';
+import { TERMINOLOGY, MARKET_TICKER_DATA } from '../../utils/glossary'; 
 import './DashboardHome.css'; 
 
 export const DashboardHome = ({ onNavigate }) => {
-  const { projects, materials } = useInventory();
+  const { activeProjects, materials } = useInventory();
   const { netProfit } = useFinancialStats();
 
-  const activeProjects = projects.filter(p => p.status === 'active');
   const lowStockItems = materials.filter(m => m.qty > 0 && m.qty < 10);
   const outOfStockItems = materials.filter(m => m.qty === 0);
 
@@ -24,9 +22,14 @@ export const DashboardHome = ({ onNavigate }) => {
       <div className="scanline-overlay" />
 
       <div className="inventory-header z-layer-top">
-        <div>
-          <h2 className="header-title">{TERMINOLOGY.GENERAL.SYSTEMS_LABEL}</h2>
-          <span className="header-subtitle">{TERMINOLOGY.WORKSHOP.HUB_SUBTITLE}</span>
+        <div className="flex-between w-full">
+          <div>
+            <h2 className="header-title">{TERMINOLOGY.GENERAL.SYSTEMS_LABEL}</h2>
+            <span className="header-subtitle">{TERMINOLOGY.WORKSHOP.HUB_SUBTITLE}</span>
+          </div>
+          <div className="text-right font-mono font-small text-muted">
+             {TERMINOLOGY.DASHBOARD.TELEMETRY} // {TERMINOLOGY.DASHBOARD.SYNC}: ACTIVE
+          </div>
         </div>
       </div>
 
@@ -35,14 +38,14 @@ export const DashboardHome = ({ onNavigate }) => {
             label={TERMINOLOGY.FINANCE.NET} 
             value={<AnimatedNumber value={netProfit} formatter={formatCurrency} />} 
             glowColor={netProfit >= 0 ? "teal" : "red"} 
-            trend={12} // Visual "pop" addition
+            trend={12}
             onClick={() => onNavigate('matrix')}
          />
          <StatCard 
             label={TERMINOLOGY.WORKSHOP.ACTIVE_OPS} 
             value={<AnimatedNumber value={activeProjects.length} />} 
             glowColor="purple" 
-            trend={5} // Visual "pop" addition
+            trend={5}
             onClick={() => onNavigate('workshop')}
          />
          <StatCard 
@@ -56,7 +59,10 @@ export const DashboardHome = ({ onNavigate }) => {
 
       <div className="dashboard-grid">
         <div className="dashboard-col-left">
-            <StampHeader status="active" label={TERMINOLOGY.STATUS.ACTIVE} />
+            <div className="flex-between-center mb-10">
+                <StampHeader status="active" label={TERMINOLOGY.STATUS.ACTIVE} />
+                <span className="label-industrial font-small opacity-50">{TERMINOLOGY.DASHBOARD.LIVE_FEED}</span>
+            </div>
             <div className="workshop-grid">
                 {activeProjects.slice(0, 2).map(p => (
                     <ProjectCard 

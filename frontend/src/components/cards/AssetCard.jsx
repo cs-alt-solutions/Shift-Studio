@@ -5,12 +5,13 @@ import { Box } from '../Icons';
 import { formatCurrency } from '../../utils/formatters';
 import { TERMINOLOGY } from '../../utils/glossary';
 import { ProgressBar } from '../ui/ProgressBar';
+import { useInventory } from '../../context/InventoryContext';
 
 export const AssetCard = ({ asset, onClick, isSelected }) => {
+  const { STOCK_THRESHOLD } = useInventory();
   const { name, qty, costPerUnit, status, brand, unit } = asset;
   
-  // Logic: Threshold is 10 for low stock
-  const isLow = qty > 0 && qty < 10;
+  const isLow = qty > 0 && qty < STOCK_THRESHOLD;
   const isOut = qty === 0;
   const isDormant = status === 'Dormant';
 
@@ -39,7 +40,6 @@ export const AssetCard = ({ asset, onClick, isSelected }) => {
        <div className="hud-stats">
           <div className="hud-qty">{qty}</div>
           <div className="hud-unit">{unit}</div>
-          {/* Rule 3: Removed redundant wrapper div causing double-border glitches */}
           <ProgressBar 
               value={qty} 
               max={50} 

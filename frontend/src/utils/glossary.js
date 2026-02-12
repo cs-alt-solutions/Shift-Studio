@@ -19,10 +19,14 @@ export const TERMINOLOGY = {
     UNITS: "UNITS",
     CATEGORY: "CATEGORY",
     ADD: "ADD ASSET",
+    ADD_SMALL: "ADD",
     BRAND: "BRAND",
     DELETE: "DELETE",
     CANCEL: "CANCEL",
-    TYPE_SEARCH: "Start typing to search..."
+    TYPE_SEARCH: "Start typing to search...",
+    NO_DATA: "No data available in this sector.",
+    ANALYZE: "RUN ANALYSIS",
+    UNKNOWN: "UNKNOWN"
   },
   DASHBOARD: {
     TELEMETRY: "SYSTEM TELEMETRY",
@@ -40,7 +44,8 @@ export const TERMINOLOGY = {
     LOW_STOCK: "RUNNING LOW",
     OUT_OF_STOCK: "OUT OF STOCK",
     STOCKED: "STOCKED",
-    LOW: "LOW"
+    LOW: "LOW",
+    DORMANT: "DORMANT"
   },
   FINANCE: {
     HEADER: "PROFIT MATRIX",
@@ -52,7 +57,11 @@ export const TERMINOLOGY = {
     MARGIN_AVG: "AVG MARGIN",
     REVENUE_CHART: "REVENUE OVER TIME",
     TREND: "GROWTH TREND",
-    LEDGER: "TRANSACTION LEDGER"
+    LEDGER: "TRANSACTION LEDGER",
+    DATE: "DATE",
+    DESC: "DESCRIPTION",
+    AMOUNT: "AMOUNT",
+    EMPTY_LEDGER: "Ledger clear. No transactions recorded."
   },
   WORKSHOP: {
     HUB_HEADER: "THE WORKSHOP",
@@ -82,7 +91,12 @@ export const TERMINOLOGY = {
     TOTAL_COST: "TOTAL COST",
     UNIT_PRICE: "UNIT COST",
     HISTORY_LOG: "ASSET LOG",
-    PHOTO_LABEL: "ASSET IMAGE"
+    PHOTO_LABEL: "ASSET IMAGE",
+    FILTERS: {
+      ALL: "ALL",
+      ACTIVE: "ACTIVE",
+      DORMANT: "DORMANT"
+    }
   },
   BLUEPRINT: {
     PHASE_PLAN: "R&D / PLANNING",
@@ -93,6 +107,7 @@ export const TERMINOLOGY = {
     INSPIRATION: "INSPIRATION / SOURCE",
     NOTES: "ENGINEERING NOTES",
     VISUAL_CONCEPTS: "VISUAL SCHEMATICS",
+    CONCEPT_PLACEHOLDER: "DRAG & DROP CONCEPT ART HERE",
     PRODUCTION_CONSOLE: "PRODUCTION TERMINAL",
     STOCK: "IN-HOUSE STOCK",
     BATCH: "BATCH SIZE",
@@ -104,7 +119,11 @@ export const TERMINOLOGY = {
     LAUNCH_CHECKLIST: "DEPLOYMENT CHECKLIST",
     PHOTOS: "HI-RES MEDIA",
     DESCRIPTION: "PRODUCT COPY",
-    TAGS: "SEO TAGGING"
+    TAGS: "SEO TAGGING",
+    RAW_MATERIALS: "Raw Materials:",
+    PLATFORM_FEES: "Platform Fees:",
+    SHIPPING_LABEL: "Shipping Label:",
+    ADD_MATERIAL: "-- Add Material --"
   },
   MARKET: {
     HEADER: "MARKET RADAR",
@@ -115,7 +134,22 @@ export const TERMINOLOGY = {
     TARGET_PLACEHOLDER: "Enter brand name...",
     TARGET_PRICE_LABEL: "MARKET PRICE",
     PULSE_HEADER: "MARKET PULSE",
-    AVG_PRICE: "AVG MARKET PRICE"
+    AVG_PRICE: "AVG MARKET PRICE",
+    DEMAND: "DEMAND",
+    SATURATION: "SATURATION"
+  }
+};
+
+export const APP_CONFIG = {
+  PROJECT: {
+    DEFAULT_STATUS: 'draft',
+    STOCK_THRESHOLD: 10,
+    INITIAL_DEMAND: TERMINOLOGY.GENERAL.UNKNOWN,
+    INITIAL_COMPETITION: TERMINOLOGY.GENERAL.UNKNOWN
+  },
+  INVENTORY: {
+    LOGISTICS: ['Packaging', 'Shipping'],
+    WORKSHOP: ['Raw Material', 'Consumables', 'Hardware', 'Electronics', 'Tools']
   }
 };
 

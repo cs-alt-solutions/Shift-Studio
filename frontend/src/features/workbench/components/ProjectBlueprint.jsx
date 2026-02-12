@@ -5,7 +5,7 @@ import { useInventory } from '../../../context/InventoryContext';
 import { useProjectEconomics } from '../../../context/FinancialContext';
 import { TERMINOLOGY } from '../../../utils/glossary';
 import { formatCurrency } from '../../../utils/formatters';
-import { Save, Box, WorkshopIcon, Radar, Finance } from '../../../components/Icons';
+import { Save, Box, WorkshopIcon, Radar, Finance, CloseIcon } from '../../../components/Icons';
 
 export const ProjectBlueprint = ({ project, onClose }) => {
   const { updateProject, materials, manufactureProduct } = useInventory();
@@ -18,7 +18,6 @@ export const ProjectBlueprint = ({ project, onClose }) => {
     economics: project.economics || { shippingCost: 0, platformFeePercent: 6.5, platformFixedFee: 0.20 }
   });
   
-  // Rule 3: Math moved to specialized hook
   const { materialCost, platformFees, netProfit, marginPercent } = useProjectEconomics(localProject);
 
   const [batchSize, setBatchSize] = useState(1);
@@ -115,8 +114,7 @@ export const ProjectBlueprint = ({ project, onClose }) => {
         <div className="phase-col">
              <div className="bp-section-header">{TERMINOLOGY.BLUEPRINT.VISUAL_CONCEPTS}</div>
              <div className="visual-concept-zone">
-                 <div className="concept-placeholder">DRAG & DROP CONCEPT ART HERE</div>
-                 <span className="font-small mt-10 opacity-50">(Simulated Upload Zone)</span>
+                 <div className="concept-placeholder">{TERMINOLOGY.BLUEPRINT.CONCEPT_PLACEHOLDER}</div>
              </div>
         </div>
     </div>
@@ -129,17 +127,17 @@ export const ProjectBlueprint = ({ project, onClose }) => {
             <div className="pad-20 border-bottom-subtle">
                 <div className="lab-form-group">
                 <select className="input-industrial mb-10" value={selectedMatId} onChange={e => setSelectedMatId(e.target.value)}>
-                    <option value="">-- Add Material --</option>
+                    <option value="">{TERMINOLOGY.BLUEPRINT.ADD_MATERIAL}</option>
                     {materials.filter(m => m.qty > 0).map(m => (
                         <option key={m.id} value={m.id}>{m.name}</option>
                     ))}
                 </select>
                 <div className="flex-between gap-10">
                     <input 
-                        type="number" className="input-industrial" placeholder="Qty"
+                        type="number" className="input-industrial" placeholder={TERMINOLOGY.GENERAL.UNITS}
                         value={reqQty} onChange={e => setReqQty(e.target.value)}
                     />
-                    <button className="btn-ghost" onClick={handleAddIngredient}>ADD</button>
+                    <button className="btn-ghost" onClick={handleAddIngredient}>{TERMINOLOGY.GENERAL.ADD_SMALL}</button>
                 </div>
                 </div>
             </div>
@@ -154,7 +152,7 @@ export const ProjectBlueprint = ({ project, onClose }) => {
                         const newRecipe = [...localProject.recipe];
                         newRecipe.splice(idx, 1);
                         handleUpdate('recipe', newRecipe);
-                    }}>×</button>
+                    }}><CloseIcon /></button>
                 </div>
                 ))}
             </div>
@@ -214,15 +212,15 @@ export const ProjectBlueprint = ({ project, onClose }) => {
                 
                 <div className="profit-breakdown">
                     <div className="calc-row">
-                        <span>Raw Materials:</span>
+                        <span>{TERMINOLOGY.BLUEPRINT.RAW_MATERIALS}</span>
                         <span className="text-muted">{formatCurrency(materialCost)}</span>
                     </div>
                     <div className="calc-row">
-                         <span>Platform Fees:</span>
+                         <span>{TERMINOLOGY.BLUEPRINT.PLATFORM_FEES}</span>
                          <span className="text-warning">-{formatCurrency(platformFees)}</span>
                     </div>
                     <div className="calc-row">
-                         <span>Shipping Label:</span>
+                         <span>{TERMINOLOGY.BLUEPRINT.SHIPPING_LABEL}</span>
                          <div className="shipping-input-wrapper">
                              <input 
                                 className="input-chromeless text-right" 
@@ -274,7 +272,7 @@ export const ProjectBlueprint = ({ project, onClose }) => {
                   <WorkshopIcon />
                   <div className="ml-10">
                     <span className="blueprint-title header-title">{localProject.title}</span>
-                    <span className="blueprint-id font-mono text-accent ml-10">REF: {localProject.id.toString().slice(-4)}</span>
+                    <span className="blueprint-id font-mono text-accent ml-10">{TERMINOLOGY.GENERAL.ID_LABEL}: {localProject.id.toString().slice(-4)}</span>
                   </div>
                </div>
                <div className="flex-center gap-10">

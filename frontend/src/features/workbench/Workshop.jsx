@@ -8,27 +8,11 @@ import { ProjectBlueprint } from './components/ProjectBlueprint';
 import { TERMINOLOGY } from '../../utils/glossary';
 
 export const Workshop = () => {
-  // REMOVED: updateProject (it is not used here)
-  const { projects, deleteProject, addProject } = useInventory();
+  const { activeProjects, draftProjects, completedProjects, deleteProject, addProject } = useInventory();
   const [selectedProject, setSelectedProject] = useState(null); 
-  
-  const activeProjects = projects.filter(p => p.status === 'active');
-  const draftProjects = projects.filter(p => p.status === 'draft');
-  const completedProjects = projects.filter(p => p.status === 'completed');
-
-  const handleCreateNew = () => {
-    addProject({
-      title: "New Untitled Project",
-      status: "draft",
-      retailPrice: 0,
-      stockQty: 0,
-      recipe: [] // Initialize empty recipe
-    });
-  };
 
   return (
     <div className="workshop-container radar-scroll-area">
-      {/* BLUEPRINT OVERLAY */}
       {selectedProject && (
         <ProjectBlueprint 
             project={selectedProject} 
@@ -41,7 +25,7 @@ export const Workshop = () => {
           <h2 className="header-title">{TERMINOLOGY.WORKSHOP.HUB_HEADER}</h2>
           <span className="header-subtitle">{TERMINOLOGY.WORKSHOP.HUB_SUBTITLE}</span>
         </div>
-        <button className="btn-primary" onClick={handleCreateNew}>
+        <button className="btn-primary" onClick={() => addProject()}>
            + {TERMINOLOGY.WORKSHOP.NEW_PROJECT}
         </button>
       </div>
