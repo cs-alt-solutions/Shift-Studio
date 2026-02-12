@@ -282,3 +282,147 @@ select.input-industrial option { background-color: #000; color: #fff; padding: 1
   transform: translateY(-2px);
   transition: all 0.2s;
 }
+/* ADD TO src/styles/global.css */
+
+/* --- GLOBAL MODAL SYSTEM --- */
+.modal-overlay {
+  position: fixed; inset: 0; 
+  background: var(--bg-overlay, rgba(0,0,0,0.85)); /* Defined variable or fallback */
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex; justify-content: center; align-items: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-window {
+  background: var(--bg-app);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 0 50px rgba(0,0,0,0.8);
+  display: flex; flex-direction: column;
+  position: relative;
+  /* Size is controlled by the specific component */
+}
+
+.modal-header {
+  height: 60px;
+  background: var(--bg-panel-header);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 25px;
+}
+
+/* --- GLOBAL TABS --- */
+.tab-container {
+    display: flex;
+    background: #000;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.tab-item {
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-right: 1px solid var(--border-subtle);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.tab-item:hover { background: var(--bg-row-odd); color: #fff; }
+.tab-item.active {
+    background: var(--bg-app);
+    color: var(--neon-cyan);
+    border-bottom: 2px solid var(--neon-cyan);
+    font-weight: 700;
+}
+
+/* --- GLOBAL CHECKLIST --- */
+.checklist-item {
+    display: flex; align-items: center;
+    padding: 10px; background: var(--bg-row-even);
+    margin-bottom: 5px; border: 1px solid transparent;
+    cursor: pointer;
+}
+.checklist-item.checked { border-color: var(--neon-teal); background: rgba(0, 255, 255, 0.05); }
+.check-box { width: 18px; height: 18px; border: 1px solid var(--text-muted); margin-right: 10px; display: grid; place-items: center; }
+.checklist-item.checked .check-box { background: var(--neon-teal); border-color: var(--neon-teal); color: #000; font-weight: bold; }
+
+/* --- GLOBAL MODAL SYSTEM (Added v2.0) --- */
+.modal-overlay {
+  position: fixed; inset: 0; 
+  background: rgba(0,0,0,0.85); /* Darken backdrop */
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex; justify-content: center; align-items: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-window {
+  background: var(--bg-app);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 0 50px rgba(0,0,0,0.8);
+  display: flex; flex-direction: column;
+  position: relative;
+  /* Note: Width/Height is set by the specific component class */
+}
+
+.modal-header {
+  height: 60px;
+  background: var(--bg-panel-header);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 25px;
+}
+
+/* --- GLOBAL TABS --- */
+.tab-container {
+    display: flex;
+    background: #000;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.tab-item {
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-right: 1px solid var(--border-subtle);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.tab-item:hover { background: var(--bg-row-odd); color: #fff; }
+.tab-item.active {
+    background: var(--bg-app);
+    color: var(--neon-cyan);
+    border-bottom: 2px solid var(--neon-cyan);
+    font-weight: 700;
+}
+
+/* --- GLOBAL CHECKLIST --- */
+.checklist-item {
+    display: flex; align-items: center;
+    padding: 10px; background: var(--bg-row-even);
+    margin-bottom: 5px; border: 1px solid transparent;
+    cursor: pointer;
+}
+.checklist-item.checked { border-color: var(--neon-teal); background: rgba(0, 255, 255, 0.05); }
+
+.check-box { 
+    width: 18px; height: 18px; 
+    border: 1px solid var(--text-muted); 
+    margin-right: 10px; 
+    display: grid; place-items: center; 
+}
+.checklist-item.checked .check-box { 
+    background: var(--neon-teal); 
+    border-color: var(--neon-teal); 
+    color: #000; font-weight: bold; 
+}

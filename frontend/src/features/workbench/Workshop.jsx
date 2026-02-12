@@ -1,12 +1,16 @@
-import React from 'react'; // Removed useState
+/* src/features/workbench/Workshop.jsx */
+import React, { useState } from 'react';
 import './Workshop.css';
 import { useInventory } from '../../context/InventoryContext';
 import { ProjectCard } from '../../components/ProjectCard';
 import { StampHeader } from '../../components/StampHeader';
+import { ProjectBlueprint } from './components/ProjectBlueprint';
 import { TERMINOLOGY } from '../../utils/glossary';
 
-export const Workshop = () => { // Removed unused onRequestFullWidth prop
+export const Workshop = () => {
+  // REMOVED: updateProject (it is not used here)
   const { projects, deleteProject, addProject } = useInventory();
+  const [selectedProject, setSelectedProject] = useState(null); 
   
   const activeProjects = projects.filter(p => p.status === 'active');
   const draftProjects = projects.filter(p => p.status === 'draft');
@@ -17,12 +21,21 @@ export const Workshop = () => { // Removed unused onRequestFullWidth prop
       title: "New Untitled Project",
       status: "draft",
       retailPrice: 0,
-      stockQty: 0
+      stockQty: 0,
+      recipe: [] // Initialize empty recipe
     });
   };
 
   return (
     <div className="workshop-container radar-scroll-area">
+      {/* BLUEPRINT OVERLAY */}
+      {selectedProject && (
+        <ProjectBlueprint 
+            project={selectedProject} 
+            onClose={() => setSelectedProject(null)} 
+        />
+      )}
+
       <div className="flex-between mb-20">
         <div>
           <h2 className="header-title">{TERMINOLOGY.WORKSHOP.HUB_HEADER}</h2>
@@ -39,6 +52,7 @@ export const Workshop = () => { // Removed unused onRequestFullWidth prop
           <ProjectCard 
             key={project.id} 
             project={project} 
+            onClick={() => setSelectedProject(project)} 
             onDelete={() => deleteProject(project.id)}
             showStatus={false} 
           />
@@ -51,6 +65,7 @@ export const Workshop = () => { // Removed unused onRequestFullWidth prop
           <ProjectCard 
             key={project.id} 
             project={project} 
+            onClick={() => setSelectedProject(project)} 
             onDelete={() => deleteProject(project.id)}
             showStatus={false} 
           />
@@ -69,6 +84,7 @@ export const Workshop = () => { // Removed unused onRequestFullWidth prop
               project={project} 
               readOnly={true}
               showStatus={false} 
+              onClick={() => setSelectedProject(project)} 
             />
         ))}
       </div>
