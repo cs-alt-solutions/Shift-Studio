@@ -1,32 +1,35 @@
-# MARKETLENS v2.0 - ARCHITECTURAL STANDARDS (STRICT MODE)
+# SHIFT STUDIO v2.0 - ARCHITECTURAL STANDARDS (STRICT MODE)
 
 ## 1. THE "NO-INLINE" PROTOCOL
 * **Strict Ban:** Do NOT use style={{ ... }} for static styling (colors, padding, margins, fonts).
-* **Exception:** Inline styles are permitted ONLY for dynamic, calculated values.
-* **Enforcement:** If you are typing a hex code (#) or px value in a .jsx file, you are wrong. Stop. Put it in the CSS.
+* **Exception:** Inline styles are permitted ONLY for dynamic, calculated values (e.g., progress bar widths).
+* **Enforcement:** If you are typing a hex code (#) or px value in a .jsx file, you are wrong.
 
-## 2. THE SINGLE SOURCE OF TRUTH (CSS VARIABLES)
-* **Variables Only:** We never use raw hex codes in components.
-* **Opacity:** Do not use rgba manually. Use variables defined in global.css.
+## 2. THE SINGLE SOURCE OF TRUTH
+* **CSS Variables:** We never use raw hex codes in components; use the variables defined in global.css.
+* **Glossary Protocol:** Core UI labels (headers, buttons, status names) must be imported from src/utils/glossary.js.
+* **Icon Centralization:** All SVGs must live in src/components/Icons.jsx. Functional components should never contain raw <svg> tags.
 
-## 3. COMPONENT COMPOSITION
-* **Props over Style:** Do not pass style objects to components. Pass Intent.
-* **Logic Separation:** Styles should not live in JavaScript logic variables. Calculate a className instead.
+## 3. ATOMIC COMPONENT COMPOSITION
+* **Extraction Rule:** If a UI element (Chart, Dial, Animated Number) is used in multiple views, it MUST be extracted to src/components/.
+* **Logic Separation:** UI components should not perform math. Calculations for margins or totals must live in Contexts or Custom Hooks.
 
 ## 4. CSS CLASS NAMING CONVENTION (BEM-ISH)
-* **Blocks:** .panel-industrial, .inventory-table
-* **Elements:** .panel-header, .inventory-row
-* **Modifiers:** .panel-industrial.collapsed, .inventory-row.selected
-* **Utility:** Use classes defined in global.css (e.g., .text-muted, .flex-between).
+* **Blocks:** .panel-industrial, .inventory-table.
+* **Elements:** .panel-header, .inventory-row.
+* **Modifiers:** .panel-industrial.collapsed, .inventory-row.selected.
+* **Utility:** Use shared classes from global.css (e.g., .text-muted, .flex-between).
 
 ## 5. FILE STRUCTURE
-* src/styles/global.css: Variables, typography, and shared component classes.
-* src/features/[feature]/[Feature].css: strictly for Grid Layouts and positioning.
+* **src/components/:** Reusable atomic UI elements and global icons.
+* **src/context/:** Global state and centralized business logic (The Brain).
+* **src/features/:** Grid layouts and feature-specific positioning.
+* **src/utils/:** Formatters, validators, and the Glossary.
 
-## 6. THE "GLOSSARY" PROTOCOL
-* **No Hardcoding:** Core UI labels (headers, section titles, status names) must never be hardcoded in .jsx files. 
-* **Implementation:** They must be imported from src/utils/glossary.js to allow for rapid rebranding.
+## 6. CONFIG-DRIVEN UI
+* **Interfaces:** Complex structures like Navigation or Tickers must be driven by configuration arrays, not static JSX.
+* **Data Flow:** Always import initial states and configuration from src/data/mockData.js.
 
-## 7. INTERACTIVE STACKING RULES
-* **Hover Priority:** Any component utilizing negative margins for "stacking" effects MUST implement a :hover state that elevates the element's z-index.
-* **Hitbox Integrity:** Ensure that negative margins do not prevent interaction with lower layers.
+## 7. INTERACTIVE STACKING & AESTHETIC
+* **Industrial Dark:** Maintain the palette (Teal, Blue, Purple) defined in global.css.
+* **Hover Priority:** Any element utilizing negative margins for stacking MUST implement a :hover state that elevates the z-index.
