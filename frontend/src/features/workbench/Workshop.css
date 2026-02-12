@@ -1,6 +1,15 @@
 /* src/features/workbench/Workshop.css */
 
 /* --- WORKSHOP LAYOUT --- */
+.workshop-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;       /* FIX: Forces full height */
+    overflow-y: auto;   /* FIX: Enables scrolling */
+    padding: 20px 40px; /* FIX: Aligns with Dashboard padding */
+    gap: 20px;
+}
+
 .workshop-grid { 
   display: grid; 
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
@@ -8,36 +17,13 @@
   padding-bottom: 40px; 
 }
 
-/* --- ANIMATIONS --- */
-@keyframes slideUpFade {
-  0% { opacity: 0; transform: translateY(40px) scale(0.98); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
+/* Studio Entry Animation */
 .studio-animate-enter {
   animation: slideUpFade 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   will-change: transform, opacity;
 }
 
-/* --- HEADER UTILS --- */
-.header-title { margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--text-main); letter-spacing: 1px; }
-.header-subtitle { color: var(--text-muted); font-size: 0.8rem; }
-
-/* --- SEPARATORS --- */
-.section-separator {
-   margin: 30px 0 15px 0;
-   border-bottom: 1px solid var(--border-subtle);
-   display: flex;
-   align-items: center;
-}
-.separator-line { height: 1px; background: var(--border-subtle); flex: 1; }
-.separator-label {
-   background: var(--bg-app);
-   padding-right: 15px;
-   color: var(--neon-cyan);
-   font-family: var(--font-mono);
-   font-size: 0.8rem;
-   letter-spacing: 2px;
-   font-weight: 700;
-   text-transform: uppercase;
+@keyframes slideUpFade {
+  0% { opacity: 0; transform: translateY(40px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }

@@ -1,124 +1,21 @@
-/* src/features/workbench/InventoryManager.css */
-
-/* --- LAYOUTS --- */
+/* src/features/inventory/InventoryManager.css */
 .inventory-layout {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  height: 100%;
-  overflow: hidden;
-  gap: 24px;
-  padding: 30px 40px;
+    display: grid;
+    grid-template-columns: 260px 1fr; /* Fixed sidebar, fluid main content */
+    gap: 20px;
+    height: 100%;
+    overflow: hidden;
 }
 
-.inventory-scroll-area { 
-  overflow-y: auto; 
-  padding-right: 10px; 
-  height: 100%; 
+.inventory-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
 }
 
-/* --- METRICS GRID --- */
-.inventory-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  margin-bottom: 30px;
-}
-
-/* --- LOCKER GRID --- */
-.blueprint-section { 
-  position: relative; 
-  margin-top: 40px; 
-  padding-bottom: 10px; 
-}
-
-.locker-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 15px;
-}
-
-/* --- SECTION SEPARATORS --- */
-.section-separator-inventory {
-   margin: 30px 0 15px 0;
-   border-bottom: 1px solid var(--border-subtle);
-   display: flex;
-   align-items: center;
-}
-.separator-line-inv { height: 1px; background: var(--border-subtle); flex: 1; }
-.separator-count-inv { font-size: 0.7rem; margin-left: 10px; font-weight: 700; color: var(--text-muted); }
-
-.separator-label-inv {
-   background: var(--bg-app);
-   padding-right: 15px;
-   color: var(--neon-teal);
-   font-family: var(--font-mono);
-   font-size: 0.8rem;
-   letter-spacing: 2px;
-   font-weight: 700;
-   text-transform: uppercase;
-}
-.separator-label-inv.logistics { color: var(--neon-orange); }
-
-/* --- SIDEBAR & UTILS --- */
-.sidebar-col { 
-  display: flex; 
-  flex-direction: column; 
-  height: 100%; 
-  overflow: hidden; 
-}
-.keyword-header { 
-  padding: 15px; 
-  border-bottom: 1px solid var(--border-subtle); 
-  background: var(--bg-panel-header); 
-}
-.keyword-list { 
-  padding: 0; 
-  overflow-y: auto; 
-  flex: 1; 
-}
-
-.sidebar-panel {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--border-subtle);
-  border-left-width: 3px;
-  margin: 15px;
-}
-.sidebar-inner { padding: 15px; }
-.detail-title { font-size: 1.2rem; margin: 0; color: #fff; }
-.detail-brand { font-size: 0.8rem; color: var(--neon-cyan); font-family: monospace; margin-top: 4px; }
-.stock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; margin-top: 15px; }
-.stock-box { background: var(--bg-app); padding: 10px; text-align: center; border: 1px solid var(--border-subtle); }
-.stock-value { font-size: 1.2rem; font-weight: 800; color: #fff; }
-.stock-label { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px; }
-
-/* History Table */
-.mini-history-table { width: 100%; font-size: 0.75rem; border-collapse: collapse; }
-.mini-history-table th { text-align: left; color: var(--text-muted); padding-bottom: 5px; border-bottom: 1px solid var(--border-subtle); }
-.mini-history-table td { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); color: var(--text-muted); }
-
-.folder-stack-v2 { 
-  padding: 15px; 
-  display: flex; 
-  flex-direction: column; 
-  gap: 15px; 
-}
-
-/* Sidebar Section Headers */
-.sidebar-section-header {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: var(--neon-teal);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  border-bottom: 1px solid rgba(45, 212, 191, 0.2);
-  padding-bottom: 5px;
-  margin-bottom: 5px; 
-  margin-top: 10px;
-}
-.sidebar-section-header:first-of-type { margin-top: 0; }
-.sidebar-section-header:nth-of-type(2) {
-  color: var(--neon-orange);
-  border-bottom-color: rgba(251, 146, 60, 0.2); 
-  margin-top: 25px; 
+.inventory-main {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; 
 }

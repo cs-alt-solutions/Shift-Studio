@@ -1,20 +1,123 @@
 /* src/features/workbench/DashboardHome.css */
-/* ... (Keep existing Layout, HUD, and Ticker styles) ... */
 
-/* --- NEW WORKSHOP CARD STYLES --- */
-.tab-btn.active.purple { 
-    border-bottom-color: var(--neon-purple); 
-    color: var(--neon-purple); 
-    background: rgba(167, 139, 250, 0.05); 
+/* --- MAIN LAYOUT --- */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    /* Global scanline is used, no need for background here */
 }
 
-.bg-darker { background: rgba(0,0,0,0.3); }
-.border-subtle { border: 1px solid var(--border-subtle); }
-.opacity-80 { opacity: 0.8; }
-.warning-text { color: var(--neon-orange); font-size: 0.7rem; margin-right: 5px; }
+/* The middle section that grows to fill space */
+.dashboard-content-scroll {
+    flex: 1; 
+    overflow-y: auto;
+    padding: 20px 40px 80px 40px; /* Padding for content & ticker */
+}
 
+/* --- SECTOR A: HUD TOP BAR --- */
+.hud-top-bar {
+    height: 60px;
+    background: rgba(9, 9, 11, 0.95);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    backdrop-filter: blur(5px);
+    z-index: 40;
+    flex-shrink: 0;
+}
+
+.hud-metric-group {
+    display: flex; flex-direction: column; justify-content: center; padding: 0 20px;
+}
+
+.hud-label {
+    font-size: 0.6rem; font-family: var(--font-mono); letter-spacing: 1px; margin-bottom: 2px;
+}
+
+.hud-value {
+    font-size: 1.2rem; font-weight: 800; line-height: 1;
+}
+
+.hud-divider { width: 1px; height: 30px; background: var(--border-subtle); }
+.hud-spacer { flex: 1; }
+
+.hud-status {
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--neon-teal);
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(var(--neon-teal-rgb), 0.2);
+    padding: 5px 10px; border-radius: 4px;
+    background: rgba(var(--neon-teal-rgb), 0.05);
+}
+
+/* --- DASHBOARD GRID & COLUMNS --- */
+.dashboard-grid {
+    display: grid; grid-template-columns: 1fr; gap: 20px;
+}
+@media (min-width: 1200px) {
+    .dashboard-grid { grid-template-columns: 3fr 1fr; align-items: start; }
+}
+.dashboard-col-main { display: flex; flex-direction: column; }
+.dashboard-col-side { display: flex; flex-direction: column; }
+
+/* --- SECTOR B: WORKSHOP SPECIFICS --- */
+.panel-header-simple {
+    display: flex; align-items: center; font-family: var(--font-mono);
+    font-size: 0.9rem; color: var(--text-main); font-weight: 700;
+    letter-spacing: 1px; border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 10px;
+}
+.badge-count {
+    background: var(--neon-purple); color: #000; font-size: 0.7rem;
+    padding: 2px 6px; border-radius: 2px;
+}
 .dashboard-deck {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 15px;
+}
+
+/* --- LOGISTICS SIMULATION VIEW --- */
+.logistics-sim-view { display: flex; flex-direction: column; }
+.sim-header { background: linear-gradient(to bottom, rgba(var(--neon-cyan-rgb), 0.05), transparent); }
+.sim-big-number {
+    font-size: 2.5rem; font-weight: 800; line-height: 1; margin: 10px 0; font-family: var(--font-mono);
+}
+.sim-bottleneck {
+    font-size: 0.75rem; font-family: var(--font-mono); margin-top: 5px;
+    padding: 8px; background: rgba(var(--neon-orange-rgb), 0.1);
+    border: 1px solid rgba(var(--neon-orange-rgb), 0.2);
+    border-radius: 2px; display: inline-block;
+}
+.logistics-divider { height: 1px; background: var(--border-subtle); width: 100%; }
+
+/* --- FOOTER: TICKER --- */
+.dashboard-footer {
+    height: 45px; background: var(--bg-panel-header);
+    border-top: 1px solid var(--border-subtle); display: flex; align-items: center;
+    z-index: 50; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); flex-shrink: 0;
+}
+.ticker-panel { display: flex; align-items: center; width: 100%; height: 100%; }
+.ticker-label {
+    padding: 0 20px; font-family: var(--font-mono); font-size: 0.7rem;
+    color: var(--neon-cyan); font-weight: 800; background: rgba(var(--neon-cyan-rgb), 0.05);
+    height: 100%; display: flex; align-items: center;
+    border-right: 1px solid var(--border-subtle); white-space: nowrap;
+}
+.ticker-wrap {
+    flex: 1; overflow: hidden; white-space: nowrap;
+    mask-image: linear-gradient(to right, transparent, black 2%, black 98%, transparent);
+}
+.ticker-move {
+    display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite;
+}
+.ticker-move:hover { animation-play-state: paused; }
+.ticker-item {
+    display: inline-block; padding: 0 40px;
+    border-right: 1px solid var(--border-subtle); opacity: 0.8;
+}
+@keyframes ticker {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
 }

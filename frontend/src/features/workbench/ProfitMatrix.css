@@ -1,5 +1,5 @@
-/* src/features/market/MarketRadar.css */
-.market-radar-container {
+/* src/features/workbench/ProfitMatrix.css */
+.profit-matrix-container {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -8,8 +8,8 @@
     padding-right: 5px;
 }
 
-.radar-metrics-grid {
+.profit-metrics-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
 }
