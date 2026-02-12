@@ -9,58 +9,66 @@ export const TERMINOLOGY = {
   },
   GENERAL: {
     SYSTEMS_LABEL: "DASHBOARD",
-    SAVE: "SAVE WORK", // Replaced "Commit Changes"
+    SAVE: "SAVE WORK",
     CLOSE: "EXIT",
-    FINALIZE: "FINISH & CATALOG", // Replaced "Deploy"
+    FINALIZE: "FINISH & CATALOG",
     CANCEL: "CANCEL",
     CREATE: "START NEW",
     ADD: "ADD TO LIST",
     ANALYZE: "SCAN MARKET",
-    DELETE: "REMOVE", // Replaced "Purge"
+    DELETE: "REMOVE",
     EDIT: "UPDATE",
     ID_LABEL: "REF-ID",
     MODULES: "SECTIONS",
-    SEARCH_PLACEHOLDER: "Search by ID or Name...",
-    NO_DATA: "Nothing here yet."
+    SEARCH_PLACEHOLDER: "Search...",
+    NO_DATA: "Nothing here yet.",
+    BRAND: "BRAND",
+    UNITS: "UNITS",
+    CATEGORY: "CATEGORY"
   },
   STATUS: {
     ACTIVE: "IN PROGRESS",
     DRAFT: "DRAFT",
     COMPLETED: "CATALOGED",
-    ON_HOLD: "ON ICE", // Relatable Gen Z/Millennial term for "Suspended"
+    ON_HOLD: "ON ICE", 
     LOW_STOCK: "RUNNING LOW",
     IN_STOCK: "AVAILABLE",
-    OUT_OF_STOCK: "SOLD OUT"
+    OUT_OF_STOCK: "SOLD OUT",
+    STOCKED: "STOCKED"
   },
   FINANCE: {
     HEADER: "PROFIT MATRIX",
     SUBTITLE: "Track your margins and revenue",
     TREND: "REVENUE GROWTH",
+    REVENUE_CHART: "REVENUE TREND",
     LEDGER: "RECORDS",
     LOG: "ADD ENTRY",
     REVENUE: "TOTAL SALES",
     EXPENSE: "COSTS",
-    NET: "TAKE HOME"
+    NET: "TAKE HOME",
+    MARGIN_AVG: "AVG MARGIN",
+    LIVE_STATUS: "Live Data Active"
   },
   WORKSHOP: {
-    HUB_HEADER: "THE WORKSHOP", // Reverted to Workshop as requested
+    HUB_HEADER: "THE WORKSHOP",
     HUB_SUBTITLE: "Current builds and blueprints",
     ACTIVE_OPS: "ACTIVE BUILDS",
     DRAFTS: "SAVED CONCEPTS",
     NEW_PROJECT: "NEW PROJECT",
     VAULT_HEADER: "THE VAULT",
     VAULT_SUBTITLE: "Finished & Paused work",
-    MISSIONS_HEADER: "GAME PLAN", // Replaced "Tactical Milestones"
-    BOM_HEADER: "MATERIALS NEEDED", // Replaced "Resource Allocation"
+    MISSIONS_HEADER: "GAME PLAN",
+    BOM_HEADER: "MATERIALS NEEDED",
     NOTES_LABEL: "PROJECT NOTES",
     TAGS_LABEL: "LABELS",
-    CALIBRATION: "PRICE CHECK", // Replaced "Market Sync"
+    CALIBRATION: "PRICE CHECK",
     TARGET_RETAIL: "YOUR PRICE",
     UNIT_COST: "COST TO MAKE",
     PROJ_MARGIN: "YOUR MARGIN",
     REF_VISUAL: "PREVIEW",
     STUDIO_LABEL: "DESIGN STUDIO",
-    ID_PREFIX: "REF-ID"
+    ID_PREFIX: "REF-ID",
+    LAST_EDIT: "LAST EDIT"
   },
   INVENTORY: {
     HEADER: "SUPPLY LOCKER",
@@ -71,7 +79,10 @@ export const TERMINOLOGY = {
     HISTORY_LOG: "ORDER HISTORY",
     NOTIFICATIONS: "ALERTS",
     QTY_LABEL: "AMOUNT LEFT",
-    UNIT_PRICE: "PRICE PER UNIT"
+    UNIT_PRICE: "PRICE PER UNIT",
+    PHOTO_LABEL: "ITEM PHOTO",
+    SELECT_ASSET: "SELECT ASSET",
+    VALUE_LABEL: "ASSET VALUE"
   },
   MARKET: {
     HEADER: "MARKET RADAR",
@@ -80,12 +91,16 @@ export const TERMINOLOGY = {
     AVG_PRICE: "MARKET AVERAGE",
     TARGET: "TRACK ITEM",
     SCANNING: "FETCHING TRENDS...",
-    COMPETITOR_LOG: "SAVED ITEMS"
+    COMPETITOR_LOG: "SAVED ITEMS",
+    TARGET_NAME: "Item Name",
+    TARGET_PRICE: "Their Price"
   },
   UI_FEEDBACK: {
     SUCCESS: "All set!",
     ERROR: "Something went wrong.",
     WARNING: "Just a heads up...",
-    CONFIRM_DELETE: "Are you sure you want to remove this?"
+    CONFIRM_DELETE: "Are you sure you want to remove this?",
+    EMPTY_LEDGER: "No transactions recorded yet.",
+    EMPTY_LOGS: "Select an item to view logs."
   }
 };

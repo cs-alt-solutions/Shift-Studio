@@ -4,8 +4,8 @@ import { useFinancial } from '../../context/FinancialContext';
 import { StatCard } from '../../components/StatCard';
 import { Plus } from '../../components/Icons';
 import { formatCurrency } from '../../utils/formatters';
+import { TERMINOLOGY } from '../../utils/glossary';
 
-// --- VISUAL CHART (ANIMATED) ---
 const RevenueChart = () => {
   const data = [20, 45, 30, 60, 55, 80, 75];
   const max = Math.max(...data);
@@ -41,16 +41,8 @@ const RevenueChart = () => {
 export const ProfitMatrix = () => {
   const { transactions, addTransaction } = useFinancial();
   const { projects } = useInventory();
-  
   const [isTxnFormOpen, setIsTxnFormOpen] = useState(false);
-  
-  const [txnForm, setTxnForm] = useState({ 
-    item: '', 
-    amount: '', 
-    type: 'SALE', 
-    platform: 'Direct',
-    relatedProjectId: '' 
-  });
+  const [txnForm, setTxnForm] = useState({ item: '', amount: '', type: 'SALE', platform: 'Direct', relatedProjectId: '' });
 
   const totalRev = transactions.filter(t => t.amount > 0).reduce((acc, t) => acc + t.amount, 0);
   const totalCost = transactions.filter(t => t.amount < 0).reduce((acc, t) => acc + Math.abs(t.amount), 0);
@@ -65,62 +57,42 @@ export const ProfitMatrix = () => {
     }
     const proj = projects.find(p => p.id === pid);
     if (proj) {
-        setTxnForm({ 
-            ...txnForm, 
-            relatedProjectId: pid, 
-            type: 'SALE', 
-            item: `Sold Unit: ${proj.title}`, 
-            amount: proj.retailPrice || '' 
-        });
+        setTxnForm({ ...txnForm, relatedProjectId: pid, type: 'SALE', item: `Sold: ${proj.title}`, amount: proj.retailPrice || '' });
     }
   };
 
   const handleLogTransaction = (e) => {
     e.preventDefault();
     if (!txnForm.item || !txnForm.amount) return;
-    
     const finalAmount = txnForm.type === 'SALE' ? parseFloat(txnForm.amount) : -parseFloat(txnForm.amount);
-    
-    addTransaction({
-      item: txnForm.item,
-      amount: finalAmount,
-      type: txnForm.type,
-      status: 'CLEARED',
-      platform: txnForm.platform,
-      relatedProjectId: txnForm.relatedProjectId 
-    });
-    
-    setTxnForm({ item: '', amount: '', type: 'SALE', platform: 'Direct', relatedProjectId: '' });
+    addTransaction({ ...txnForm, amount: finalAmount, date: new Date().toISOString().split('T')[0], status: 'CLEARED' });
     setIsTxnFormOpen(false);
   };
 
   return (
     <div className="radar-grid-layout">
-      {/* MAIN COLUMN */}
       <div className="radar-scroll-area">
-        
         <div className="inventory-header">
           <div>
-            <h2 className="header-title">PROFIT MATRIX</h2>
-            <span style={{color: 'var(--text-muted)', fontSize: '0.8rem'}}>FINANCIAL HEALTH & REAL MARGINS</span>
+            <h2 className="header-title">{TERMINOLOGY.FINANCE.HEADER}</h2>
+            <span className="text-muted">{TERMINOLOGY.FINANCE.SUBTITLE}</span>
           </div>
           <button className="btn-primary" onClick={() => setIsTxnFormOpen(true)}>
-             <Plus /> LOG TRANSACTION
+             <Plus /> {TERMINOLOGY.FINANCE.LOG}
           </button>
         </div>
 
-        <div className="panel-industrial" style={{padding:'20px', marginBottom:'30px'}}>
+        <div className="panel-industrial pad-20 mb-20">
             <div className="flex-between">
-              <span className="label-industrial">REVENUE TREND</span>
-              <span style={{color:'var(--neon-teal)', fontSize:'0.7rem'}}>Live Data Active</span>
+              <span className="label-industrial">{TERMINOLOGY.FINANCE.REVENUE_CHART}</span>
+              <span className="text-good font-mono">{TERMINOLOGY.FINANCE.LIVE_STATUS}</span>
             </div>
             <RevenueChart />
         </div>
 
         <div className="panel-industrial">
            <div className="panel-header">
-             <h3 style={{margin:0, fontSize:'1rem'}}>TRANSACTION LEDGER</h3>
-             <button className="btn-ghost">EXPORT CSV</button>
+             <h3 className="no-margin">{TERMINOLOGY.FINANCE.LEDGER}</h3>
            </div>
            <div className="panel-content">
              <table className="inventory-table">
@@ -128,36 +100,22 @@ export const ProfitMatrix = () => {
                  <tr>
                    <th>DATE</th>
                    <th>DESCRIPTION</th>
-                   <th>TYPE</th>
                    <th className="td-right">AMOUNT</th>
-                   <th className="td-right">STATUS</th>
                  </tr>
                </thead>
                <tbody>
                  {transactions.length === 0 ? (
-                    <tr><td colSpan="5" style={{padding:'20px', textAlign:'center', color:'var(--text-muted)'}}>No transactions recorded yet.</td></tr>
+                    <tr><td colSpan="3" className="text-center text-muted pad-20 italic">{TERMINOLOGY.UI_FEEDBACK.EMPTY_LEDGER}</td></tr>
                  ) : (
-                   transactions.map(t => {
-                     const isSale = t.item.includes('Sold Unit');
-                     
-                     return (
-                       <tr key={t.id} className="inventory-row">
-                         <td className="td-cell text-muted" style={{fontSize:'0.75rem'}}>{t.date}</td>
-                         <td className="td-cell cell-name" style={{fontSize:'0.9rem', color: isSale ? 'var(--neon-teal)' : '#fff'}}>
-                            {t.item}
-                         </td>
-                         <td className="td-cell">
-                            <span className="label-industrial" style={{color: t.amount > 0 ? 'var(--neon-teal)' : 'var(--neon-orange)'}}>{t.type}</span>
-                         </td>
-                         <td className="td-cell td-right" style={{fontWeight:700, color: t.amount > 0 ? 'var(--neon-teal)' : 'var(--text-muted)'}}>
-                           {t.amount > 0 ? '+' : ''}{formatCurrency(Math.abs(t.amount))}
-                         </td>
-                         <td className="td-cell td-right">
-                           <span style={{fontSize:'0.65rem', color: 'var(--neon-purple)'}}>{t.status || 'CLEARED'}</span>
-                         </td>
-                       </tr>
-                     );
-                   })
+                   transactions.map(t => (
+                     <tr key={t.id} className="inventory-row">
+                       <td className="td-cell text-muted font-mono">{t.date}</td>
+                       <td className="td-cell cell-name">{t.item}</td>
+                       <td className={`td-cell td-right font-bold ${t.amount > 0 ? 'text-good' : 'text-muted'}`}>
+                         {t.amount > 0 ? '+' : ''}{formatCurrency(Math.abs(t.amount))}
+                       </td>
+                     </tr>
+                   ))
                  )}
                </tbody>
              </table>
@@ -165,64 +123,46 @@ export const ProfitMatrix = () => {
         </div>
       </div>
 
-      <div className="sidebar-col" style={{padding:'15px'}}>
-         <div className="keyword-header" style={{padding:'0 0 15px 0'}}>
-            <h3 className="label-industrial glow-purple" style={{ margin: 0 }}>FINANCIALS</h3>
+      <div className="sidebar-col pad-20">
+         <div className="keyword-header no-pad mb-20 bg-transparent">
+            <h3 className="label-industrial glow-purple">{TERMINOLOGY.FINANCE.HEADER}</h3>
          </div>
-         <div style={{display:'flex', flexDirection:'column', gap:'15px', paddingTop:'15px'}}>
-            <StatCard label="GROSS REVENUE" value={formatCurrency(totalRev)} glowColor="teal" />
-            <StatCard label="NET PROFIT" value={formatCurrency(netProfit)} glowColor={netProfit >= 0 ? "purple" : "red"} />
-            <StatCard label="TOTAL EXPENSES" value={formatCurrency(totalCost)} glowColor="orange" />
-            <StatCard label="AVG MARGIN" value={`${margin.toFixed(1)}%`} glowColor="cyan" />
+         <div className="flex-col gap-20">
+            <StatCard label={TERMINOLOGY.FINANCE.REVENUE} value={formatCurrency(totalRev)} glowColor="teal" />
+            <StatCard label={TERMINOLOGY.FINANCE.NET} value={formatCurrency(netProfit)} glowColor={netProfit >= 0 ? "purple" : "red"} />
+            <StatCard label={TERMINOLOGY.FINANCE.EXPENSE} value={formatCurrency(totalCost)} glowColor="orange" />
+            <StatCard label={TERMINOLOGY.FINANCE.MARGIN_AVG} value={`${margin.toFixed(1)}%`} glowColor="cyan" />
          </div>
       </div>
 
       {isTxnFormOpen && (
-        <div className="blueprint-overlay" style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.8)', display:'flex', justifyContent:'center', alignItems:'center', zIndex:2000}}>
-          <div className="panel-industrial" style={{width:'400px', padding:'30px'}}>
-            <h2 style={{ color: 'var(--neon-teal)', marginTop: 0, fontSize:'1.2rem' }}>LOG TRANSACTION</h2>
+        <div className="blueprint-overlay">
+          <div className="panel-industrial modal-panel">
+            <h2 className="modal-title">{TERMINOLOGY.FINANCE.LOG}</h2>
             <form onSubmit={handleLogTransaction}>
-              
               <div className="lab-form-group">
-                <label className="label-industrial">Transaction Type</label>
-                <select className="input-industrial" value={txnForm.type} onChange={e => setTxnForm({...txnForm, type: e.target.value})}>
-                  <option value="SALE">Revenue (Sale)</option>
-                  <option value="EXPENSE">Misc Expense</option>
+                <label className="label-industrial">{TERMINOLOGY.INVENTORY.SELECT_ASSET}</label>
+                <select className="input-industrial" value={txnForm.relatedProjectId} onChange={handleProjectSelect}>
+                  <option value="">-- Manual Entry --</option>
+                  {projects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
                 </select>
               </div>
-
-              {/* AUTOMATION DROPDOWN */}
-              <div className="lab-form-group" style={{background:'rgba(34, 211, 238, 0.05)', padding:'10px', border:'1px dashed var(--neon-teal)'}}>
-                   <label className="label-industrial" style={{color:'var(--neon-teal)'}}>Select Stock Item (Auto-Fill)</label>
-                   <select className="input-industrial" value={txnForm.relatedProjectId} onChange={handleProjectSelect}>
-                      <option value="">-- Manual Entry --</option>
-                      {projects.map(p => (
-                          <option key={p.id} value={p.id}>
-                              {p.title} (Stock: {p.stockQty || 0})
-                          </option>
-                      ))}
-                   </select>
-              </div>
-
               <div className="lab-form-group">
-                <label className="label-industrial">Description</label>
-                <input className="input-industrial" placeholder="e.g. Sold Candle #001" value={txnForm.item} onChange={e => setTxnForm({...txnForm, item: e.target.value})} />
+                <label className="label-industrial">{TERMINOLOGY.WORKSHOP.NOTES_LABEL}</label>
+                <input className="input-industrial" value={txnForm.item} onChange={e => setTxnForm({...txnForm, item: e.target.value})} />
               </div>
-
               <div className="lab-form-group">
-                <label className="label-industrial">Amount ($)</label>
-                <input type="number" step="0.01" className="input-industrial" placeholder="0.00" value={txnForm.amount} onChange={e => setTxnForm({...txnForm, amount: e.target.value})} />
+                <label className="label-industrial">{TERMINOLOGY.FINANCE.REVENUE}</label>
+                <input type="number" step="0.01" className="input-industrial" value={txnForm.amount} onChange={e => setTxnForm({...txnForm, amount: e.target.value})} />
               </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop:'20px' }}>
-                <button type="button" className="btn-ghost" onClick={() => setIsTxnFormOpen(false)}>CANCEL</button>
-                <button type="submit" className="btn-primary">RECORD</button>
+              <div className="flex-end gap-10 mt-20">
+                <button type="button" className="btn-ghost" onClick={() => setIsTxnFormOpen(false)}>{TERMINOLOGY.GENERAL.CANCEL}</button>
+                <button type="submit" className="btn-primary">{TERMINOLOGY.GENERAL.SAVE}</button>
               </div>
             </form>
           </div>
         </div>
       )}
-
     </div>
   );
 };

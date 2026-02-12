@@ -1,43 +1,43 @@
 import React from 'react';
 import './ProjectCard.css';
 import { formatCurrency, formatDate } from '../utils/formatters';
+import { TERMINOLOGY } from '../utils/glossary';
 
 export const ProjectCard = ({ project, onClick, onDelete, readOnly = false }) => {
   const { title, status, retailPrice, updated_at, stockQty } = project;
 
+  // Narrative Mapping for status stamps
+  const statusLabel = {
+    'active': TERMINOLOGY.STATUS.ACTIVE,
+    'draft': TERMINOLOGY.STATUS.DRAFT,
+    'completed': TERMINOLOGY.STATUS.COMPLETED,
+    'on_hold': TERMINOLOGY.STATUS.ON_HOLD
+  }[status] || status.toUpperCase();
+
   return (
     <div className="folder-container" onClick={onClick}>
       <div className="folder-tab">
-        <span className="folder-tab-text">ID: {project.id.toString().slice(-4)}</span>
+        <span className="folder-tab-text">{TERMINOLOGY.GENERAL.ID_LABEL}: {project.id.toString().slice(-4)}</span>
       </div>
 
       <div className={`folder-body card-hover-effect ${status === 'completed' ? 'catalog-mode' : ''}`}>
         
-        {/* Updated "HALTED" to "SUSPENDED" */}
         <div className={`status-stamp ${status}`}>
-          {status === 'on_hold' ? 'SUSPENDED' : status}
+          {statusLabel}
         </div>
 
-        {status === 'completed' && <div className="catalog-stamp-large">CATALOGED</div>}
-        
-        {/* STATUS STAMP: Rotated and styled via CSS */}
-        <div className={`status-stamp ${status}`}>
-          {status === 'on_hold' ? 'SUSPENDED' : status}
-        </div>
-
-        {status === 'completed' && <div className="catalog-stamp-large">CATALOGED</div>}
+        {status === 'completed' && <div className="catalog-stamp-large">{TERMINOLOGY.STATUS.COMPLETED}</div>}
 
         <div className="folder-content">
           <h3 className="folder-title">{title}</h3>
           
           <div className="mt-20">
             <div className="flex-between mb-10">
-              <span className="label-industrial">INVENTORY STOCK</span>
+              <span className="label-industrial">{TERMINOLOGY.WORKSHOP.BOM_HEADER}</span>
               <div className="stock-indicator-clean">
-                {stockQty || 0} UNITS
+                {stockQty || 0} {TERMINOLOGY.GENERAL.UNITS}
               </div>
             </div>
-            {/* Progress track from global and local CSS */}
             <div className="progress-track">
               <div className="progress-fill" style={{ width: status === 'completed' ? '100%' : '45%' }}></div>
             </div>
@@ -45,11 +45,11 @@ export const ProjectCard = ({ project, onClick, onDelete, readOnly = false }) =>
 
           <div className="flex-between mt-20">
              <div>
-                <span className="label-industrial">RETAIL TARGET</span>
+                <span className="label-industrial">{TERMINOLOGY.WORKSHOP.TARGET_RETAIL}</span>
                 <div className="text-accent font-bold">{formatCurrency(retailPrice)}</div>
              </div>
              <div className="text-right">
-                <span className="label-industrial">LAST EDIT</span>
+                <span className="label-industrial">{TERMINOLOGY.WORKSHOP.LAST_EDIT}</span>
                 <div className="text-muted" style={{fontSize: '0.75rem'}}>{formatDate(updated_at)}</div>
              </div>
           </div>
@@ -59,7 +59,7 @@ export const ProjectCard = ({ project, onClick, onDelete, readOnly = false }) =>
               <button 
                 className="btn-icon-hover" 
                 onClick={(e) => { e.stopPropagation(); onDelete(e); }}
-                title="Declassify File"
+                title={TERMINOLOGY.GENERAL.DELETE}
               >
                 ×
               </button>

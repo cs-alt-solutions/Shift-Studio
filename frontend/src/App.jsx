@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { ConsoleLayout } from './features/workbench/ConsoleLayout';
-import { InventoryProvider } from './context/InventoryContext'; // NEW
-import { FinancialProvider } from './context/FinancialContext'; // NEW
+import { InventoryProvider } from './context/InventoryContext';
+import { FinancialProvider } from './context/FinancialContext';
+import { TERMINOLOGY } from './utils/glossary';
 import './styles/global.css';
 
-// Boot Screen Component - Logic Only
 const BootScreen = ({ onComplete }) => {
   const [lines, setLines] = useState([]);
 
   useEffect(() => {
     const bootText = [
-      "INITIALIZING KERNEL...",
-      "LOADING MARKET PROTOCOLS...",
-      "ESTABLISHING SECURE CONNECTION...",
-      "DECRYPTING ASSETS...",
-      "ACCESS GRANTED."
+      TERMINOLOGY.BOOT.KERNEL,
+      TERMINOLOGY.BOOT.MARKET,
+      TERMINOLOGY.BOOT.SECURE,
+      TERMINOLOGY.BOOT.ASSETS,
+      TERMINOLOGY.BOOT.GRANTED
     ];
 
     let delay = 0;
