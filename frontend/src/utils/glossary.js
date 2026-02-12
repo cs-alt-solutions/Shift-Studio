@@ -12,12 +12,17 @@ export const TERMINOLOGY = {
   GENERAL: {
     APP_NAME: "SHIFT STUDIO",
     VERSION: "v2.0",
-    SYSTEMS_LABEL: "COMMAND CENTER", // Leveling up the label
+    SYSTEMS_LABEL: "COMMAND CENTER",
     SAVE: "SAVE WORK",
     CLOSE: "EXIT",
     ID_LABEL: "REF-ID",
     UNITS: "UNITS",
-    CATEGORY: "CATEGORY"
+    CATEGORY: "CATEGORY",
+    ADD: "ADD ASSET",
+    BRAND: "BRAND",
+    DELETE: "DELETE",
+    CANCEL: "CANCEL",
+    TYPE_SEARCH: "Start typing to search..."
   },
   DASHBOARD: {
     TELEMETRY: "SYSTEM TELEMETRY",
@@ -33,7 +38,7 @@ export const TERMINOLOGY = {
     COMPLETED: "CATALOGED",
     ON_HOLD: "ON ICE", 
     LOW_STOCK: "RUNNING LOW",
-    OUT_OF_STOCK: "OUT OF STOCK", // Recalibrated from Sold Out
+    OUT_OF_STOCK: "OUT OF STOCK",
     STOCKED: "STOCKED",
     LOW: "LOW"
   },
@@ -41,22 +46,76 @@ export const TERMINOLOGY = {
     HEADER: "PROFIT MATRIX",
     SUBTITLE: "Track your margins and revenue",
     NET: "TAKE HOME",
-    LIVE_STATUS: "LIVE DATA ACTIVE"
+    LIVE_STATUS: "LIVE DATA ACTIVE",
+    REVENUE: "GROSS REVENUE",
+    EXPENSE: "TOTAL EXPENSES",
+    MARGIN_AVG: "AVG MARGIN",
+    REVENUE_CHART: "REVENUE OVER TIME",
+    TREND: "GROWTH TREND",
+    LEDGER: "TRANSACTION LEDGER"
   },
   WORKSHOP: {
     HUB_HEADER: "THE WORKSHOP",
     HUB_SUBTITLE: "Current builds and blueprints",
     ACTIVE_OPS: "ACTIVE BUILDS",
-    NEW_PROJECT: "NEW PROJECT"
+    NEW_PROJECT: "NEW PROJECT",
+    VAULT_HEADER: "PROJECT ARCHIVE",
+    BOM_HEADER: "BILL OF MATERIALS",
+    REF_VISUAL: "SCHEMATIC VIEW",
+    TARGET_RETAIL: "TARGET RETAIL",
+    LAST_EDIT: "LAST PULSE"
   },
   INVENTORY: {
     HEADER: "RESOURCE DEPOT",
     MANIFEST_LABEL: "ALL RESOURCES",
-    NOTIFICATIONS: "ALERTS"
+    NOTIFICATIONS: "ALERTS",
+    VALUE_LABEL: "TOTAL ASSET VALUE",
+    SECTION_WORKSHOP: "PRODUCTION MATERIALS",
+    SECTION_LOGISTICS: "LOGISTICS & SHIPPING",
+    INTAKE: "MATERIAL INTAKE",
+    ASSET_DETAILS: "ASSET SPECS",
+    VAULT_ACCESS: "VAULT BROWSER",
+    RESTOCK: "EXISTING ASSET RESTOCK",
+    SELECT_ASSET: "SELECT ASSET",
+    MATERIAL_NAME: "MATERIAL NAME",
+    ADD_QTY: "ADD QTY",
+    TOTAL_COST: "TOTAL COST",
+    UNIT_PRICE: "UNIT COST",
+    HISTORY_LOG: "ASSET LOG",
+    PHOTO_LABEL: "ASSET IMAGE"
+  },
+  BLUEPRINT: {
+    PHASE_PLAN: "R&D / PLANNING",
+    PHASE_BUILD: "ENGINEERING",
+    PHASE_LAUNCH: "MARKET READY",
+    MARKET_RESEARCH: "MARKET SCAN",
+    AUDIENCE: "TARGET AUDIENCE",
+    INSPIRATION: "INSPIRATION / SOURCE",
+    NOTES: "ENGINEERING NOTES",
+    VISUAL_CONCEPTS: "VISUAL SCHEMATICS",
+    PRODUCTION_CONSOLE: "PRODUCTION TERMINAL",
+    STOCK: "IN-HOUSE STOCK",
+    BATCH: "BATCH SIZE",
+    RUN: "EXECUTE PRODUCTION",
+    PROFIT_SIMULATOR: "MARGIN ANALYSIS",
+    RETAIL: "RETAIL PRICE",
+    PROFIT: "NET PER UNIT",
+    MARGIN: "MARGIN",
+    LAUNCH_CHECKLIST: "DEPLOYMENT CHECKLIST",
+    PHOTOS: "HI-RES MEDIA",
+    DESCRIPTION: "PRODUCT COPY",
+    TAGS: "SEO TAGGING"
   },
   MARKET: {
     HEADER: "MARKET RADAR",
-    SCANNING: "FETCHING TRENDS..."
+    SUBTITLE: "Competitor tracking and trends",
+    SCANNING: "FETCHING TRENDS...",
+    TARGET: "TARGET ACQUISITION",
+    TARGET_NAME_LABEL: "COMPETITOR NAME",
+    TARGET_PLACEHOLDER: "Enter brand name...",
+    TARGET_PRICE_LABEL: "MARKET PRICE",
+    PULSE_HEADER: "MARKET PULSE",
+    AVG_PRICE: "AVG MARKET PRICE"
   }
 };
 
@@ -77,6 +136,22 @@ export const CATEGORY_KEYWORDS = {
   'Tools':        ['hammer', 'drill', 'mold', 'pitcher', 'thermometer', 'scale'],
   'Electronics':  ['led', 'battery', 'switch', 'sensor', 'chip', 'board']
 };
+
+export const COMMON_ASSETS = [
+  "Soy Wax (Golden Brands 464)",
+  "Beeswax (Yellow Pellets)",
+  "8oz Amber Glass Jar",
+  "16oz Straight Sided Jar",
+  "CD-12 Cotton Wick",
+  "ECO-14 Wick",
+  "Santal & Coconut Fragrance",
+  "Lavender & Driftwood Fragrance",
+  "Small Shipping Box (6x6x6)",
+  "Medium Shipping Box (10x10x4)",
+  "Kraft Warning Labels",
+  "Black Screw-on Lid",
+  "Digital Scale Calibration Weight"
+];
 
 export const MARKET_TICKER_DATA = [
     { label: "SOY WAX", trend: "up", value: "$2.15/lb" },

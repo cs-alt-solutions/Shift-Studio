@@ -1,103 +1,86 @@
 /* src/features/workbench/DashboardHome.css */
 
-/* --- LAYOUT --- */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 20px;
   padding-bottom: 40px;
-  position: relative;
-  z-index: 2; /* Sit above scanlines */
 }
 
-.dashboard-col-left { display: flex; flex-direction: column; gap: 20px; }
-.dashboard-col-right { display: flex; flex-direction: column; }
-.dashboard-alert-table { width: 100%; }
+.dashboard-col-left { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+}
 
-/* --- 1. THE "ALIVE" ANIMATIONS --- */
+/* Specific grid for the dashboard preview to prevent cards from becoming too wide */
+.dashboard-project-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 15px;
+}
 
-/* SLOW BREATH (For Status) */
+/* --- TELEMETRY & STRIPS --- */
+.telemetry-strip {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 10px;
+}
+
+.label-industrial {
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* --- ANIMATIONS: BREATH & ALERT --- */
 @keyframes breathe {
-  0% { opacity: 0.6; text-shadow: 0 0 5px rgba(255, 165, 0, 0.2); }
-  50% { opacity: 1; text-shadow: 0 0 15px rgba(255, 165, 0, 0.8); }
-  100% { opacity: 0.6; text-shadow: 0 0 5px rgba(255, 165, 0, 0.2); }
+  0% { opacity: 0.6; }
+  50% { opacity: 1; text-shadow: 0 0 10px var(--neon-orange); }
+  100% { opacity: 0.6; }
 }
 .pulse-warning {
   animation: breathe 3s infinite ease-in-out;
 }
 
-/* RAPID ALERT (For Critical Items) */
 @keyframes flash-alert {
-  0% { color: var(--neon-red); text-shadow: none; }
-  50% { color: #fff; text-shadow: 0 0 10px var(--neon-red); }
-  100% { color: var(--neon-red); text-shadow: none; }
+  0%, 100% { color: var(--neon-red); }
+  50% { color: var(--text-main); }
 }
 .pulse-critical {
-  animation: flash-alert 1s infinite step-start;
-  font-weight: 900;
+  animation: flash-alert 1s infinite;
 }
 
-/* --- 2. THE TICKER TAPE (Scrolling Market Data) --- */
+/* --- TICKER SCROLL --- */
 .ticker-container {
   overflow: hidden;
   white-space: nowrap;
-  position: relative;
-  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
-
 .ticker-content {
   display: inline-block;
-  animation: ticker-scroll 20s linear infinite;
-  padding-left: 100%; /* Start off-screen */
+  animation: ticker-scroll 30s linear infinite;
 }
-
 @keyframes ticker-scroll {
-  0% { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(-100%, 0, 0); }
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
 }
 
 .ticker-item {
-  display: inline-block;
-  padding: 0 30px;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  padding: 0 40px;
+  font-size: 0.75rem;
 }
-.ticker-value { color: var(--neon-cyan); margin-left: 5px; }
-.ticker-trend-up { color: var(--neon-teal); }
-.ticker-trend-down { color: var(--neon-red); }
 
-
-/* --- 3. BACKGROUND SCANLINES (The "Screen" Effect) --- */
+/* --- OVERLAY STACKING --- */
 .scanline-overlay {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0) 50%,
-    rgba(0, 0, 0, 0.2) 50%,
-    rgba(0, 0, 0, 0.2)
-  );
+  inset: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
   background-size: 100% 4px;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.3;
+  opacity: 0.2;
 }
 
-/* UTILITY FOR STACKING */
 .z-layer-top {
   position: relative;
-  z-index: 2;
-}
-/* --- NEW COMMAND CENTER ANIMATIONS --- */
-@keyframes blink-red {
-  0%, 100% { color: var(--neon-red); opacity: 1; text-shadow: 0 0 10px var(--neon-red); }
-  50% { opacity: 0.2; text-shadow: none; }
-}
-
-.blink-critical {
-  animation: blink-red 0.8s infinite;
-  font-weight: 900;
-  letter-spacing: 1px;
+  z-index: 5;
 }
