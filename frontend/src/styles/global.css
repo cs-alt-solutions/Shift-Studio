@@ -1,3 +1,4 @@
+/* src/styles/global.css */
 :root {
   /* --- THEME: INDUSTRIAL DARK --- */
   --bg-app: #09090b;        /* Deepest Black */
@@ -8,13 +9,21 @@
   
   --border-subtle: #27272a; 
   
-  /* PALETTE (The Raw Colors) */
-  --neon-cyan: #22d3ee;    
-  --neon-teal: #2dd4bf;    
-  --neon-blue: #60a5fa;    
-  --neon-purple: #a78bfa;  
-  --neon-orange: #fb923c;  
-  --neon-red: #ef4444;
+  /* PALETTE (The Raw Colors) - RGB CHANNELS FOR OPACITY MANIPULATION */
+  --neon-cyan-rgb: 34, 211, 238;
+  --neon-teal-rgb: 45, 212, 191;
+  --neon-blue-rgb: 96, 165, 250;
+  --neon-purple-rgb: 167, 139, 250;
+  --neon-orange-rgb: 251, 146, 60;
+  --neon-red-rgb: 239, 68, 68;
+
+  /* CSS VARIABLES (Derived from RGB) */
+  --neon-cyan: rgb(var(--neon-cyan-rgb));    
+  --neon-teal: rgb(var(--neon-teal-rgb));    
+  --neon-blue: rgb(var(--neon-blue-rgb));    
+  --neon-purple: rgb(var(--neon-purple-rgb));  
+  --neon-orange: rgb(var(--neon-orange-rgb));  
+  --neon-red: rgb(var(--neon-red-rgb));
   
   /* SEMANTIC (The Meaning) */
   --status-good: var(--neon-teal);
@@ -55,7 +64,8 @@
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(to bottom, transparent, rgba(34, 211, 238, 0.05), transparent);
+  /* ARCHITECTURE FIX: Use variable for gradient color */
+  background: linear-gradient(to bottom, transparent, rgba(var(--neon-cyan-rgb), 0.05), transparent);
   height: 20%;
   width: 100%;
   animation: scanline 6s linear infinite;
@@ -164,7 +174,11 @@ body {
 }
 .inventory-row:nth-child(odd) { background-color: var(--bg-row-odd); }
 .inventory-row:nth-child(even) { background-color: var(--bg-row-even); }
-.inventory-row:hover { background: rgba(34, 211, 238, 0.05); border-left-color: var(--neon-cyan); }
+.inventory-row:hover { 
+  /* ARCHITECTURE FIX: Use variable for hover state */
+  background: rgba(var(--neon-cyan-rgb), 0.05); 
+  border-left-color: var(--neon-cyan); 
+}
 
 .td-cell { padding: 0 20px; vertical-align: middle; }
 
@@ -181,7 +195,11 @@ body {
   text-transform: uppercase;
   transition: all 0.1s;
 }
-.btn-primary:hover { filter: brightness(1.1); box-shadow: 0 0 15px rgba(45, 212, 191, 0.4); }
+.btn-primary:hover { 
+  filter: brightness(1.1); 
+  /* ARCHITECTURE FIX: Use variable for glow */
+  box-shadow: 0 0 15px rgba(var(--neon-teal-rgb), 0.4); 
+}
 
 .btn-ghost { 
   background: transparent; border: 1px solid var(--border-subtle); color: var(--text-muted); 
@@ -198,7 +216,8 @@ body {
 }
 
 .hover-glow:hover {
-  box-shadow: 0 0 15px rgba(45, 212, 191, 0.2);
+  /* ARCHITECTURE FIX: Use variable for glow */
+  box-shadow: 0 0 15px rgba(var(--neon-teal-rgb), 0.2);
   transform: translateY(-2px);
   transition: all 0.2s;
 }

@@ -2,6 +2,7 @@
 import { DashboardIcon, WorkshopIcon, Box, Finance, Radar } from '../components/Icons';
 
 export const TERMINOLOGY = {
+  // ... existing sections ...
   BOOT: {
     KERNEL: "WAKING SYSTEMS...",
     MARKET: "SYNCING MARKET DATA...",
@@ -137,22 +138,21 @@ export const TERMINOLOGY = {
     AVG_PRICE: "AVG MARKET PRICE",
     DEMAND: "DEMAND",
     SATURATION: "SATURATION"
-  }
-};
-
-export const APP_CONFIG = {
-  PROJECT: {
-    DEFAULT_STATUS: 'draft',
-    STOCK_THRESHOLD: 10,
-    INITIAL_DEMAND: TERMINOLOGY.GENERAL.UNKNOWN,
-    INITIAL_COMPETITION: TERMINOLOGY.GENERAL.UNKNOWN
   },
-  INVENTORY: {
-    LOGISTICS: ['Packaging', 'Shipping'],
-    WORKSHOP: ['Raw Material', 'Consumables', 'Hardware', 'Electronics', 'Tools']
+  // --- NEW LOGISTICS PROTOCOLS ---
+  LOGISTICS: {
+    TAB: "LOGISTICS",
+    CAPACITY: "MAX FULFILLMENT",
+    BOTTLENECK: "LIMITING FACTOR",
+    STATUS: {
+        READY: "READY TO SHIP",
+        HALTED: "SHIPMENTS HALTED"
+    },
+    SIM: "OUTBOUND SIMULATION"
   }
 };
 
+// ... Rest of exports (NAV_LINKS, CATEGORY_KEYWORDS, COMMON_ASSETS, MARKET_TICKER_DATA) ...
 export const NAV_LINKS = [
   { id: 'dashboard', label: 'SYSTEMS_LABEL', Icon: DashboardIcon },
   { id: 'workshop', label: 'HUB_HEADER', Icon: WorkshopIcon, category: 'WORKSHOP' },

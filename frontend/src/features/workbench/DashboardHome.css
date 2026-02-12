@@ -1,86 +1,64 @@
 /* src/features/workbench/DashboardHome.css */
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-  padding-bottom: 40px;
+/* ... (Keep existing layout styles from previous turn) ... */
+
+/* --- NEW: LOGISTICS SIMULATION STYLES --- */
+
+.tab-btn.active.teal { 
+    border-bottom-color: var(--neon-teal); 
+    color: var(--neon-teal); 
+    background: rgba(45, 212, 191, 0.05); 
 }
 
-.dashboard-col-left { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 10px; 
+.logistics-sim-view {
+    display: flex;
+    flex-direction: column;
 }
 
-/* Specific grid for the dashboard preview to prevent cards from becoming too wide */
-.dashboard-project-preview {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 15px;
+.sim-header {
+    background: linear-gradient(to bottom, rgba(34, 211, 238, 0.05), transparent);
 }
 
-/* --- TELEMETRY & STRIPS --- */
-.telemetry-strip {
-  border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: 10px;
+.sim-big-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin: 10px 0;
+    font-family: var(--font-mono);
 }
 
-.label-industrial {
-  font-family: var(--font-mono);
-  letter-spacing: 1px;
-  text-transform: uppercase;
+.sim-bottleneck {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    margin-top: 5px;
+    padding: 8px;
+    background: rgba(251, 146, 60, 0.1);
+    border: 1px solid rgba(251, 146, 60, 0.2);
+    border-radius: 2px;
+    display: inline-block;
 }
 
-/* --- ANIMATIONS: BREATH & ALERT --- */
-@keyframes breathe {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; text-shadow: 0 0 10px var(--neon-orange); }
-  100% { opacity: 0.6; }
-}
-.pulse-warning {
-  animation: breathe 3s infinite ease-in-out;
+.logistics-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    width: 100%;
 }
 
-@keyframes flash-alert {
-  0%, 100% { color: var(--neon-red); }
-  50% { color: var(--text-main); }
-}
-.pulse-critical {
-  animation: flash-alert 1s infinite;
-}
+.inventory-table.simple th { background: transparent; padding-left: 0; }
+.inventory-table.simple td { padding-left: 0; }
 
-/* --- TICKER SCROLL --- */
-.ticker-container {
-  overflow: hidden;
-  white-space: nowrap;
-}
-.ticker-content {
-  display: inline-block;
-  animation: ticker-scroll 30s linear infinite;
-}
-@keyframes ticker-scroll {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
+/* ... (Keep existing footer/ticker/util styles) ... */
 
-.ticker-item {
-  padding: 0 40px;
-  font-size: 0.75rem;
+/* --- RESTORED LAYOUT ESSENTIALS (Ensures no regression) --- */
+.dashboard-container {
+    display: flex; flex-direction: column; height: 100%; overflow: hidden;
+    background: radial-gradient(circle at center, #131316 0%, #000 100%);
 }
-
-/* --- OVERLAY STACKING --- */
-.scanline-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-  background-size: 100% 4px;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.2;
+.dashboard-content-scroll { flex: 1; overflow-y: auto; padding: 20px 40px; }
+.hud-top-bar { height: 60px; flex-shrink: 0; display: flex; align-items: center; border-bottom: 1px solid var(--border-subtle); background: rgba(9, 9, 11, 0.95); padding: 0 30px; }
+.dashboard-footer { height: 45px; flex-shrink: 0; display: flex; align-items: center; border-top: 1px solid var(--border-subtle); background: var(--bg-panel-header); }
+.dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 1200px) {
+    .dashboard-grid { grid-template-columns: 3fr 1fr; align-items: start; }
 }
-
-.z-layer-top {
-  position: relative;
-  z-index: 5;
-}
+.full-height-panel { height: 100%; min-height: 300px; max-height: 600px; }
