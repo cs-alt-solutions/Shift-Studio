@@ -9,34 +9,23 @@ export const TERMINOLOGY = {
     ASSETS: "LOADING ASSETS...",
     GRANTED: "WELCOME BACK."
   },
-  MODES: {
-    LIVE: "LIVE DATA ACTIVE",
-    SIMULATION: "SIMULATION MODE",
-    OFFLINE: "SYSTEM OFFLINE",
-    DEMO: "DEMO ENVIRONMENT",
-    SYNCING: "SYNCING..."
-  },
   GENERAL: {
     APP_NAME: "SHIFT STUDIO",
     VERSION: "v2.0",
-    SYSTEMS_LABEL: "DASHBOARD",
+    SYSTEMS_LABEL: "COMMAND CENTER", // Leveling up the label
     SAVE: "SAVE WORK",
     CLOSE: "EXIT",
-    FINALIZE: "FINISH & CATALOG",
-    CANCEL: "CANCEL",
-    CREATE: "START NEW",
-    ADD: "ADD TO LIST",
-    ANALYZE: "SCAN MARKET",
-    DELETE: "REMOVE",
-    EDIT: "UPDATE",
     ID_LABEL: "REF-ID",
-    MODULES: "SECTIONS",
-    SEARCH_PLACEHOLDER: "Search...",
-    TYPE_SEARCH: "Type to search...",
-    NO_DATA: "Nothing here yet.",
-    BRAND: "BRAND",
     UNITS: "UNITS",
     CATEGORY: "CATEGORY"
+  },
+  DASHBOARD: {
+    TELEMETRY: "SYSTEM TELEMETRY",
+    LIVE_FEED: "PRODUCTION STREAM",
+    MARKET_PULSE: "PREDICTIVE RADAR",
+    UPTIME: "SYSTEM UPTIME",
+    SYNC: "ETSY SYNC STATUS",
+    LOAD: "DATABASE LOAD"
   },
   STATUS: {
     ACTIVE: "IN PROGRESS",
@@ -44,112 +33,30 @@ export const TERMINOLOGY = {
     COMPLETED: "CATALOGED",
     ON_HOLD: "ON ICE", 
     LOW_STOCK: "RUNNING LOW",
-    IN_STOCK: "AVAILABLE",
-    OUT_OF_STOCK: "SOLD OUT",
+    OUT_OF_STOCK: "OUT OF STOCK", // Recalibrated from Sold Out
     STOCKED: "STOCKED",
-    EMPTY: "EMPTY",
     LOW: "LOW"
   },
   FINANCE: {
     HEADER: "PROFIT MATRIX",
     SUBTITLE: "Track your margins and revenue",
-    TREND: "REVENUE GROWTH",
-    REVENUE_CHART: "REVENUE TREND",
-    LEDGER: "RECORDS",
-    LOG: "ADD ENTRY",
-    REVENUE: "TOTAL SALES",
-    EXPENSE: "COSTS",
     NET: "TAKE HOME",
-    MARGIN_AVG: "AVG MARGIN",
     LIVE_STATUS: "LIVE DATA ACTIVE"
   },
   WORKSHOP: {
     HUB_HEADER: "THE WORKSHOP",
     HUB_SUBTITLE: "Current builds and blueprints",
     ACTIVE_OPS: "ACTIVE BUILDS",
-    DRAFTS: "SAVED CONCEPTS",
-    NEW_PROJECT: "NEW PROJECT",
-    VAULT_HEADER: "THE VAULT",
-    VAULT_SUBTITLE: "Finished & Paused work",
-    MISSIONS_HEADER: "GAME PLAN",
-    BOM_HEADER: "MATERIALS NEEDED",
-    NOTES_LABEL: "PROJECT NOTES",
-    TAGS_LABEL: "LABELS",
-    CALIBRATION: "PRICE CHECK",
-    TARGET_RETAIL: "YOUR PRICE",
-    UNIT_COST: "COST TO MAKE",
-    PROJ_MARGIN: "YOUR MARGIN",
-    REF_VISUAL: "PREVIEW",
-    STUDIO_LABEL: "DESIGN STUDIO",
-    ID_PREFIX: "REF-ID",
-    LAST_EDIT: "LAST EDIT"
+    NEW_PROJECT: "NEW PROJECT"
   },
   INVENTORY: {
     HEADER: "RESOURCE DEPOT",
     MANIFEST_LABEL: "ALL RESOURCES",
-    SECTION_WORKSHOP: "WORKSHOP INVENTORY",
-    SECTION_LOGISTICS: "LOGISTICS & PACKAGING",
-    ASSET_DETAILS: "ITEM DETAILS",
-    RESTOCK: "UPDATE STOCK",
-    INTAKE: "ADD NEW RESOURCE",
-    HISTORY_LOG: "ORDER HISTORY",
-    NOTIFICATIONS: "ALERTS",
-    QTY_LABEL: "AMOUNT LEFT",
-    UNIT_PRICE: "PRICE PER UNIT",
-    PHOTO_LABEL: "ITEM PHOTO",
-    ADD_PHOTO: "ADD PHOTO",
-    SELECT_ASSET: "SELECT ASSET",
-    VALUE_LABEL: "TOTAL VALUE",
-    VAULT_ACCESS: "VAULT ACCESS",
-    MATERIAL_NAME: "MATERIAL NAME",
-    ADD_QTY: "ADD QTY",
-    TOTAL_COST: "TOTAL COST",
-    STOCK_LEVEL: "STOCK LEVEL",
-    UNIT_COST: "UNIT COST"
-  },
-  BLUEPRINT: {
-    MARKET_RESEARCH: "MARKET RESEARCH",
-    VISUAL_CONCEPTS: "VISUAL CONCEPTS",
-    PRODUCTION_CONSOLE: "PRODUCTION CONSOLE",
-    PROFIT_SIMULATOR: "PROFIT SIMULATOR",
-    LAUNCH_CHECKLIST: "LAUNCH CHECKLIST",
-    PHASE_PLAN: "1. PLAN (R&D)",
-    PHASE_BUILD: "2. BUILD (ENGINEERING)",
-    PHASE_LAUNCH: "3. LAUNCH (MARKET)",
-    AUDIENCE: "TARGET AUDIENCE",
-    INSPIRATION: "INSPIRATION / COMPETITOR URL",
-    NOTES: "PRODUCT NOTES",
-    STOCK: "IN STOCK",
-    BATCH: "BATCH SIZE",
-    RUN: "RUN BATCH",
-    RETAIL: "RETAIL PRICE ($)",
-    PROFIT: "NET PROFIT",
-    MARGIN: "Margin",
-    PHOTOS: "PRODUCT PHOTOS TAKEN",
-    DESCRIPTION: "DESCRIPTION WRITTEN",
-    TAGS: "SEO TAGS RESEARCHED"
+    NOTIFICATIONS: "ALERTS"
   },
   MARKET: {
     HEADER: "MARKET RADAR",
-    SUBTITLE: "See what others are doing",
-    PULSE_HEADER: "MARKET PULSE",
-    AVG_PRICE: "MARKET AVERAGE",
-    TARGET: "TRACK ITEM",
-    SCANNING: "FETCHING TRENDS...",
-    COMPETITOR_LOG: "SAVED ITEMS",
-    TARGET_NAME: "Item Name",
-    TARGET_PRICE: "Their Price",
-    TARGET_NAME_LABEL: "COMPETITOR NAME",
-    TARGET_PRICE_LABEL: "THEIR PRICE",
-    TARGET_PLACEHOLDER: "e.g. NorthFace"
-  },
-  UI_FEEDBACK: {
-    SUCCESS: "All set!",
-    ERROR: "Something went wrong.",
-    WARNING: "Just a heads up...",
-    CONFIRM_DELETE: "Are you sure you want to remove this?",
-    EMPTY_LEDGER: "No transactions recorded yet.",
-    EMPTY_LOGS: "Select an item to view logs."
+    SCANNING: "FETCHING TRENDS..."
   }
 };
 
@@ -171,30 +78,11 @@ export const CATEGORY_KEYWORDS = {
   'Electronics':  ['led', 'battery', 'switch', 'sensor', 'chip', 'board']
 };
 
-export const COMMON_ASSETS = [
-    "Golden Brands 464 Soy Wax",
-    "Igi 6006 Paraffin Blend",
-    "Beeswax Pellets (White)",
-    "Beeswax Pellets (Yellow)",
-    "Coco Apricot Creme Wax",
-    "Fragrance Oil: Santal & Coconut",
-    "Fragrance Oil: Lavender Driftwood",
-    "Fragrance Oil: White Sage",
-    "Liquid Dye: Black",
-    "Liquid Dye: Red",
-    "CD-12 Cotton Wicks",
-    "ECO-10 Cotton Wicks",
-    "Wooden Wicks (Crackling)",
-    "Wick Stickers",
-    "Warning Labels",
-    "8oz Amber Glass Jar",
-    "9oz Straight Sided Jar (Clear)",
-    "4oz Gold Tin",
-    "Black Metal Lid (Threaded)",
-    "Bamboo Lid (Suction)",
-    "4x4x4 Shipping Box",
-    "6x6x6 Shipping Box",
-    "Bubble Mailer (6x10)",
-    "Packing Peanuts (Biodegradable)",
-    "Heavy Duty Packing Tape"
+export const MARKET_TICKER_DATA = [
+    { label: "SOY WAX", trend: "up", value: "$2.15/lb" },
+    { label: "FRAGRANCE OIL", trend: "neutral", value: "$18.50/lb" },
+    { label: "SHIPPING (DOMESTIC)", trend: "down", value: "$4.20/avg" },
+    { label: "BEESWAX", trend: "up", value: "$8.50/lb" },
+    { label: "GLASS JARS (8oz)", trend: "neutral", value: "$0.85/ea" },
+    { label: "WICKING (CD-12)", trend: "down", value: "$0.05/ea" }
 ];

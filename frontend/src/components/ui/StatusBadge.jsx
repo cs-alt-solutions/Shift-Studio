@@ -3,7 +3,6 @@ import React from 'react';
 import { TERMINOLOGY } from '../../utils/glossary';
 
 export const StatusBadge = ({ status = '', customLabel }) => {
-  // Guard clause: if no status is provided, render nothing or a neutral placeholder
   if (!status && !customLabel) return null;
 
   const config = {

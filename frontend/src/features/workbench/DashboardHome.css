@@ -90,3 +90,14 @@
   position: relative;
   z-index: 2;
 }
+/* --- NEW COMMAND CENTER ANIMATIONS --- */
+@keyframes blink-red {
+  0%, 100% { color: var(--neon-red); opacity: 1; text-shadow: 0 0 10px var(--neon-red); }
+  50% { opacity: 0.2; text-shadow: none; }
+}
+
+.blink-critical {
+  animation: blink-red 0.8s infinite;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
