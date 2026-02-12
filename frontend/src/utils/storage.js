@@ -1,6 +1,6 @@
 /* src/utils/storage.js */
 
-const APP_PREFIX = 'MARKETLENS_V2';
+const APP_PREFIX = 'SHIFT_STUDIO_V2';
 
 export const loadState = (key, fallback = null) => {
   try {

@@ -1,19 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react'; // Removed useState
 import './Workshop.css';
 import { useInventory } from '../../context/InventoryContext';
 import { ProjectCard } from '../../components/ProjectCard';
-import { StampHeader } from '../../components/StampHeader'; // IMPORT NEW COMPONENT
+import { StampHeader } from '../../components/StampHeader';
 import { TERMINOLOGY } from '../../utils/glossary';
 
-export const Workshop = ({ onRequestFullWidth }) => {
+export const Workshop = () => { // Removed unused onRequestFullWidth prop
   const { projects, deleteProject, addProject } = useInventory();
   
-  // Filter projects by status
   const activeProjects = projects.filter(p => p.status === 'active');
   const draftProjects = projects.filter(p => p.status === 'draft');
   const completedProjects = projects.filter(p => p.status === 'completed');
 
-  // Simple handler for creating a new project (stub)
   const handleCreateNew = () => {
     addProject({
       title: "New Untitled Project",
@@ -25,8 +23,6 @@ export const Workshop = ({ onRequestFullWidth }) => {
 
   return (
     <div className="workshop-container radar-scroll-area">
-      
-      {/* HEADER AREA */}
       <div className="flex-between mb-20">
         <div>
           <h2 className="header-title">{TERMINOLOGY.WORKSHOP.HUB_HEADER}</h2>
@@ -37,54 +33,30 @@ export const Workshop = ({ onRequestFullWidth }) => {
         </button>
       </div>
 
-      {/* --- SECTION 1: IN PROGRESS --- */}
-      {/* Replaced text header with STAMP HEADER */}
       <StampHeader status="active" label={TERMINOLOGY.STATUS.ACTIVE} />
-
       <div className="workshop-grid">
-        {activeProjects.length > 0 ? (
-          activeProjects.map(project => (
-            <ProjectCard 
-              key={project.id} 
-              project={project} 
-              onDelete={() => deleteProject(project.id)}
-              showStatus={false} /* Stamp is now in the header */
-            />
-          ))
-        ) : (
-          <div className="empty-state-message">
-            {TERMINOLOGY.GENERAL.NO_DATA}
-          </div>
-        )}
+        {activeProjects.map(project => (
+          <ProjectCard 
+            key={project.id} 
+            project={project} 
+            onDelete={() => deleteProject(project.id)}
+            showStatus={false} 
+          />
+        ))}
       </div>
 
-      {/* --- SECTION 2: DRAFTS --- */}
-      {/* Replaced "Saved Concepts" text with STAMP HEADER (Draft) */}
       <StampHeader status="draft" label={TERMINOLOGY.STATUS.DRAFT} />
-
       <div className="workshop-grid">
-        {draftProjects.length > 0 ? (
-          draftProjects.map(project => (
-            <ProjectCard 
-              key={project.id} 
-              project={project} 
-              onDelete={() => deleteProject(project.id)}
-              showStatus={false} /* Stamp is now in the header */
-            />
-          ))
-        ) : (
-          <div className="empty-state-message">
-            {TERMINOLOGY.GENERAL.NO_DATA}
-          </div>
-        )}
+        {draftProjects.map(project => (
+          <ProjectCard 
+            key={project.id} 
+            project={project} 
+            onDelete={() => deleteProject(project.id)}
+            showStatus={false} 
+          />
+        ))}
       </div>
 
-      {/* --- SECTION 3: THE VAULT (Completed) --- */}
-      {/* We can keep The Vault as a text header if desired, or use the stamp too.
-          Given "The Vault" is a specific place name, I'll stick to text unless you want "CATALOGED" stamp.
-          But let's use the stamp for consistency if you prefer "CATALOGED". 
-          For now, I will leave the Vault header as it is distinct, but let me know if you want "CATALOGED" stamp here too. */}
-      
       <div className="section-separator mt-20">
           <span className="separator-label text-muted">{TERMINOLOGY.WORKSHOP.VAULT_HEADER}</span>
           <div className="separator-line" />
@@ -96,13 +68,10 @@ export const Workshop = ({ onRequestFullWidth }) => {
               key={project.id} 
               project={project} 
               readOnly={true}
-              /* For completed items, maybe we keep the stamp? Or hide it? 
-                 Let's hide it for consistency if they are grouped here. */
               showStatus={false} 
             />
         ))}
       </div>
-
     </div>
   );
 };

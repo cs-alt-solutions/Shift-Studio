@@ -16,6 +16,8 @@ export const TERMINOLOGY = {
     SYNCING: "SYNCING..."
   },
   GENERAL: {
+    APP_NAME: "SHIFT STUDIO", // Added application name
+    VERSION: "v2.0",
     SYSTEMS_LABEL: "DASHBOARD",
     SAVE: "SAVE WORK",
     CLOSE: "EXIT",

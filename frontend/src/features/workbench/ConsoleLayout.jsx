@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './ConsoleLayout.css'; 
-import { DashboardHome } from './DashboardHome'; // Import the new component
+import { DashboardHome } from './DashboardHome';
 import { MarketRadar } from './MarketRadar';
 import { ProfitMatrix } from './ProfitMatrix';
 import { InventoryManager } from './InventoryManager';
@@ -8,7 +8,6 @@ import { Workshop } from './Workshop';
 import { Radar, WorkshopIcon, Box, Finance, Menu, ChevronLeft } from '../../components/Icons';
 import { TERMINOLOGY } from '../../utils/glossary';
 
-// Create a Dashboard Icon (Simple Grid)
 const DashboardIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
@@ -17,14 +16,12 @@ const DashboardIcon = () => (
 );
 
 export const ConsoleLayout = () => {
-  // CHANGED: Default view is now 'dashboard'
   const [activeView, setActiveView] = useState('dashboard'); 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isFullWidthMode, setIsFullWidthMode] = useState(false);
 
   const sidebarCollapsed = isCollapsed || isFullWidthMode;
 
-  // Helper to allow dashboard widgets to switch views
   const handleNavigate = (view) => {
     setActiveView(view);
     setIsFullWidthMode(false);
@@ -33,12 +30,10 @@ export const ConsoleLayout = () => {
   return (
     <div className="console-container">
       
-      {/* --- LEFT NAVIGATION RAIL --- */}
       <div className={`console-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        
         <div className="sidebar-header">
           <div className="app-title">
-            <span>MARKETLENS v2.0</span>
+            <span>{TERMINOLOGY.GENERAL.APP_NAME} {TERMINOLOGY.GENERAL.VERSION}</span>
           </div>
           <button 
             className="toggle-btn" 
@@ -50,14 +45,11 @@ export const ConsoleLayout = () => {
         </div>
         
         <div className="nav-group">
-          {/* CHANGED: Header label to 'MODULES' or similar from glossary */}
           <div className="section-label">{TERMINOLOGY.GENERAL.MODULES || "SECTIONS"}</div>
           
-          {/* NEW: Dashboard Link */}
           <div 
             className={`nav-link ${activeView === 'dashboard' ? 'active' : ''}`}
             onClick={() => handleNavigate('dashboard')}
-            title={TERMINOLOGY.GENERAL.SYSTEMS_LABEL}
           >
             <DashboardIcon />
             <span className="nav-text">{TERMINOLOGY.GENERAL.SYSTEMS_LABEL}</span>
@@ -66,7 +58,6 @@ export const ConsoleLayout = () => {
           <div 
             className={`nav-link ${activeView === 'workshop' ? 'active' : ''}`}
             onClick={() => handleNavigate('workshop')}
-            title={TERMINOLOGY.WORKSHOP.HUB_HEADER}
           >
             <WorkshopIcon />
             <span className="nav-text">{TERMINOLOGY.WORKSHOP.HUB_HEADER}</span>
@@ -75,7 +66,6 @@ export const ConsoleLayout = () => {
           <div 
             className={`nav-link ${activeView === 'inventory' ? 'active' : ''}`}
             onClick={() => handleNavigate('inventory')}
-            title={TERMINOLOGY.INVENTORY.HEADER}
           >
             <Box />
             <span className="nav-text">{TERMINOLOGY.INVENTORY.HEADER}</span>
@@ -84,17 +74,14 @@ export const ConsoleLayout = () => {
           <div 
             className={`nav-link ${activeView === 'matrix' ? 'active' : ''}`}
             onClick={() => handleNavigate('matrix')}
-            title={TERMINOLOGY.FINANCE.HEADER}
           >
             <Finance />
             <span className="nav-text">{TERMINOLOGY.FINANCE.HEADER}</span>
           </div>
 
-          {/* MOVED: Market Radar to bottom of list */}
           <div 
             className={`nav-link ${activeView === 'radar' ? 'active' : ''}`}
             onClick={() => handleNavigate('radar')}
-            title={TERMINOLOGY.MARKET.HEADER}
           >
             <Radar />
             <span className="nav-text">{TERMINOLOGY.MARKET.HEADER}</span>
@@ -108,14 +95,12 @@ export const ConsoleLayout = () => {
             </p>
           </div>
         )}
-
       </div>
 
       <div className="console-main">
-        {/* NEW: Route for Dashboard */}
         {activeView === 'dashboard' && <DashboardHome onNavigate={handleNavigate} />}
         {activeView === 'radar' && <MarketRadar />}
-        {activeView === 'workshop' && <Workshop onRequestFullWidth={setIsFullWidthMode} />}
+        {activeView === 'workshop' && <Workshop />}
         {activeView === 'inventory' && <InventoryManager />}
         {activeView === 'matrix' && <ProfitMatrix />}
       </div>
