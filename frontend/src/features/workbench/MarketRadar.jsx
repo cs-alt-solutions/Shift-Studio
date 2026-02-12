@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './MarketRadar.css';
-import { InputGroup } from '../../components/InputGroup';
-import { ImagePlaceholder } from '../../components/ImagePlaceholder';
-import { Dial } from '../../components/Dial';
+import { InputGroup } from '../../components/ui/InputGroup';
+import { ImagePlaceholder } from '../../components/ui/ImagePlaceholder';
+import { Dial } from '../../components/charts/Dial';
 import { TERMINOLOGY } from '../../utils/glossary';
 
 export const MarketRadar = () => {

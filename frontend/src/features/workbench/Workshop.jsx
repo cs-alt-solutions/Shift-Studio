@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import './Workshop.css';
 import { useInventory } from '../../context/InventoryContext';
-import { ProjectCard } from '../../components/ProjectCard';
-import { StampHeader } from '../../components/StampHeader';
+import { ProjectCard } from '../../components/cards/ProjectCard';
+import { StampHeader } from '../../components/ui/StampHeader';
 import { ProjectBlueprint } from './components/ProjectBlueprint';
 import { TERMINOLOGY } from '../../utils/glossary';
 

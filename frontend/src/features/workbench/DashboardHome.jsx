@@ -1,10 +1,10 @@
 import React from 'react';
 import { useInventory } from '../../context/InventoryContext';
 import { useFinancialStats } from '../../context/FinancialContext';
-import { StatCard } from '../../components/StatCard';
-import { ProjectCard } from '../../components/ProjectCard';
-import { StampHeader } from '../../components/StampHeader';
-import { AnimatedNumber } from '../../components/AnimatedNumber';
+import { StatCard } from '../../components/cards/StatCard';
+import { ProjectCard } from '../../components/cards/ProjectCard';
+import { StampHeader } from '../../components/ui/StampHeader';
+import { AnimatedNumber } from '../../components/charts/AnimatedNumber';
 import { formatCurrency } from '../../utils/formatters';
 import { TERMINOLOGY } from '../../utils/glossary'; 
 import { MARKET_TICKER_DATA } from '../../data/mockData';

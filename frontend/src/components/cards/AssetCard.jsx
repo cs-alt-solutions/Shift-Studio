@@ -1,7 +1,7 @@
 import React from 'react';
 import { PhotoIcon } from './Icons';
-import { formatCurrency } from '../utils/formatters';
-import { TERMINOLOGY } from '../utils/glossary';
+import { formatCurrency } from '../../utils/formatters';
+import { TERMINOLOGY } from '../../utils/glossary';
 import './AssetCard.css';
 
 export const AssetCard = ({ item, onClick, isSelected }) => {

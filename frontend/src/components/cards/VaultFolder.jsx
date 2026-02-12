@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TERMINOLOGY } from '../utils/glossary';
+import { TERMINOLOGY } from '../../utils/glossary';
 import './VaultFolder.css';
 
 export const VaultFolder = ({ title, count, items, onItemClick, stampText }) => {

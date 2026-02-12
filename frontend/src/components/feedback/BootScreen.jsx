@@ -1,6 +1,6 @@
 /* src/components/BootScreen.jsx */
 import React, { useState, useEffect } from 'react';
-import { TERMINOLOGY } from '../utils/glossary';
+import { TERMINOLOGY } from '../../utils/glossary';
 import './BootScreen.css';
 
 export const BootScreen = ({ onComplete }) => {

@@ -1,9 +1,9 @@
 /* src/features/workbench/ProfitMatrix.jsx */
 import React from 'react';
 import { useFinancialStats } from '../../context/FinancialContext';
-import { StatCard } from '../../components/StatCard';
-import { AnimatedNumber } from '../../components/AnimatedNumber';
-import { RevenueChart } from '../../components/RevenueChart';
+import { StatCard } from '../../components/cards/StatCard';
+import { AnimatedNumber } from '../../components/charts/AnimatedNumber';
+import { RevenueChart } from '../../components/charts/RevenueChart';
 import { TERMINOLOGY } from '../../utils/glossary';
 import { formatCurrency } from '../../utils/formatters';
 

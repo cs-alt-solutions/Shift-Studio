@@ -1,33 +1,34 @@
 import React from 'react';
 import './ProjectCard.css';
-import { formatCurrency, formatDate } from '../utils/formatters';
-import { TERMINOLOGY } from '../utils/glossary';
+import { formatCurrency, formatDate } from '../../../utils/formatters';
+import { TERMINOLOGY } from '../../../utils/glossary';
+/* NEW ATOMIC IMPORTS */
+import { StatusBadge } from '../../ui/StatusBadge';
+import { ProgressBar } from '../../ui/ProgressBar';
 
 export const ProjectCard = ({ project, onClick, onDelete, readOnly = false, showStatus = true }) => {
   const { title, status, retailPrice, updated_at, stockQty } = project;
 
-  const statusLabel = {
-    'active': TERMINOLOGY.STATUS.ACTIVE,
-    'draft': TERMINOLOGY.STATUS.DRAFT,
-    'completed': TERMINOLOGY.STATUS.COMPLETED,
-    'on_hold': TERMINOLOGY.STATUS.ON_HOLD
-  }[status] || status.toUpperCase();
-
   return (
     <div className="folder-container" onClick={onClick}>
       <div className="folder-tab">
-        <span className="folder-tab-text">{TERMINOLOGY.GENERAL.ID_LABEL}: {project.id.toString().slice(-4)}</span>
+        <span className="folder-tab-text">
+            {TERMINOLOGY.GENERAL.ID_LABEL}: {project.id.toString().slice(-4)}
+        </span>
       </div>
 
       <div className={`folder-body card-hover-effect ${status === 'completed' ? 'catalog-mode' : ''}`}>
         
+        {/* REPLACED: Hardcoded status div with StatusBadge */}
         {showStatus && (
-          <div className={`status-stamp ${status}`}>
-            {statusLabel}
+          <div className="status-stamp-wrapper">
+             <StatusBadge status={status} />
           </div>
         )}
 
-        {status === 'completed' && <div className="catalog-stamp-large">{TERMINOLOGY.STATUS.COMPLETED}</div>}
+        {status === 'completed' && (
+            <div className="catalog-stamp-large">{TERMINOLOGY.STATUS.COMPLETED}</div>
+        )}
 
         <div className="folder-content">
           <h3 className="folder-title">{title}</h3>
@@ -39,9 +40,11 @@ export const ProjectCard = ({ project, onClick, onDelete, readOnly = false, show
                 {stockQty || 0} {TERMINOLOGY.GENERAL.UNITS}
               </div>
             </div>
-            <div className="progress-track">
-              <div className="progress-fill" style={{ width: status === 'completed' ? '100%' : '45%' }}></div>
-            </div>
+            {/* REPLACED: Inline progress bar with Atomic ProgressBar */}
+            <ProgressBar 
+                value={status === 'completed' ? 100 : 45} 
+                colorVar={status === 'active' ? '--neon-teal' : '--neon-purple'}
+            />
           </div>
 
           <div className="flex-between mt-20">
