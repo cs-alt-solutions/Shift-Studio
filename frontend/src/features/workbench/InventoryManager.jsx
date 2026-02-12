@@ -1,3 +1,4 @@
+/* src/features/workbench/InventoryManager.jsx */
 import React, { useState, useMemo } from 'react';
 import { useInventory } from '../../context/InventoryContext';
 import './InventoryManager.css';
@@ -10,8 +11,6 @@ import { IntakeForm } from './components/IntakeForm';
 import { formatCurrency } from '../../utils/formatters';
 import { TERMINOLOGY } from '../../utils/glossary';
 
-// Note: CATEGORIES are now also derived in IntakeForm to prevent redundancy, 
-// but kept here for Vault Grouping logic.
 const CATEGORIES = ['Raw Material', 'Packaging', 'Shipping', 'Consumables', 'Hardware', 'Electronics', 'Tools'];
 const LOGISTICS_CATS = ['Packaging', 'Shipping'];
 const WORKSHOP_CATS = ['Raw Material', 'Consumables', 'Hardware', 'Electronics', 'Tools'];
@@ -108,8 +107,8 @@ export const InventoryManager = () => {
              {workshopItems.length > 0 ? workshopItems.map(m => (
                 <AssetCard 
                    key={m.id} 
-                   item={m} 
-                   onClick={setSelectedMaterial}
+                   asset={m} 
+                   onClick={() => setSelectedMaterial(m)}
                    isSelected={selectedMaterial?.id === m.id}
                 />
              )) : (
@@ -128,8 +127,8 @@ export const InventoryManager = () => {
              {logisticsItems.length > 0 ? logisticsItems.map(m => (
                 <AssetCard 
                    key={m.id} 
-                   item={m} 
-                   onClick={setSelectedMaterial}
+                   asset={m} 
+                   onClick={() => setSelectedMaterial(m)}
                    isSelected={selectedMaterial?.id === m.id}
                 />
              )) : (
@@ -158,7 +157,7 @@ export const InventoryManager = () => {
             <IntakeForm onClose={() => setShowIntakeForm(false)} />
           ) : selectedMaterial ? (
             <div className="sidebar-panel animate-fade-in">
-              <ImagePlaceholder height="180px" label={TERMINOLOGY.INVENTORY.PHOTO_LABEL} />
+              <ImagePlaceholder text={TERMINOLOGY.INVENTORY.PHOTO_LABEL} />
               <div className="sidebar-inner">
                 <h3 className="detail-title">{selectedMaterial.name}</h3>
                 <div className="detail-brand">{TERMINOLOGY.GENERAL.BRAND}: {selectedMaterial.brand || 'N/A'}</div>

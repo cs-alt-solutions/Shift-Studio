@@ -10,8 +10,7 @@ import { Save, Box, WorkshopIcon, Radar, Finance } from '../../../components/Ico
 export const ProjectBlueprint = ({ project, onClose }) => {
   const { updateProject, materials, manufactureProduct } = useInventory();
   
-  // SESSION STATE
-  const [activeTab, setActiveTab] = useState('RD'); // RD | BUILD | LAUNCH
+  const [activeTab, setActiveTab] = useState('RD'); 
   const [localProject, setLocalProject] = useState({
     ...project,
     research: project.research || { targetAudience: '', inspiration: '', notes: '' },
@@ -22,12 +21,9 @@ export const ProjectBlueprint = ({ project, onClose }) => {
   const [batchSize, setBatchSize] = useState(1);
   const [consoleLogs, setConsoleLogs] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
-  
-  // Recipe Form State
   const [selectedMatId, setSelectedMatId] = useState('');
   const [reqQty, setReqQty] = useState('');
 
-  // --- CALCULATIONS ---
   const materialCost = useMemo(() => {
     if (!localProject.recipe || localProject.recipe.length === 0) return 0;
     return localProject.recipe.reduce((total, item) => {
@@ -49,7 +45,6 @@ export const ProjectBlueprint = ({ project, onClose }) => {
   const netProfit = (localProject.retailPrice || 0) - totalCost;
   const marginPercent = localProject.retailPrice > 0 ? (netProfit / localProject.retailPrice) * 100 : 0;
 
-  // --- ACTIONS ---
   const handleUpdate = (field, value, subField = null) => {
       setIsDirty(true);
       if (subField) {
@@ -71,26 +66,16 @@ export const ProjectBlueprint = ({ project, onClose }) => {
   const handleAddIngredient = () => {
     if (!selectedMatId || !reqQty) return;
     const mat = materials.find(m => m.id === parseInt(selectedMatId));
-    
     const newItem = {
       matId: mat.id,
       name: mat.name,
       reqPerUnit: parseFloat(reqQty),
       unit: mat.unit 
     };
-
-    const newRecipe = [...(localProject.recipe || []), newItem];
-    setLocalProject(prev => ({ ...prev, recipe: newRecipe }));
+    setLocalProject(prev => ({ ...prev, recipe: [...(prev.recipe || []), newItem] }));
     setIsDirty(true);
     setReqQty('');
     setSelectedMatId('');
-  };
-
-  const handleRemoveIngredient = (index) => {
-    const newRecipe = [...localProject.recipe];
-    newRecipe.splice(index, 1);
-    setLocalProject(prev => ({ ...prev, recipe: newRecipe }));
-    setIsDirty(true);
   };
 
   const handleRunBatch = () => {
@@ -112,35 +97,33 @@ export const ProjectBlueprint = ({ project, onClose }) => {
     setConsoleLogs(prev => [`[${timestamp}] ${msg}::${type}`, ...prev]);
   };
 
-  // --- RENDERERS ---
   const renderRD = () => (
     <div className="phase-grid">
         <div className="phase-col">
-            <div className="bp-section-header flex-center gap-10"><Radar /> MARKET RESEARCH</div>
+            <div className="bp-section-header flex-center gap-10">
+                <Radar /> {TERMINOLOGY.BLUEPRINT.MARKET_RESEARCH}
+            </div>
             <div className="pad-20">
                 <div className="lab-form-group">
-                    <label className="label-industrial">TARGET AUDIENCE</label>
+                    <label className="label-industrial">{TERMINOLOGY.BLUEPRINT.AUDIENCE}</label>
                     <textarea 
                         className="input-industrial" rows="3" 
-                        placeholder="Who is this for? (e.g., 'Gifts for Moms', 'Coffee Lovers')..."
                         value={localProject.research.targetAudience}
                         onChange={e => handleUpdate('research', e.target.value, 'targetAudience')}
                     />
                 </div>
                 <div className="lab-form-group">
-                    <label className="label-industrial">INSPIRATION / COMPETITOR URL</label>
+                    <label className="label-industrial">{TERMINOLOGY.BLUEPRINT.INSPIRATION}</label>
                     <input 
                         className="input-industrial" 
-                        placeholder="https://etsy.com/..."
                         value={localProject.research.inspiration}
                         onChange={e => handleUpdate('research', e.target.value, 'inspiration')}
                     />
                 </div>
                 <div className="lab-form-group">
-                    <label className="label-industrial">PRODUCT NOTES</label>
+                    <label className="label-industrial">{TERMINOLOGY.BLUEPRINT.NOTES}</label>
                     <textarea 
                         className="input-industrial" rows="6" 
-                        placeholder="Design ideas, scent profiles, sketches..."
                         value={localProject.research.notes}
                         onChange={e => handleUpdate('research', e.target.value, 'notes')}
                     />
@@ -148,11 +131,9 @@ export const ProjectBlueprint = ({ project, onClose }) => {
             </div>
         </div>
         <div className="phase-col">
-             <div className="bp-section-header">VISUAL CONCEPTS</div>
-             <div className="flex-center flex-col h-full text-muted">
-                 <div style={{ border: '2px dashed var(--border-subtle)', padding: '40px', borderRadius: '8px' }}>
-                    DRAG & DROP CONCEPT ART HERE
-                 </div>
+             <div className="bp-section-header">{TERMINOLOGY.BLUEPRINT.VISUAL_CONCEPTS}</div>
+             <div className="visual-concept-zone">
+                 <div className="concept-placeholder">DRAG & DROP CONCEPT ART HERE</div>
                  <span className="font-small mt-10 opacity-50">(Simulated Upload Zone)</span>
              </div>
         </div>
@@ -161,9 +142,8 @@ export const ProjectBlueprint = ({ project, onClose }) => {
 
   const renderEngineering = () => (
     <div className="engineering-grid">
-        {/* COL 1: RECIPE */}
         <div className="bp-col">
-            <div className="bp-section-header">BILL OF MATERIALS</div>
+            <div className="bp-section-header">{TERMINOLOGY.WORKSHOP.BOM_HEADER}</div>
             <div className="pad-20 border-bottom-subtle">
                 <div className="lab-form-group">
                 <select className="input-industrial mb-10" value={selectedMatId} onChange={e => setSelectedMatId(e.target.value)}>
@@ -188,29 +168,31 @@ export const ProjectBlueprint = ({ project, onClose }) => {
                         <div className="recipe-name">{item.name}</div>
                         <div className="recipe-meta">{item.reqPerUnit} {item.unit}</div>
                     </div>
-                    <button className="btn-icon" onClick={() => handleRemoveIngredient(idx)}>×</button>
+                    <button className="btn-icon" onClick={() => {
+                        const newRecipe = [...localProject.recipe];
+                        newRecipe.splice(idx, 1);
+                        handleUpdate('recipe', newRecipe);
+                    }}>×</button>
                 </div>
                 ))}
             </div>
         </div>
 
-        {/* COL 2: VISUAL */}
         <div className="bp-col flex-center bg-dots">
              <div className="text-center">
-                 <Box style={{ width: 48, height: 48, opacity: 0.3 }} />
-                 <div className="mt-20 font-mono text-muted">PRODUCT RENDER</div>
+                 <Box className="placeholder-icon-large" />
+                 <div className="mt-20 font-mono text-muted">{TERMINOLOGY.WORKSHOP.REF_VISUAL}</div>
              </div>
         </div>
 
-        {/* COL 3: PRODUCTION */}
         <div className="bp-col">
-            <div className="bp-section-header">PRODUCTION CONSOLE</div>
+            <div className="bp-section-header">{TERMINOLOGY.BLUEPRINT.PRODUCTION_CONSOLE}</div>
             <div className="pad-20">
                 <div className="stock-indicator-clean mb-20 flex-center">
-                   IN STOCK: <strong className="ml-5 text-white">{localProject.stockQty || 0}</strong>
+                   {TERMINOLOGY.BLUEPRINT.STOCK}: <strong className="ml-5 text-white">{localProject.stockQty || 0}</strong>
                 </div>
                 <div className="lab-form-group">
-                   <label className="label-industrial">BATCH SIZE</label>
+                   <label className="label-industrial">{TERMINOLOGY.BLUEPRINT.BATCH}</label>
                    <input 
                        type="number" className="input-industrial" 
                        value={batchSize} onChange={e => setBatchSize(e.target.value)}
@@ -221,7 +203,7 @@ export const ProjectBlueprint = ({ project, onClose }) => {
                    onClick={handleRunBatch}
                    disabled={!localProject.recipe || localProject.recipe.length === 0}
                 >
-                   RUN BATCH
+                   {TERMINOLOGY.BLUEPRINT.RUN}
                 </button>
             </div>
             <div className="console-log-area">
@@ -237,12 +219,12 @@ export const ProjectBlueprint = ({ project, onClose }) => {
   const renderLaunch = () => (
     <div className="phase-grid">
          <div className="phase-col">
-            <div className="bp-section-header flex-center gap-10"><Finance /> PROFIT SIMULATOR</div>
+            <div className="bp-section-header flex-center gap-10"><Finance /> {TERMINOLOGY.BLUEPRINT.PROFIT_SIMULATOR}</div>
             <div className="pad-20">
                 <div className="lab-form-group">
-                    <label className="label-industrial">RETAIL PRICE ($)</label>
+                    <label className="label-industrial">{TERMINOLOGY.BLUEPRINT.RETAIL}</label>
                     <input 
-                        type="number" className="input-industrial font-bold text-main" style={{ fontSize: '1.2rem' }}
+                        type="number" className="input-industrial retail-price-input" 
                         value={localProject.retailPrice}
                         onChange={e => handleUpdate('retailPrice', parseFloat(e.target.value))}
                     />
@@ -254,12 +236,12 @@ export const ProjectBlueprint = ({ project, onClose }) => {
                         <span className="text-muted">{formatCurrency(materialCost)}</span>
                     </div>
                     <div className="calc-row">
-                         <span>Platform Fees ({localProject.economics.platformFeePercent}% + ${localProject.economics.platformFixedFee}):</span>
+                         <span>Platform Fees:</span>
                          <span className="text-warning">-{formatCurrency(platformFees)}</span>
                     </div>
                     <div className="calc-row">
-                         <span>Shipping Label Cost (Est.):</span>
-                         <div style={{ width: '80px' }}>
+                         <span>Shipping Label:</span>
+                         <div className="shipping-input-wrapper">
                              <input 
                                 className="input-chromeless text-right" 
                                 type="number" 
@@ -269,20 +251,20 @@ export const ProjectBlueprint = ({ project, onClose }) => {
                          </div>
                     </div>
                     <div className="calc-row final">
-                        <span>NET PROFIT:</span>
+                        <span>{TERMINOLOGY.BLUEPRINT.PROFIT}:</span>
                         <span className={netProfit > 0 ? 'text-good' : 'text-alert'}>
                             {formatCurrency(netProfit)}
                         </span>
                     </div>
                      <div className="text-right font-small text-muted mt-5">
-                        Margin: {marginPercent.toFixed(1)}%
+                        {TERMINOLOGY.BLUEPRINT.MARGIN}: {marginPercent.toFixed(1)}%
                      </div>
                 </div>
             </div>
          </div>
 
          <div className="phase-col">
-             <div className="bp-section-header">LAUNCH CHECKLIST</div>
+             <div className="bp-section-header">{TERMINOLOGY.BLUEPRINT.LAUNCH_CHECKLIST}</div>
              <div className="pad-20">
                  {['photos', 'description', 'tags'].map(key => (
                      <div 
@@ -292,51 +274,39 @@ export const ProjectBlueprint = ({ project, onClose }) => {
                      >
                         <div className="check-box">{localProject.checklist[key] && '✓'}</div>
                         <span className="label-industrial no-margin">
-                            {key === 'photos' ? 'PRODUCT PHOTOS TAKEN' : 
-                             key === 'description' ? 'DESCRIPTION WRITTEN' : 'SEO TAGS RESEARCHED'}
+                            {TERMINOLOGY.BLUEPRINT[key.toUpperCase()]}
                         </span>
                      </div>
                  ))}
-
-                 <div className="mt-40 p-20 border-subtle text-center">
-                     <div className="label-industrial mb-10">READY TO SHIP?</div>
-                     <button className="btn-primary w-full">GENERATE SHIPPING LABEL (MOCK)</button>
-                 </div>
              </div>
          </div>
     </div>
   );
 
   return (
-    // UPDATED: Using Global "modal-overlay" and "modal-window" classes
     <div className="modal-overlay">
       <div className="modal-window blueprint-window-size animate-fade-in">
         <div className="blueprint-header">
-           <div className="bp-top-bar">
+           <div className="bp-top-bar pad-20 flex-between">
                <div className="flex-center">
                   <WorkshopIcon />
                   <div className="ml-10">
-                    <span className="blueprint-title">{localProject.title}</span>
-                    <span className="blueprint-id">REF: {localProject.id.toString().slice(-4)}</span>
+                    <span className="blueprint-title header-title">{localProject.title}</span>
+                    <span className="blueprint-id font-mono text-accent ml-10">REF: {localProject.id.toString().slice(-4)}</span>
                   </div>
                </div>
                <div className="flex-center gap-10">
                   {isDirty && <span className="text-warning font-small italic">Unsaved Changes</span>}
-                  <button className="btn-primary" onClick={handleSave}>
-                     <Save /> {TERMINOLOGY.GENERAL.SAVE}
-                  </button>
+                  <button className="btn-primary" onClick={handleSave}><Save /> {TERMINOLOGY.GENERAL.SAVE}</button>
                   <button className="btn-ghost" onClick={onClose}>{TERMINOLOGY.GENERAL.CLOSE}</button>
                </div>
            </div>
-           
-           {/* UPDATED: Using Global "tab-container" and "tab-item" classes */}
            <div className="tab-container">
-               <div className={`tab-item ${activeTab === 'RD' ? 'active' : ''}`} onClick={() => setActiveTab('RD')}>1. PLAN (R&D)</div>
-               <div className={`tab-item ${activeTab === 'BUILD' ? 'active' : ''}`} onClick={() => setActiveTab('BUILD')}>2. BUILD (ENGINEERING)</div>
-               <div className={`tab-item ${activeTab === 'LAUNCH' ? 'active' : ''}`} onClick={() => setActiveTab('LAUNCH')}>3. LAUNCH (MARKET)</div>
+               <div className={`tab-item ${activeTab === 'RD' ? 'active' : ''}`} onClick={() => setActiveTab('RD')}>{TERMINOLOGY.BLUEPRINT.PHASE_PLAN}</div>
+               <div className={`tab-item ${activeTab === 'BUILD' ? 'active' : ''}`} onClick={() => setActiveTab('BUILD')}>{TERMINOLOGY.BLUEPRINT.PHASE_BUILD}</div>
+               <div className={`tab-item ${activeTab === 'LAUNCH' ? 'active' : ''}`} onClick={() => setActiveTab('LAUNCH')}>{TERMINOLOGY.BLUEPRINT.PHASE_LAUNCH}</div>
            </div>
         </div>
-
         <div className="blueprint-body">
             {activeTab === 'RD' && renderRD()}
             {activeTab === 'BUILD' && renderEngineering()}

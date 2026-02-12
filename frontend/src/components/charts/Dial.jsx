@@ -1,6 +1,7 @@
-/* src/components/Dial.jsx */
+/* src/components/charts/Dial.jsx */
 import React from 'react';
 import './Dial.css';
+import { DialIcon } from '../Icons';
 
 export const Dial = ({ value, label, colorVar }) => {
   const radius = 35;
@@ -10,18 +11,13 @@ export const Dial = ({ value, label, colorVar }) => {
   return (
     <div className="dial-wrapper">
       <div className="dial-svg-container">
-        <svg className="dial-svg">
-          <circle className="dial-bg-circle" cx="40" cy="40" r={radius} />
-          <circle 
-            className="dial-progress-circle" 
-            cx="40" cy="40" r={radius} 
-            style={{ 
-              strokeDasharray: circumference, 
-              strokeDashoffset: offset, 
-              stroke: `var(${colorVar})` 
-            }}
-          />
-        </svg>
+        {/* PROTOCOL 2: SVG moved to Icons.jsx */}
+        <DialIcon 
+            radius={radius} 
+            circumference={circumference} 
+            offset={offset} 
+            colorVar={colorVar} 
+        />
         <div className="dial-value-text">{value}%</div>
       </div>
       <span className="label-industrial no-margin">{label}</span>

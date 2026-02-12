@@ -1,54 +1,63 @@
 /* src/components/cards/AssetCard.jsx */
 import React from 'react';
 import './AssetCard.css';
-/* PATH RECALIBRATED: Reaching siblings and parents in the new architecture */
-import { Box, AlertOctagon } from '../Icons'; 
+import { Box } from '../Icons'; 
 import { formatCurrency } from '../../utils/formatters';
 import { TERMINOLOGY } from '../../utils/glossary';
-/* NEW ATOMIC INTEGRATION */
-import { StatusBadge } from '../ui/StatusBadge';
 import { ProgressBar } from '../ui/ProgressBar';
 
-export const AssetCard = ({ asset, onClick }) => {
-  const { name, currentStock, minStock, unitPrice, status } = asset;
-  const isLow = currentStock <= minStock;
+export const AssetCard = ({ asset, onClick, isSelected }) => {
+  const { name, qty, costPerUnit, status, brand, unit } = asset;
+  
+  // Logic: Threshold is 10 for low stock
+  const isLow = qty > 0 && qty < 10;
+  const isOut = qty === 0;
+  const isDormant = status === 'Dormant';
 
   return (
-    <div className={`asset-card-industrial ${isLow ? 'border-warning' : ''}`} onClick={onClick}>
-       <div className="asset-card-header">
-          <div className="flex-center gap-10">
-             <Box className={isLow ? 'text-warning' : 'text-accent'} />
-             <div className="flex-column">
-                <span className="asset-name">{name}</span>
-                {/* FIX: 'status' is now used here, resolving ESLint warning */}
-                <StatusBadge status={status || (isLow ? 'low' : 'active')} />
-             </div>
+    <div 
+      className={`hud-strip ${isLow ? 'border-warning' : isOut ? 'border-alert' : ''} ${isDormant ? 'status-dormant' : ''} ${isSelected ? 'selected' : ''}`} 
+      onClick={onClick}
+    >
+       <div 
+          className="hud-status-bar" 
+          style={{ backgroundColor: isOut ? 'var(--neon-red)' : isLow ? 'var(--neon-orange)' : 'var(--neon-teal)' }} 
+       />
+       
+       <div className="hud-icon-area">
+          <div className="category-icon-wrapper">
+             <Box />
           </div>
-          {isLow && <AlertOctagon className="text-warning animate-pulse" />}
        </div>
 
-       <div className="asset-card-body">
-          <div className="stock-status-row mb-10">
-             <span className="label-industrial">{TERMINOLOGY.INVENTORY.STOCK_LEVEL}</span>
-             <span className={`font-mono font-bold ${isLow ? 'text-warning' : 'text-good'}`}>
-                {currentStock} / {minStock}
-             </span>
-          </div>
+       <div className="hud-info">
+          <span className="hud-brand">{brand || 'N/A'}</span>
+          <h3 className="hud-title">{name}</h3>
+          <div className="hud-cost">{formatCurrency(costPerUnit)} / {unit}</div>
+       </div>
 
-          {/* INTEGRATION: Adding the atomic ProgressBar for visual stock tracking */}
-          <ProgressBar 
-            value={currentStock} 
-            max={minStock * 2} 
-            colorVar={isLow ? '--neon-orange' : '--neon-teal'} 
-          />
-
-          <div className="price-tag-row mt-15">
-             <span className="label-industrial">{TERMINOLOGY.INVENTORY.UNIT_COST}</span>
-             <span className="text-accent font-mono">{formatCurrency(unitPrice)}</span>
+       <div className="hud-stats">
+          <div className="hud-qty">{qty}</div>
+          <div className="hud-unit">{unit}</div>
+          <div className="hud-progress-track">
+             <ProgressBar 
+                value={qty} 
+                max={50} 
+                colorVar={isOut ? '--neon-red' : isLow ? '--neon-orange' : '--neon-teal'} 
+             />
           </div>
        </div>
        
-       <div className="card-corner-accent" />
+       {isOut && (
+          <div className="status-stamp active alert-stamp">
+              {TERMINOLOGY.STATUS.OUT_OF_STOCK}
+          </div>
+       )}
+       {isDormant && !isOut && (
+          <div className="status-stamp active dormant-stamp">
+              {TERMINOLOGY.STATUS.ON_HOLD}
+          </div>
+       )}
     </div>
   );
 };
