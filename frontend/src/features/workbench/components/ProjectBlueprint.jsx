@@ -5,26 +5,25 @@ import { useInventory } from '../../../context/InventoryContext';
 import { useProjectEconomics } from '../../../context/FinancialContext';
 import { TERMINOLOGY } from '../../../utils/glossary';
 import { formatCurrency } from '../../../utils/formatters';
-import { Save, WorkshopIcon, Finance, CloseIcon } from '../../../components/Icons';
+import { Save, WorkshopIcon, Finance, CloseIcon, Plus } from '../../../components/Icons';
 
 export const ProjectBlueprint = ({ project, onClose }) => {
-  const { updateProject, materials, manufactureProduct } = useInventory();
+  const { updateProject, materials } = useInventory();
   
   const [activeTab, setActiveTab] = useState('BUILD'); 
   const [localProject, setLocalProject] = useState({
     ...project,
-    research: project.research || { targetAudience: '', inspiration: '', notes: '' },
-    checklist: project.checklist || { photos: false, description: false, tags: false },
-    economics: project.economics || { shippingCost: 0, platformFeePercent: 6.5, platformFixedFee: 0.20 }
+    instructions: project.instructions || [],
+    brand_specs: project.brand_specs || { label_size: '', finish: '', font_main: '', hex_code: '#ffffff', notes: '' },
+    economics: project.economics || { shippingCost: 0, platformFeePercent: 6.5, platformFixedFee: 0.20 },
+    checklist: project.checklist || { photos: false, description: false, tags: false }
   });
   
   const { materialCost, platformFees, netProfit, marginPercent } = useProjectEconomics(localProject);
-
-  const [batchSize, setBatchSize] = useState(1);
-  const [consoleLogs, setConsoleLogs] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
   const [selectedMatId, setSelectedMatId] = useState('');
   const [reqQty, setReqQty] = useState('');
+  const [newStep, setNewStep] = useState('');
 
   const handleUpdate = (field, value, subField = null) => {
       setIsDirty(true);
@@ -38,68 +37,27 @@ export const ProjectBlueprint = ({ project, onClose }) => {
       }
   };
 
-  const handleTitleChange = (e) => {
-      handleUpdate('title', e.target.value);
-  };
-
   const handleSave = () => {
     updateProject(localProject);
     setIsDirty(false);
     onClose(); 
   };
 
-  const handleAddIngredient = () => {
-    if (!selectedMatId || !reqQty) {
-        logToConsole("Error: Please select a material and enter a quantity.");
-        return;
-    }
-    
-    // THE FIX: Uses .toString() to handle both Ints and UUIDs safely!
-    const mat = materials.find(m => m.id.toString() === selectedMatId.toString());
-    
-    if (!mat) {
-        logToConsole("Error: Could not locate material in database.");
-        return;
-    }
-
-    const newItem = {
-      matId: mat.id,
-      name: mat.name,
-      reqPerUnit: parseFloat(reqQty),
-      unit: mat.unit 
-    };
-    
-    setLocalProject(prev => ({ ...prev, recipe: [...(prev.recipe || []), newItem] }));
-    setIsDirty(true);
-    setReqQty('');
-    setSelectedMatId('');
-    logToConsole(`Added ${newItem.reqPerUnit} ${newItem.unit} of ${newItem.name} to recipe.`);
+  // --- INSTRUCTION LOGIC ---
+  const addStep = () => {
+    if (!newStep.trim()) return;
+    handleUpdate('instructions', [...localProject.instructions, newStep.trim()]);
+    setNewStep('');
   };
 
-  const handleRunBatch = async () => {
-    if (!localProject.recipe || localProject.recipe.length === 0) {
-        logToConsole("Please add materials before making a batch.");
-        return;
-    }
-    
-    logToConsole("Checking material levels...");
-    const result = await manufactureProduct(localProject.id, localProject.recipe, parseInt(batchSize));
-    
-    if (result.success) {
-        logToConsole(`Success: ${batchSize} units built and added to stock!`);
-        setLocalProject(prev => ({ ...prev, stockQty: (prev.stockQty || 0) + parseInt(batchSize) }));
-    } else {
-        logToConsole(`Error: ${result.message}`);
-    }
-  };
-
-  const logToConsole = (msg) => {
-    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    setConsoleLogs(prev => [`[${timestamp}] ${msg}`, ...prev]);
+  const removeStep = (index) => {
+    const updated = localProject.instructions.filter((_, i) => i !== index);
+    handleUpdate('instructions', updated);
   };
 
   const renderEngineering = () => (
-    <div className="engineering-grid">
+    <div className="engineering-grid-v2">
+        {/* Left Column: The Recipe */}
         <div className="bp-col">
             <div className="blueprint-card">
                 <div className="blueprint-card-title">{TERMINOLOGY.WORKSHOP.BOM_HEADER}</div>
@@ -112,62 +70,56 @@ export const ProjectBlueprint = ({ project, onClose }) => {
                     </select>
                     <div className="flex-between gap-10">
                         <input 
-                            type="number" className="input-industrial" placeholder={TERMINOLOGY.GENERAL.UNITS}
+                            type="number" className="input-industrial" placeholder="Qty per unit"
                             value={reqQty} onChange={e => setReqQty(e.target.value)}
                         />
-                        <button className="btn-ghost" onClick={handleAddIngredient}>{TERMINOLOGY.GENERAL.ADD}</button>
+                        <button className="btn-ghost" onClick={() => {
+                            const mat = materials.find(m => m.id.toString() === selectedMatId.toString());
+                            if(mat && reqQty) {
+                                handleUpdate('recipe', [...(localProject.recipe || []), { matId: mat.id, name: mat.name, reqPerUnit: parseFloat(reqQty), unit: mat.unit }]);
+                                setSelectedMatId(''); setReqQty('');
+                            }
+                        }}>{TERMINOLOGY.GENERAL.ADD}</button>
                     </div>
                 </div>
-                
                 <div className="flex-col gap-10">
-                    {localProject.recipe?.length === 0 && <div className="text-muted italic font-small">No materials added yet.</div>}
                     {localProject.recipe?.map((item, idx) => (
-                    <div key={idx} className="recipe-item flex-between p-10 bg-row-odd border-subtle border-radius-2">
-                        <div>
-                            <div className="font-bold">{item.name}</div>
-                            <div className="text-muted font-small">{item.reqPerUnit} {item.unit} per item</div>
+                        <div key={idx} className="recipe-item flex-between p-10 bg-row-odd border-radius-2 border-subtle">
+                            <span className="font-bold">{item.name} <span className="text-muted font-small">({item.reqPerUnit}{item.unit})</span></span>
+                            <button className="btn-icon text-muted hover-red" onClick={() => {
+                                const r = localProject.recipe.filter((_, i) => i !== idx);
+                                handleUpdate('recipe', r);
+                            }}><CloseIcon /></button>
                         </div>
-                        <button className="btn-icon text-muted hover-red" onClick={() => {
-                            const newRecipe = [...localProject.recipe];
-                            newRecipe.splice(idx, 1);
-                            handleUpdate('recipe', newRecipe);
-                        }}><CloseIcon /></button>
-                    </div>
                     ))}
                 </div>
             </div>
         </div>
 
+        {/* Right Column: Assembly Guide */}
         <div className="bp-col">
             <div className="blueprint-card">
-                <div className="blueprint-card-title">{TERMINOLOGY.BLUEPRINT.PRODUCTION_CONSOLE}</div>
-                <div className="flex-between mb-20 p-10 bg-row-even border-radius-2">
-                   <span className="font-bold">{TERMINOLOGY.BLUEPRINT.STOCK}:</span>
-                   <span className="text-accent font-large font-bold">{localProject.stockQty || 0}</span>
+                <div className="blueprint-card-title">ASSEMBLY GUIDE (SOP)</div>
+                <div className="flex-between gap-10 mb-20">
+                    <input 
+                        className="input-industrial" placeholder="Step description..." 
+                        value={newStep} onChange={e => setNewStep(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && addStep()}
+                    />
+                    <button className="btn-ghost" onClick={addStep}><Plus /></button>
                 </div>
-                <div className="lab-form-group">
-                   <label className="label-industrial">{TERMINOLOGY.BLUEPRINT.BATCH}</label>
-                   <input 
-                       type="number" className="input-industrial text-center text-large" 
-                       value={batchSize} onChange={e => setBatchSize(e.target.value)}
-                       min="1"
-                   />
+                <div className="instructions-list">
+                    {localProject.instructions.map((step, idx) => (
+                        <div key={idx} className="instruction-step flex-between p-10 mb-5 bg-row-even border-radius-2">
+                            <div className="flex-center gap-10">
+                                <span className="step-num">{idx + 1}</span>
+                                <span className="text-main font-small">{step}</span>
+                            </div>
+                            <button className="btn-icon text-muted" onClick={() => removeStep(idx)}><CloseIcon /></button>
+                        </div>
+                    ))}
+                    {localProject.instructions.length === 0 && <div className="text-muted italic pad-10">No instructions defined yet.</div>}
                 </div>
-                <button 
-                   className="btn-primary w-full mt-10 py-15" 
-                   onClick={handleRunBatch}
-                   disabled={!localProject.recipe || localProject.recipe.length === 0}
-                >
-                   {TERMINOLOGY.BLUEPRINT.RUN}
-                </button>
-                
-                {consoleLogs.length > 0 && (
-                    <div className="console-log-area mt-20 p-10 bg-app border-subtle border-radius-2 font-mono font-small text-muted">
-                        {consoleLogs.map((log, i) => (
-                            <div key={i} className="mb-5">{log}</div>
-                        ))}
-                    </div>
-                )}
             </div>
         </div>
     </div>
@@ -177,70 +129,58 @@ export const ProjectBlueprint = ({ project, onClose }) => {
     <div className="phase-grid">
          <div className="phase-col">
             <div className="blueprint-card">
-                <div className="blueprint-card-title"><Finance /> {TERMINOLOGY.BLUEPRINT.PROFIT_SIMULATOR}</div>
-                
+                <div className="blueprint-card-title"><Finance /> PROFIT SIMULATOR</div>
                 <div className="lab-form-group mt-20">
-                    <label className="label-industrial">{TERMINOLOGY.BLUEPRINT.RETAIL}</label>
+                    <label className="label-industrial">TARGET RETAIL</label>
                     <input 
                         type="number" className="input-industrial retail-price-input" 
                         value={localProject.retailPrice}
                         onChange={e => handleUpdate('retailPrice', parseFloat(e.target.value) || 0)}
-                        placeholder="0.00"
                     />
                 </div>
-                
                 <div className="profit-breakdown">
                     <div className="calc-row">
-                        <span>{TERMINOLOGY.BLUEPRINT.RAW_MATERIALS}</span>
+                        <span>Material Cost:</span> 
                         <span className="text-muted">{formatCurrency(materialCost)}</span>
                     </div>
                     <div className="calc-row">
-                         <span>{TERMINOLOGY.BLUEPRINT.PLATFORM_FEES}</span>
-                         <span className="text-warning">-{formatCurrency(platformFees)}</span>
-                    </div>
-                    <div className="calc-row border-none">
-                         <span>{TERMINOLOGY.BLUEPRINT.SHIPPING_LABEL}</span>
-                         <div className="shipping-input-wrapper">
-                             <input 
-                                className="input-chromeless" 
-                                type="number" 
-                                value={localProject.economics.shippingCost}
-                                onChange={e => handleUpdate('economics', parseFloat(e.target.value) || 0, 'shippingCost')}
-                                placeholder="0.00"
-                             />
-                         </div>
+                        <span>Platform Fees:</span> 
+                        <span className="text-warning">-{formatCurrency(platformFees)}</span>
                     </div>
                     <div className="calc-row final">
-                        <span>{TERMINOLOGY.BLUEPRINT.PROFIT}:</span>
-                        <span className={netProfit > 0 ? 'text-good' : 'text-alert'}>
-                            {formatCurrency(netProfit)}
-                        </span>
+                        <span>Net Profit:</span> 
+                        <span className="text-good">{formatCurrency(netProfit)}</span>
                     </div>
-                     <div className="text-right font-small text-muted mt-10">
-                        {TERMINOLOGY.BLUEPRINT.MARGIN}: {marginPercent.toFixed(1)}%
-                     </div>
+                    <div className="text-right font-small text-muted mt-10">Margin: {marginPercent.toFixed(1)}%</div>
                 </div>
             </div>
          </div>
 
          <div className="phase-col">
-             <div className="blueprint-card h-full">
-                 <div className="blueprint-card-title">{TERMINOLOGY.BLUEPRINT.LAUNCH_CHECKLIST}</div>
-                 <div className="mt-20">
-                     {['photos', 'description', 'tags'].map(key => (
-                         <div 
-                            key={key} 
-                            className={`flex-center gap-10 p-15 mb-10 border-subtle border-radius-2 clickable transition-all ${localProject.checklist[key] ? 'bg-row-even border-teal' : 'hover-bg-odd'}`}
-                            onClick={() => handleUpdate('checklist', !localProject.checklist[key], key)}
-                         >
-                            <div className={`w-20 h-20 border-radius-circle flex-center border-subtle ${localProject.checklist[key] ? 'bg-teal text-black border-none' : ''}`}>
-                                {localProject.checklist[key] && '✓'}
+             <div className="blueprint-card">
+                 <div className="blueprint-card-title">BRAND & LABEL SPECS</div>
+                 <div className="mt-20 flex-col gap-15">
+                    <div className="flex-between gap-10">
+                        <div className="w-full">
+                            <label className="label-industrial">LABEL SIZE</label>
+                            <input className="input-industrial" value={localProject.brand_specs.label_size} onChange={e => handleUpdate('brand_specs', e.target.value, 'label_size')} placeholder="e.g. 2x3 Rectangle" />
+                        </div>
+                        <div className="w-full">
+                            <label className="label-industrial">HEX COLOR</label>
+                            <div className="flex-center gap-10">
+                                <input type="color" value={localProject.brand_specs.hex_code} onChange={e => handleUpdate('brand_specs', e.target.value, 'hex_code')} />
+                                <input className="input-industrial font-mono" value={localProject.brand_specs.hex_code} onChange={e => handleUpdate('brand_specs', e.target.value, 'hex_code')} />
                             </div>
-                            <span className={`font-bold ${localProject.checklist[key] ? 'text-main' : 'text-muted'}`}>
-                                {TERMINOLOGY.BLUEPRINT[key.toUpperCase()]}
-                            </span>
-                         </div>
-                     ))}
+                        </div>
+                    </div>
+                    <div>
+                        <label className="label-industrial">PRIMARY FONT</label>
+                        <input className="input-industrial" value={localProject.brand_specs.font_main} onChange={e => handleUpdate('brand_specs', e.target.value, 'font_main')} placeholder="e.g. Montserrat Bold" />
+                    </div>
+                    <div>
+                        <label className="label-industrial">MAKER NOTES / PACKAGING INFO</label>
+                        <textarea className="input-industrial" value={localProject.brand_specs.notes} onChange={e => handleUpdate('brand_specs', e.target.value, 'notes')} placeholder="Special packaging instructions..." />
+                    </div>
                  </div>
              </div>
          </div>
@@ -255,22 +195,20 @@ export const ProjectBlueprint = ({ project, onClose }) => {
                <div className="flex-center w-full max-w-500">
                   <WorkshopIcon />
                   <input 
-                    className="input-chromeless ml-10 font-large font-bold w-full text-left"
-                    style={{ fontSize: '1.4rem' }}
+                    className="input-chromeless ml-10 font-large font-bold w-full"
                     value={localProject.title}
-                    onChange={handleTitleChange}
-                    placeholder="Project Name..."
+                    onChange={(e) => handleUpdate('title', e.target.value)}
                   />
                </div>
                <div className="flex-center gap-10">
                   {isDirty && <span className="text-warning font-small italic mr-10">Unsaved Changes</span>}
-                  <button className="btn-ghost" onClick={onClose}>{TERMINOLOGY.GENERAL.CANCEL}</button>
-                  <button className="btn-primary" onClick={handleSave}><Save /> {TERMINOLOGY.GENERAL.SAVE}</button>
+                  <button className="btn-ghost" onClick={onClose}>CANCEL</button>
+                  <button className="btn-primary" onClick={handleSave}><Save /> SAVE BLUEPRINT</button>
                </div>
            </div>
            <div className="tab-container">
-               <div className={`tab-item ${activeTab === 'BUILD' ? 'active' : ''}`} onClick={() => setActiveTab('BUILD')}>{TERMINOLOGY.BLUEPRINT.PHASE_BUILD}</div>
-               <div className={`tab-item ${activeTab === 'LAUNCH' ? 'active' : ''}`} onClick={() => setActiveTab('LAUNCH')}>{TERMINOLOGY.BLUEPRINT.PHASE_LAUNCH}</div>
+               <div className={`tab-item ${activeTab === 'BUILD' ? 'active' : ''}`} onClick={() => setActiveTab('BUILD')}>ENGINEERING</div>
+               <div className={`tab-item ${activeTab === 'LAUNCH' ? 'active' : ''}`} onClick={() => setActiveTab('LAUNCH')}>BRANDING & PROFIT</div>
            </div>
         </div>
         <div className="blueprint-body bg-app p-20">

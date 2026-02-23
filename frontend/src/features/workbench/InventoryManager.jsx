@@ -2,61 +2,58 @@
 import React, { useState, useMemo } from 'react';
 import { useInventory } from '../../context/InventoryContext';
 import './InventoryManager.css';
-import { Plus, Back, History } from '../../components/Icons'; 
+import { Plus, Back, History, WorkshopIcon } from '../../components/Icons'; 
 import { StatCard } from '../../components/cards/StatCard';
 import { ImagePlaceholder } from '../../components/ui/ImagePlaceholder';
 import { AssetCard } from '../../components/cards/AssetCard';
-import { VaultFolder } from '../../components/cards/VaultFolder';
 import { IntakeForm } from './components/IntakeForm';
 import { formatCurrency } from '../../utils/formatters';
-import { TERMINOLOGY, APP_CONFIG, CATEGORY_KEYWORDS } from '../../utils/glossary';
-
-const CATEGORIES = Object.keys(CATEGORY_KEYWORDS);
+import { TERMINOLOGY, APP_CONFIG } from '../../utils/glossary';
 
 export const InventoryManager = () => {
-  const { materials } = useInventory(); 
-  const [filter, setFilter] = useState(TERMINOLOGY.INVENTORY.FILTERS.ALL);
+  const { materials, activeProjects, manufactureProduct } = useInventory(); 
   const [showIntakeForm, setShowIntakeForm] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null); 
   
+  // Production State
+  const [productionData, setProductionData] = useState({ projectId: '', batchSize: 1 });
+  const [consoleLogs, setConsoleLogs] = useState([]);
+
   const metrics = useMemo(() => {
-    let totalValue = 0, lowStockCount = 0, outOfStockCount = 0;
+    let totalValue = 0;
     materials.forEach(m => {
       const val = (m.qty || 0) * m.costPerUnit;
       if (m.status !== 'Discontinued') totalValue += val;
-      if (m.status === 'Active') {
-        if (m.qty <= 0) outOfStockCount++;
-        else if (m.qty < 10) lowStockCount++;
-      }
     });
-    return { totalValue, lowStockCount, outOfStockCount };
+    return { totalValue };
   }, [materials]);
-
-  const filteredMaterials = useMemo(() => {
-    if (filter === TERMINOLOGY.INVENTORY.FILTERS.ALL) return materials;
-    return materials.filter(m => m.status.toUpperCase() === filter);
-  }, [materials, filter]);
 
   const workshopItems = useMemo(() => 
-    filteredMaterials.filter(m => APP_CONFIG.INVENTORY.WORKSHOP.includes(m.category)), 
-  [filteredMaterials]);
+    materials.filter(m => APP_CONFIG.INVENTORY.WORKSHOP.includes(m.category)), 
+  [materials]);
   
   const logisticsItems = useMemo(() => 
-    filteredMaterials.filter(m => APP_CONFIG.INVENTORY.LOGISTICS.includes(m.category)), 
-  [filteredMaterials]);
+    materials.filter(m => APP_CONFIG.INVENTORY.LOGISTICS.includes(m.category)), 
+  [materials]);
 
-  const vaultGroups = useMemo(() => {
-    const groups = {};
-    CATEGORIES.forEach(cat => groups[cat] = []);
-    materials.forEach(m => {
-        if (groups[m.category]) groups[m.category].push(m);
-    });
-    return groups;
-  }, [materials]);
+  const handleRunBatch = async (e) => {
+    e.preventDefault();
+    const project = activeProjects.find(p => p.id.toString() === productionData.projectId.toString());
+    if (!project) return;
 
-  const closeSidebarPanel = () => {
-    setShowIntakeForm(false);
-    setSelectedMaterial(null);
+    logToConsole(`Initializing batch for ${project.title}...`);
+    const result = await manufactureProduct(project.id, project.recipe, parseInt(productionData.batchSize));
+    
+    if (result.success) {
+        logToConsole(`Success: ${productionData.batchSize} units added to stock.`);
+    } else {
+        logToConsole(`Error: ${result.message}`);
+    }
+  };
+
+  const logToConsole = (msg) => {
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setConsoleLogs(prev => [`[${timestamp}] ${msg}`, ...prev]);
   };
 
   return (
@@ -67,22 +64,9 @@ export const InventoryManager = () => {
             <h2 className="header-title">{TERMINOLOGY.INVENTORY.HEADER}</h2>
             <span className="header-subtitle">{TERMINOLOGY.INVENTORY.MANIFEST_LABEL}</span>
           </div>
-          <div className="flex-center gap-10">
-            <div className="filter-group">
-               {Object.values(TERMINOLOGY.INVENTORY.FILTERS).map(f => (
-                 <button 
-                    key={f} 
-                    onClick={() => setFilter(f)} 
-                    className={`filter-btn ${filter === f ? 'active' : ''}`}
-                 >
-                    {f}
-                 </button>
-               ))}
-            </div>
-            <button className="btn-primary" onClick={() => setShowIntakeForm(true)}>
-               <Plus /> {TERMINOLOGY.GENERAL.ADD}
-            </button>
-          </div>
+          <button className="btn-primary" onClick={() => setShowIntakeForm(true)}>
+             <Plus /> {TERMINOLOGY.GENERAL.ADD}
+          </button>
         </div>
 
         <StatCard label={TERMINOLOGY.INVENTORY.VALUE_LABEL} value={formatCurrency(metrics.totalValue)} glowColor="purple" />
@@ -91,19 +75,11 @@ export const InventoryManager = () => {
           <div className="section-separator-inventory">
              <span className="separator-label-inv">{TERMINOLOGY.INVENTORY.SECTION_WORKSHOP}</span>
              <div className="separator-line-inv" />
-             <span className="separator-count-inv">{workshopItems.length}</span>
           </div>
           <div className="locker-grid animate-fade-in">
-             {workshopItems.length > 0 ? workshopItems.map(m => (
-                <AssetCard 
-                   key={m.id} 
-                   asset={m} 
-                   onClick={() => setSelectedMaterial(m)}
-                   isSelected={selectedMaterial?.id === m.id}
-                />
-             )) : (
-               <div className="text-muted italic">{TERMINOLOGY.GENERAL.NO_DATA}</div>
-             )}
+             {workshopItems.map(m => (
+                <AssetCard key={m.id} asset={m} onClick={() => setSelectedMaterial(m)} isSelected={selectedMaterial?.id === m.id} />
+             ))}
           </div>
         </div>
 
@@ -111,34 +87,22 @@ export const InventoryManager = () => {
           <div className="section-separator-inventory">
              <span className="separator-label-inv logistics">{TERMINOLOGY.INVENTORY.SECTION_LOGISTICS}</span>
              <div className="separator-line-inv" />
-             <span className="separator-count-inv">{logisticsItems.length}</span>
           </div>
           <div className="locker-grid animate-fade-in">
-             {logisticsItems.length > 0 ? logisticsItems.map(m => (
-                <AssetCard 
-                   key={m.id} 
-                   asset={m} 
-                   onClick={() => setSelectedMaterial(m)}
-                   isSelected={selectedMaterial?.id === m.id}
-                />
-             )) : (
-               <div className="text-muted italic">{TERMINOLOGY.GENERAL.NO_DATA}</div>
-             )}
+             {logisticsItems.map(m => (
+                <AssetCard key={m.id} asset={m} onClick={() => setSelectedMaterial(m)} isSelected={selectedMaterial?.id === m.id} />
+             ))}
           </div>
         </div>
       </div>
 
       <div className="sidebar-col">
-         <div className="keyword-header flex-between-center">
+         <div className="keyword-header flex-between">
            <h3 className="label-industrial glow-purple">
-             {showIntakeForm ? TERMINOLOGY.INVENTORY.INTAKE : 
-              selectedMaterial ? TERMINOLOGY.INVENTORY.ASSET_DETAILS : 
-              TERMINOLOGY.INVENTORY.VAULT_ACCESS}
+             {showIntakeForm ? "ADD NEW SUPPLY" : selectedMaterial ? "SUPPLY DETAILS" : "PRODUCTION TERMINAL"}
            </h3>
            {(showIntakeForm || selectedMaterial) && (
-               <button onClick={closeSidebarPanel} className="btn-icon" title={TERMINOLOGY.GENERAL.CLOSE}>
-                   <Back />
-               </button>
+               <button onClick={() => {setShowIntakeForm(false); setSelectedMaterial(null);}} className="btn-icon"><Back /></button>
            )}
         </div>
 
@@ -147,29 +111,19 @@ export const InventoryManager = () => {
             <IntakeForm onClose={() => setShowIntakeForm(false)} />
           ) : selectedMaterial ? (
             <div className="sidebar-panel animate-fade-in">
-              <ImagePlaceholder text={TERMINOLOGY.INVENTORY.PHOTO_LABEL} />
-              <div className="sidebar-inner">
+              <ImagePlaceholder text="ITEM PHOTO" />
+              <div className="sidebar-inner pad-20">
                 <h3 className="detail-title">{selectedMaterial.name}</h3>
-                <div className="detail-brand">{TERMINOLOGY.GENERAL.BRAND}: {selectedMaterial.brand || 'N/A'}</div>
-                
                 <div className="history-section mt-20">
-                    <div className="label-industrial text-teal border-bottom-subtle mb-10 pb-5">
-                       <History /> {TERMINOLOGY.INVENTORY.HISTORY_LOG}
-                    </div>
-                    
-                    <div className="history-list flex-col gap-10 mt-10">
-                        {selectedMaterial.history && selectedMaterial.history.length > 0 ? (
+                    <div className="label-industrial text-teal border-bottom-subtle mb-10 pb-5"><History /> HISTORY</div>
+                    <div className="history-list flex-col gap-10">
+                        {selectedMaterial.history?.length > 0 ? (
                             selectedMaterial.history.map((log, idx) => (
                                 <div key={idx} className="flex-between p-10 bg-row-odd border-radius-2 border-subtle">
-                                    <div className="flex-col gap-5">
-                                        <span className="label-industrial no-margin">{new Date(log.date).toLocaleDateString()}</span>
-                                        <span className="font-bold font-small text-main">
-                                            {log.type === 'USAGE' ? log.note : (log.type === 'RESTOCK' ? 'Restocked Supply' : 'Initial Intake')}
-                                        </span>
-                                    </div>
-                                    <div className={`font-bold ${log.qty > 0 ? 'text-good' : 'text-warning'}`}>
-                                        {log.qty > 0 ? '+' : ''}{log.qty} <span className="font-small">{selectedMaterial.unit}</span>
-                                    </div>
+                                    <span className="font-small text-muted">{new Date(log.date).toLocaleDateString()}</span>
+                                    <span className={log.qty > 0 ? 'text-good' : 'text-warning'}>
+                                        {log.qty > 0 ? '+' : ''}{log.qty}
+                                    </span>
                                 </div>
                             ))
                         ) : (
@@ -177,23 +131,39 @@ export const InventoryManager = () => {
                         )}
                     </div>
                 </div>
-
-                <button className="btn-ghost w-full mt-20" onClick={() => setSelectedMaterial(null)}>
-                  {TERMINOLOGY.GENERAL.CLOSE}
-                </button>
               </div>
             </div>
           ) : (
-            <div className="folder-stack-v2">
-                {CATEGORIES.map(cat => (
-                    vaultGroups[cat]?.length > 0 && (
-                        <VaultFolder 
-                            key={cat} title={cat} count={vaultGroups[cat].length}
-                            items={vaultGroups[cat]} onItemClick={setSelectedMaterial}
-                            stampText={cat.split(' ')[0].toUpperCase()}
+            <div className="sidebar-panel animate-fade-in pad-20">
+                <form onSubmit={handleRunBatch}>
+                    <div className="lab-form-group mb-20">
+                        <label className="label-industrial">SELECT PROJECT</label>
+                        <select 
+                            className="input-industrial" 
+                            value={productionData.projectId} 
+                            onChange={e => setProductionData({...productionData, projectId: e.target.value})}
+                        >
+                            <option value="">-- Choose Product --</option>
+                            {activeProjects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
+                        </select>
+                    </div>
+                    <div className="lab-form-group mb-20">
+                        <label className="label-industrial">BATCH SIZE</label>
+                        <input 
+                            type="number" className="input-industrial text-center" 
+                            value={productionData.batchSize} 
+                            onChange={e => setProductionData({...productionData, batchSize: e.target.value})}
                         />
-                    )
-                ))}
+                    </div>
+                    <button className="btn-primary w-full py-15" disabled={!productionData.projectId}>
+                        <WorkshopIcon /> LOG PRODUCTION
+                    </button>
+                </form>
+                {consoleLogs.length > 0 && (
+                    <div className="console-log-area mt-20 p-10 bg-app border-subtle border-radius-2 font-mono font-small text-muted">
+                        {consoleLogs.map((log, i) => <div key={i} className="mb-5">{log}</div>)}
+                    </div>
+                )}
             </div>
           )}
         </div>

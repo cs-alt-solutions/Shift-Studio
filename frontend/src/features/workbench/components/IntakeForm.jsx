@@ -1,12 +1,14 @@
 /* src/features/workbench/components/IntakeForm.jsx */
 import React, { useState } from 'react';
 import { useInventory } from '../../../context/InventoryContext';
+import { useFinancial } from '../../../context/FinancialContext'; // <-- ADDED FINANCIAL CONTEXT
 import { TERMINOLOGY, CATEGORY_KEYWORDS, COMMON_ASSETS } from '../../../utils/glossary';
 
 const CATEGORIES = Object.keys(CATEGORY_KEYWORDS);
 
 export const IntakeForm = ({ onClose }) => {
   const { materials, addInventoryItem, updateInventoryItem } = useInventory();
+  const { addTransaction } = useFinancial(); // <-- PULLING THE LEDGER FUNCTION
   
   const [isExistingItem, setIsExistingItem] = useState(false);
   const [selectedExistingId, setSelectedExistingId] = useState('');
@@ -43,7 +45,7 @@ export const IntakeForm = ({ onClose }) => {
     const totalCost = parseFloat(formData.totalCost);
     const newUnitCost = totalCost / addedQty;
 
-    // Create the ledger entry for additions
+    // Create the ledger entry for inventory history
     const historyEntry = {
         date: new Date().toISOString(),
         qty: addedQty,
@@ -51,9 +53,14 @@ export const IntakeForm = ({ onClose }) => {
         type: isExistingItem ? 'RESTOCK' : 'INITIAL_INTAKE'
     };
 
+    let itemName = formData.name;
+    let itemUnit = formData.unit;
+
     if (isExistingItem && selectedExistingId) {
       const existing = materials.find(m => m.id.toString() === selectedExistingId.toString());
       if (existing) {
+        itemName = existing.name;
+        itemUnit = existing.unit;
         const newTotalQty = (existing.qty || 0) + addedQty;
         const newHistory = [historyEntry, ...(existing.history || [])];
         
@@ -71,6 +78,13 @@ export const IntakeForm = ({ onClose }) => {
         history: [historyEntry]
       });
     }
+    
+    // --- NEW: INJECT EXPENSE INTO FINANCIAL LEDGER ---
+    await addTransaction({
+        description: isExistingItem ? `Restocked ${addedQty} ${itemUnit} of ${itemName}` : `Purchased ${addedQty} ${itemUnit} of ${itemName}`,
+        amount: -Math.abs(totalCost), // Forces it to be a negative expense
+        type: 'EXPENSE'
+    });
     
     onClose();
   };

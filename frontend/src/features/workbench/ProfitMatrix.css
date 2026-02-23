@@ -5,11 +5,10 @@
     gap: 20px;
     height: 100%;
     overflow-y: auto;
-    padding-right: 5px;
 }
 
-.profit-metrics-grid {
+.profit-grid-header {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
