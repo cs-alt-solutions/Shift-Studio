@@ -1,15 +1,18 @@
-/* src/features/market/MarketRadar.css */
-.market-radar-container {
+/* src/features/workbench/MarketRadar.css */
+.performance-dials {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    height: 100%;
-    overflow-y: auto;
-    padding-right: 5px;
+    align-items: center;
 }
 
-.radar-metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+.h-120 {
+    height: 120px;
+}
+
+/* Ensure dashed border for the 'Add Competitor' slot follows industrial style */
+.border-dashed {
+    border-style: dashed !important;
+    border-color: var(--border-subtle);
+    background: rgba(var(--neon-cyan-rgb), 0.02);
 }

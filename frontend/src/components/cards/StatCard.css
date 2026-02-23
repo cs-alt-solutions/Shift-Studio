@@ -1,0 +1,34 @@
+/* src/components/cards/StatCard.css */
+.stat-card-glow {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px; /* Industrial sharp edges */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px;
+}
+
+/* Rule 7: Interactive Stacking & Feedback */
+.stat-card-glow:hover {
+  transform: translateY(-4px);
+  z-index: 10;
+}
+
+.font-large {
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+}
+
+.text-accent {
+  color: var(--neon-teal);
+  filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.2));
+}
+
+/* Ensure the layout doesn't "bounce" when numbers change */
+.leading-tight {
+  line-height: 1.1;
+}

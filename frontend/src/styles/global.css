@@ -293,9 +293,38 @@ select.input-industrial option {
   color: var(--text-main);
 }
 
-/* FIX: Consistent icon sizing for navigation */
-.nav-icon svg {
-  width: 24px !important;
-  height: 24px !important;
-  display: block;
+/* Update in src/styles/global.css */
+.nav-link svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke-width: 2px;
+  flex-shrink: 0; /* Prevents icons from squishing in collapsed mode */
+}
+/* src/styles/global.css - Added Design Tokens */
+:root {
+  /* Industrial Color Palette */
+  --neon-teal: #00f2ff;
+  --neon-purple: #bc13fe;
+  --neon-orange: #ff8c00;
+  --neon-red: #ff3131;
+  --bg-panel: #1a1a1a;
+  --border-subtle: #333333;
+
+  /* Strict Glow Registry */
+  --glow-teal: 0 0 15px rgba(0, 242, 255, 0.3), 0 0 5px rgba(0, 242, 255, 0.2);
+  --glow-purple: 0 0 15px rgba(188, 19, 254, 0.3), 0 0 5px rgba(188, 19, 254, 0.2);
+  --glow-orange: 0 0 15px rgba(255, 140, 0, 0.3), 0 0 5px rgba(255, 140, 0, 0.2);
+}
+
+/* Operational Utility Classes */
+.glow-teal { box-shadow: var(--glow-teal); border-color: var(--neon-teal) !important; }
+.glow-purple { box-shadow: var(--glow-purple); border-color: var(--neon-purple) !important; }
+.glow-orange { box-shadow: var(--glow-orange); border-color: var(--neon-orange) !important; }
+
+/* Global StatCard Correction */
+.stat-card-glow {
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+.stat-card-glow:hover {
+  transform: translateY(-2px);
 }
