@@ -12,8 +12,20 @@ import './DashboardHome.css';
 import { convertToStockUnit } from '../../utils/units';
 
 export const DashboardHome = ({ onNavigate }) => {
-  const { activeProjects, draftProjects, materials } = useInventory();
-  const { netProfit, totalRev, totalCost } = useFinancialStats();
+  // FIX 1: Provide default empty arrays and pull the loading state
+  const { 
+    activeProjects = [], 
+    draftProjects = [], 
+    materials = [], 
+    loading: inventoryLoading 
+  } = useInventory() || {};
+
+  const { 
+    netProfit = 0, 
+    totalRev = 0, 
+    totalCost = 0,
+    loading: financeLoading
+  } = useFinancialStats() || {};
   
   const [workshopTab, setWorkshopTab] = useState('FLEET'); 
   const [invTab, setInvTab] = useState('LOGISTICS'); 
@@ -24,7 +36,6 @@ export const DashboardHome = ({ onNavigate }) => {
         let maxBuildable = 9999;
         let limitingMaterial = null;
 
-        // FIX: Added safety check (p.recipe?.length)
         if (p.recipe && p.recipe.length > 0) {
             p.recipe.forEach(ing => {
                 const mat = materials.find(m => m.id === ing.matId);
@@ -46,7 +57,6 @@ export const DashboardHome = ({ onNavigate }) => {
         else if (p.stockQty < 5) health = 'LOW';
         
         let productionStatus = 'READY';
-        // FIX: Added safety check (p.recipe?.length) to prevent crash
         if (maxBuildable === 0 && p.recipe?.length > 0) productionStatus = 'HALTED';
 
         return { 
@@ -118,6 +128,15 @@ export const DashboardHome = ({ onNavigate }) => {
   }, [materials]);
 
   const productionChartData = fleetAnalysis.map(p => ({ label: p.title.substring(0,6), value: p.stockQty }));
+
+  // FIX 2: Our Loading Gatekeeper
+  if (inventoryLoading || financeLoading) {
+    return (
+      <div className="dashboard-container pad-20 text-center">
+         <div className="text-accent font-mono mt-20">INITIALIZING STUDIO TELEMETRY...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-container">
@@ -289,7 +308,7 @@ export const DashboardHome = ({ onNavigate }) => {
                                         ))}
                                     </tbody>
                                 </table>
-                            ) : <div className="good-state">NOMINAL</div>
+                            ) : <div className="good-state pad-20 font-mono text-center text-good">NOMINAL</div>
                         )}
                     </div>
                 </div>
