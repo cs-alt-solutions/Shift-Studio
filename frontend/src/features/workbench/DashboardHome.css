@@ -1,22 +1,18 @@
 /* src/features/workbench/DashboardHome.css */
 
-/* --- MAIN LAYOUT --- */
 .dashboard-container {
     display: flex;
     flex-direction: column;
     height: 100%;
     overflow: hidden;
-    /* Global scanline is used, no need for background here */
 }
 
-/* The middle section that grows to fill space */
 .dashboard-content-scroll {
     flex: 1; 
     overflow-y: auto;
-    padding: 20px 40px 80px 40px; /* Padding for content & ticker */
+    padding: 20px 40px 80px 40px; 
 }
 
-/* --- SECTOR A: HUD TOP BAR --- */
 .hud-top-bar {
     height: 60px;
     background: rgba(9, 9, 11, 0.95);
@@ -38,7 +34,7 @@
 }
 
 .hud-value {
-    font-size: 1.2rem; font-weight: 800; line-height: 1;
+    font-size: 1.5rem; font-weight: 800; line-height: 1;
 }
 
 .hud-divider { width: 1px; height: 30px; background: var(--border-subtle); }
@@ -52,33 +48,19 @@
     background: rgba(var(--neon-teal-rgb), 0.05);
 }
 
-/* --- DASHBOARD GRID & COLUMNS --- */
 .dashboard-grid {
-    display: grid; grid-template-columns: 1fr; gap: 20px;
+    display: grid; grid-template-columns: 1fr; gap: 24px;
 }
 @media (min-width: 1200px) {
     .dashboard-grid { grid-template-columns: 3fr 1fr; align-items: start; }
 }
-.dashboard-col-main { display: flex; flex-direction: column; }
-.dashboard-col-side { display: flex; flex-direction: column; }
 
-/* --- SECTOR B: WORKSHOP SPECIFICS --- */
-.panel-header-simple {
-    display: flex; align-items: center; font-family: var(--font-mono);
-    font-size: 0.9rem; color: var(--text-main); font-weight: 700;
-    letter-spacing: 1px; border-bottom: 1px solid var(--border-subtle);
-    padding-bottom: 10px;
-}
-.badge-count {
-    background: var(--neon-purple); color: #000; font-size: 0.7rem;
-    padding: 2px 6px; border-radius: 2px;
-}
 .dashboard-deck {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px; /* FIX: Fixed stacking with consistent gap */
 }
 
-/* --- LOGISTICS SIMULATION VIEW --- */
 .logistics-sim-view { display: flex; flex-direction: column; }
 .sim-header { background: linear-gradient(to bottom, rgba(var(--neon-cyan-rgb), 0.05), transparent); }
 .sim-big-number {
@@ -92,60 +74,26 @@
 }
 .logistics-divider { height: 1px; background: var(--border-subtle); width: 100%; }
 
-/* --- FOOTER: TICKER --- */
 .dashboard-footer {
     height: 45px; background: var(--bg-panel-header);
     border-top: 1px solid var(--border-subtle); display: flex; align-items: center;
     z-index: 50; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); flex-shrink: 0;
 }
+
 .ticker-panel { display: flex; align-items: center; width: 100%; height: 100%; }
-.ticker-label {
-    padding: 0 20px; font-family: var(--font-mono); font-size: 0.7rem;
-    color: var(--neon-cyan); font-weight: 800; background: rgba(var(--neon-cyan-rgb), 0.05);
-    height: 100%; display: flex; align-items: center;
-    border-right: 1px solid var(--border-subtle); white-space: nowrap;
-}
-.ticker-wrap {
-    flex: 1; overflow: hidden; white-space: nowrap;
-    mask-image: linear-gradient(to right, transparent, black 2%, black 98%, transparent);
-}
+
 .ticker-move {
     display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite;
 }
-.ticker-move:hover { animation-play-state: paused; }
-.ticker-item {
-    display: inline-block; padding: 0 40px;
-    border-right: 1px solid var(--border-subtle); opacity: 0.8;
-}
+/* REMOVED: No more animation pausing on hover */
+
 @keyframes ticker {
     0% { transform: translate3d(0, 0, 0); }
     100% { transform: translate3d(-50%, 0, 0); }
 }
-/* src/features/workbench/DashboardHome.css */
 
-/* Rule 2: Single Source of Truth - Using global CSS variables */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1.6fr 1fr; /* Adjusted for better content flow */
-    gap: 24px;
-    padding: 20px;
-}
-
-/* Fix for "small text" - enforcing readable standards */
-.hud-value {
-    font-size: 1.5rem; /* Increased from 1.2rem */
-    font-weight: 800;
-    color: var(--neon-teal);
-}
-
-.panel-industrial {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-subtle);
-    padding: 20px;
-    border-radius: 4px;
-}
-
-/* Ensure the ticker doesn't overlap content */
-.dashboard-content-scroll {
-    padding-bottom: 100px; 
-}
+/* FIX: Align draft missing badges */
+.align-start { align-items: flex-start; }
+.max-w-150 { max-width: 150px; }
+.font-tiny { font-size: 0.6rem; letter-spacing: 0.5px; }
+.warning-text { color: var(--neon-orange); border: 1px solid var(--neon-orange); padding: 2px 4px; border-radius: 2px; }

@@ -1,5 +1,5 @@
-/* uploaded file: src/components/ProjectCard.css */
-/* --- FOLDER ARCHITECTURE --- */
+/* src/components/cards/ProjectCard.css */
+
 .folder-container {
   display: flex;
   flex-direction: column;
@@ -7,7 +7,6 @@
   margin-top: 10px; 
 }
 
-/* The "Tab" */
 .folder-tab {
   width: 50%; 
   background: var(--bg-panel); 
@@ -32,7 +31,6 @@
   text-transform: uppercase;
 }
 
-/* The Main Card Body */
 .folder-body.card-hover-effect {
   background: var(--bg-panel); 
   border: 1px solid var(--border-subtle);
@@ -52,15 +50,6 @@
   z-index: 10;
 }
 
-/* Catalog Mode Clipping */
-.folder-body.catalog-mode {
-  overflow: hidden !important; 
-  border-color: var(--border-subtle); 
-}
-.folder-body.catalog-mode:hover {
-  border-color: var(--neon-purple);
-}
-
 .folder-content {
   padding: 24px;
   display: flex;
@@ -68,49 +57,6 @@
   flex: 1;
 }
 
-/* --- STAMPS --- */
-.status-stamp {
-  position: absolute;
-  top: -15px;
-  right: -10px; 
-  z-index: 20;
-  font-family: var(--font-mono); 
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-size: 0.8rem;
-  padding: 8px 14px;
-  border: 3px double currentColor; 
-  border-radius: 2px; 
-  background: var(--bg-panel); 
-  box-shadow: 4px 4px 10px rgba(0,0,0,0.5); 
-}
-
-.status-stamp.active { transform: rotate(12deg); color: var(--neon-teal); border-color: var(--neon-teal); text-shadow: 0 0 5px rgba(45, 212, 191, 0.4); }
-.status-stamp.draft { transform: rotate(-5deg); color: var(--neon-blue); border-color: var(--neon-blue); border-style: solid; }
-.status-stamp.halted { transform: rotate(8deg); color: var(--neon-red); border-color: var(--neon-red); border-style: solid; }
-
-.catalog-stamp-large {
-  position: absolute;
-  bottom: 25px;
-  right: 20px;
-  z-index: 15;
-  font-family: var(--font-mono); 
-  font-weight: 900;
-  font-size: 2rem; 
-  color: var(--neon-purple);
-  opacity: 0.15; 
-  transform: rotate(-10deg); 
-  border: 4px solid var(--neon-purple);
-  padding: 5px 15px;
-  border-radius: 4px;
-  pointer-events: none; 
-  white-space: nowrap;
-  mask-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,1));
-}
-
-/* --- ELEMENTS --- */
-/* RENAMED from .card-title to prevent conflicts */
 .folder-title {
   margin: 0;
   font-size: 1.3rem; 
@@ -120,50 +66,28 @@
   line-height: 1.2;
 }
 
-.stock-indicator-clean {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
+/* FIX: Clean Delete Button Protocol */
+.btn-icon-hover-clean {
+  background: transparent !important;
+  border: none !important;
   color: var(--text-muted);
-  background: var(--bg-row-odd); 
-  border: 1px solid var(--border-subtle);
-  padding: 6px 10px;
-  border-radius: 4px;
-}
-
-/* --- PROGRESS BAR --- */
-.progress-track {
-  width: 100%;
-  height: 4px; 
-  background: var(--bg-row-even); 
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: var(--neon-purple);
-  box-shadow: 0 0 8px var(--neon-purple);
-  transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-/* BUTTONS */
-.btn-icon-hover {
-  background: transparent;
-  border: none;
-  color: var(--border-subtle);
   font-size: 1.5rem;
   cursor: pointer;
   line-height: 0.5;
-  padding: 0 0 0 10px;
+  padding: 0;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
 }
-.btn-icon-hover:hover { 
+
+.btn-icon-hover-clean:hover { 
   color: var(--neon-red); 
   transform: scale(1.1); 
+  filter: drop-shadow(0 0 5px var(--neon-red));
 }
-/* --- CLEANUP UTILITIES --- */
+
 .metrics-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

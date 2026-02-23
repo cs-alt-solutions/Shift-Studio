@@ -62,7 +62,7 @@ export const ProjectCard = ({ project, onClick, onDelete, readOnly = false, show
           {!readOnly && onDelete && (
             <div className="flex-end mt-10">
               <button 
-                className="btn-icon-hover" 
+                className="btn-icon-hover-clean" 
                 onClick={(e) => { 
                   e.stopPropagation(); 
                   onDelete(project.id); 

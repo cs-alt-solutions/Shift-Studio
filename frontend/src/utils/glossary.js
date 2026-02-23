@@ -26,9 +26,6 @@ export const TERMINOLOGY = {
     NO_DATA: "No data available yet.",
     ANALYZE: "VIEW DETAILS",
     UNKNOWN: "UNKNOWN",
-    SELECT_PRODUCT: "SELECT PRODUCT",
-    BATCH_SIZE: "BATCH SIZE",
-    RUN_PRODUCTION: "LOG PRODUCTION",
     CONFIRM: "CONFIRM"
   },
   DASHBOARD: {
@@ -94,7 +91,8 @@ export const TERMINOLOGY = {
     LABEL_SIZE: "LABEL SIZE",
     HEX_COLOR: "HEX COLOR",
     PRIMARY_FONT: "PRIMARY FONT",
-    MAKER_NOTES: "MAKER NOTES"
+    MAKER_NOTES: "MAKER NOTES",
+    BRAND_SPECS: "BRAND & LABEL SPECS"
   },
   INVENTORY: {
     HEADER: "SUPPLIES & INVENTORY",
@@ -114,6 +112,7 @@ export const TERMINOLOGY = {
     UNIT_PRICE: "COST PER UNIT",
     HISTORY_LOG: "RESTOCK HISTORY",
     PHOTO_LABEL: "ITEM PHOTO",
+    CONSOLE_HEADER: "MANUFACTURING CONSOLE",
     FILTERS: {
       ALL: "ALL",
       ACTIVE: "ACTIVE",
@@ -220,10 +219,10 @@ export const COMMON_ASSETS = [
 ];
 
 export const MARKET_TICKER_DATA = [
-    { label: "SOY WAX", trend: "up", value: "$2.15/lb" },
-    { label: "FRAGRANCE OIL", trend: "neutral", value: "$18.50/lb" },
-    { label: "SHIPPING (DOMESTIC)", trend: "down", value: "$4.20/avg" },
-    { label: "BEESWAX", trend: "up", value: "$8.50/lb" },
-    { label: "GLASS JARS (8oz)", trend: "neutral", value: "$0.85/ea" },
-    { label: "WICKING (CD-12)", trend: "down", value: "$0.05/ea" }
+    { label: "SOY WAX", trend: "up", value: "$2.15 PER LB" },
+    { label: "FRAGRANCE OIL", trend: "neutral", value: "$18.50 PER LB" },
+    { label: "SHIPPING (DOMESTIC)", trend: "down", value: "$4.20 PER AVG" },
+    { label: "BEESWAX", trend: "up", value: "$8.50 PER LB" },
+    { label: "GLASS JARS (8oz)", trend: "neutral", value: "$0.85 EA" },
+    { label: "WICKING (CD-12)", trend: "down", value: "$0.05 EA" }
 ];

@@ -15,7 +15,6 @@ export const InventoryManager = () => {
   const [showIntakeForm, setShowIntakeForm] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null); 
   
-  // Production State
   const [productionData, setProductionData] = useState({ projectId: '', batchSize: 1 });
   const [consoleLogs, setConsoleLogs] = useState([]);
 
@@ -99,10 +98,10 @@ export const InventoryManager = () => {
       <div className="sidebar-col">
          <div className="keyword-header flex-between">
            <h3 className="label-industrial glow-purple">
-             {showIntakeForm ? "ADD NEW SUPPLY" : selectedMaterial ? "SUPPLY DETAILS" : "PRODUCTION TERMINAL"}
+             {showIntakeForm ? TERMINOLOGY.INVENTORY.INTAKE : selectedMaterial ? TERMINOLOGY.INVENTORY.ASSET_DETAILS : TERMINOLOGY.INVENTORY.CONSOLE_HEADER}
            </h3>
            {(showIntakeForm || selectedMaterial) && (
-               <button onClick={() => {setShowIntakeForm(false); setSelectedMaterial(null);}} className="btn-icon"><Back /></button>
+               <button onClick={() => {setShowIntakeForm(false); setSelectedMaterial(null);}} className="btn-icon-hover-clean"><Back /></button>
            )}
         </div>
 
@@ -111,11 +110,11 @@ export const InventoryManager = () => {
             <IntakeForm onClose={() => setShowIntakeForm(false)} />
           ) : selectedMaterial ? (
             <div className="sidebar-panel animate-fade-in">
-              <ImagePlaceholder text="ITEM PHOTO" />
+              <ImagePlaceholder text={TERMINOLOGY.INVENTORY.PHOTO_LABEL} />
               <div className="sidebar-inner pad-20">
                 <h3 className="detail-title">{selectedMaterial.name}</h3>
                 <div className="history-section mt-20">
-                    <div className="label-industrial text-teal border-bottom-subtle mb-10 pb-5"><History /> HISTORY</div>
+                    <div className="label-industrial text-teal border-bottom-subtle mb-10 pb-5"><History /> {TERMINOLOGY.INVENTORY.HISTORY_LOG}</div>
                     <div className="history-list flex-col gap-10">
                         {selectedMaterial.history?.length > 0 ? (
                             selectedMaterial.history.map((log, idx) => (
@@ -127,7 +126,7 @@ export const InventoryManager = () => {
                                 </div>
                             ))
                         ) : (
-                            <div className="text-muted italic font-small">No transaction history.</div>
+                            <div className="text-muted italic font-small">{TERMINOLOGY.GENERAL.NO_DATA}</div>
                         )}
                     </div>
                 </div>
@@ -137,7 +136,7 @@ export const InventoryManager = () => {
             <div className="sidebar-panel animate-fade-in pad-20">
                 <form onSubmit={handleRunBatch}>
                     <div className="lab-form-group mb-20">
-                        <label className="label-industrial">SELECT PROJECT</label>
+                        <label className="label-industrial">{TERMINOLOGY.GENERAL.SELECT_PRODUCT}</label>
                         <select 
                             className="input-industrial" 
                             value={productionData.projectId} 
@@ -148,7 +147,7 @@ export const InventoryManager = () => {
                         </select>
                     </div>
                     <div className="lab-form-group mb-20">
-                        <label className="label-industrial">BATCH SIZE</label>
+                        <label className="label-industrial">{TERMINOLOGY.BLUEPRINT.BATCH}</label>
                         <input 
                             type="number" className="input-industrial text-center" 
                             value={productionData.batchSize} 
@@ -156,7 +155,7 @@ export const InventoryManager = () => {
                         />
                     </div>
                     <button className="btn-primary w-full py-15" disabled={!productionData.projectId}>
-                        <WorkshopIcon /> LOG PRODUCTION
+                        <WorkshopIcon /> {TERMINOLOGY.BLUEPRINT.RUN}
                     </button>
                 </form>
                 {consoleLogs.length > 0 && (

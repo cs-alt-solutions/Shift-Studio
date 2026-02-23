@@ -46,7 +46,7 @@ export const EngineeringPanel = ({
             {localProject.recipe?.map((item, idx) => (
               <div key={idx} className="recipe-item flex-between p-10 bg-row-odd border-radius-2 border-subtle">
                 <span className="font-bold">{item.name} <span className="text-muted font-small">({item.reqPerUnit}{item.unit})</span></span>
-                <button className="btn-icon text-muted hover-red" onClick={() => {
+                <button className="btn-icon-hover-clean" onClick={() => {
                   const r = localProject.recipe.filter((_, i) => i !== idx);
                   handleUpdate('recipe', r);
                 }}><CloseIcon /></button>
@@ -73,7 +73,7 @@ export const EngineeringPanel = ({
                   <span className="step-num">{idx + 1}</span>
                   <span className="text-main font-small">{step}</span>
                 </div>
-                <button className="btn-icon text-muted" onClick={() => removeStep(idx)}><CloseIcon /></button>
+                <button className="btn-icon-hover-clean" onClick={() => removeStep(idx)}><CloseIcon /></button>
               </div>
             ))}
           </div>

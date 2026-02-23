@@ -1,4 +1,4 @@
-/* src/features/workbench/components/ProjectBlueprint.jsx - REFACTORED */
+/* src/features/workbench/components/ProjectBlueprint.jsx */
 import React, { useState } from 'react';
 import './ProjectBlueprint.css';
 import { useInventory } from '../../../context/InventoryContext';
@@ -10,6 +10,7 @@ import { Save, WorkshopIcon } from '../../../components/Icons';
 
 export const ProjectBlueprint = ({ project, onClose }) => {
   const { updateProject, materials } = useInventory();
+  
   const [activeTab, setActiveTab] = useState('BUILD'); 
   const [localProject, setLocalProject] = useState({
     ...project,
@@ -25,12 +26,15 @@ export const ProjectBlueprint = ({ project, onClose }) => {
   const [newStep, setNewStep] = useState('');
 
   const handleUpdate = (field, value, subField = null) => {
-    setIsDirty(true);
-    if (subField) {
-      setLocalProject(prev => ({ ...prev, [field]: { ...prev[field], [subField]: value } }));
-    } else {
-      setLocalProject(prev => ({ ...prev, [field]: value }));
-    }
+      setIsDirty(true);
+      if (subField) {
+          setLocalProject(prev => ({
+              ...prev,
+              [field]: { ...prev[field], [subField]: value }
+          }));
+      } else {
+          setLocalProject(prev => ({ ...prev, [field]: value }));
+      }
   };
 
   const handleSave = () => {
@@ -45,6 +49,11 @@ export const ProjectBlueprint = ({ project, onClose }) => {
     setNewStep('');
   };
 
+  const removeStep = (index) => {
+    const updated = localProject.instructions.filter((_, i) => i !== index);
+    handleUpdate('instructions', updated);
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-window blueprint-window-size animate-fade-in">
@@ -52,7 +61,11 @@ export const ProjectBlueprint = ({ project, onClose }) => {
            <div className="bp-top-bar pad-20 flex-between border-bottom-subtle">
                <div className="flex-center w-full max-w-500">
                   <WorkshopIcon />
-                  <input className="input-chromeless ml-10 font-large font-bold w-full" value={localProject.title} onChange={(e) => handleUpdate('title', e.target.value)} />
+                  <input 
+                    className="input-chromeless ml-10 font-large font-bold w-full"
+                    value={localProject.title}
+                    onChange={(e) => handleUpdate('title', e.target.value)}
+                  />
                </div>
                <div className="flex-center gap-10">
                   {isDirty && <span className="text-warning font-small italic mr-10">Unsaved Changes</span>}
@@ -65,19 +78,30 @@ export const ProjectBlueprint = ({ project, onClose }) => {
                <div className={`tab-item ${activeTab === 'LAUNCH' ? 'active' : ''}`} onClick={() => setActiveTab('LAUNCH')}>{TERMINOLOGY.BLUEPRINT.PHASE_LAUNCH}</div>
            </div>
         </div>
+        
         <div className="blueprint-body bg-app p-20">
             {activeTab === 'BUILD' ? (
                 <EngineeringPanel 
-                    localProject={localProject} materials={materials} handleUpdate={handleUpdate} 
-                    selectedMatId={selectedMatId} setSelectedMatId={setSelectedMatId} 
-                    reqQty={reqQty} setReqQty={setReqQty} newStep={newStep} setNewStep={setNewStep} 
-                    addStep={addStep} removeStep={(idx) => handleUpdate('instructions', localProject.instructions.filter((_, i) => i !== idx))} 
+                    localProject={localProject}
+                    materials={materials}
+                    handleUpdate={handleUpdate}
+                    selectedMatId={selectedMatId}
+                    setSelectedMatId={setSelectedMatId}
+                    reqQty={reqQty}
+                    setReqQty={setReqQty}
+                    newStep={newStep}
+                    setNewStep={setNewStep}
+                    addStep={addStep}
+                    removeStep={removeStep}
                 />
             ) : (
                 <BrandingPanel 
-                    localProject={localProject} handleUpdate={handleUpdate} 
-                    materialCost={materialCost} platformFees={platformFees} 
-                    netProfit={netProfit} marginPercent={marginPercent} 
+                    localProject={localProject}
+                    handleUpdate={handleUpdate}
+                    materialCost={materialCost}
+                    platformFees={platformFees}
+                    netProfit={netProfit}
+                    marginPercent={marginPercent}
                 />
             )}
         </div>
