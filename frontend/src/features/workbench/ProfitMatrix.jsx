@@ -1,26 +1,32 @@
-/* src/features/workbench/ProfitMatrix.jsx - REFACTORED */
+/* src/features/workbench/ProfitMatrix.jsx */
 import React, { useState } from 'react';
 import { useFinancialStats, useFinancial } from '../../context/FinancialContext';
 import { useInventory } from '../../context/InventoryContext';
 import { StatCard } from '../../components/cards/StatCard';
 import { AnimatedNumber } from '../../components/charts/AnimatedNumber';
 import { RevenueChart } from '../../components/charts/RevenueChart';
-import { SaleModal } from './components/SaleModal'; // NEW COMPONENT
+import { SaleModal } from './components/SaleModal'; 
+import { TransactionHistory } from './components/TransactionHistory';
+import { TransactionForm } from './components/TransactionForm';
 import { TERMINOLOGY } from '../../utils/glossary';
-import { formatCurrency, formatDate } from '../../utils/formatters';
-import { Finance } from '../../components/Icons';
+import { formatCurrency } from '../../utils/formatters';
+import { Finance, Plus } from '../../components/Icons';
 import './ProfitMatrix.css';
 
 export const ProfitMatrix = () => {
   const { totalRev, totalCost, margin, transactions } = useFinancialStats();
-  const { addTransaction } = useFinancial();
+  const { addTransaction, updateTransaction, deleteTransaction } = useFinancial(); 
   const { activeProjects, updateProject } = useInventory();
   
+  // UI State
   const [showSaleModal, setShowSaleModal] = useState(false);
+  const [showTxModal, setShowTxModal] = useState(false);
+  const [editingTx, setEditingTx] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const sellableProjects = activeProjects.filter(p => p.stockQty > 0);
 
+  // --- SALE LOGIC ---
   const handleLogSale = async (project, qty, revenue) => {
     setIsProcessing(true);
     try {
@@ -44,16 +50,49 @@ export const ProfitMatrix = () => {
     }
   };
 
+  // --- CRUD LOGIC FOR TRANSACTIONS ---
+  const handleOpenNewTx = () => {
+    setEditingTx(null);
+    setShowTxModal(true);
+  };
+
+  const handleEditTx = (tx) => {
+    setEditingTx(tx);
+    setShowTxModal(true);
+  };
+
+  const handleDeleteTx = async (id) => {
+    const confirmed = window.confirm("Delete this transaction permanently?");
+    if (confirmed) {
+      await deleteTransaction(id);
+    }
+  };
+
+  const handleTxSubmit = async (data) => {
+    if (editingTx) {
+      await updateTransaction(editingTx.id, data);
+    } else {
+      await addTransaction({ ...data, created_at: new Date().toISOString() });
+    }
+    setShowTxModal(false);
+    setEditingTx(null);
+  };
+
   return (
-    <div className="radar-scroll-area relative">
+    <div className="profit-matrix-container relative">
       <div className="inventory-header flex-between mb-20">
         <div>
            <h2 className="header-title">{TERMINOLOGY.FINANCE.HEADER}</h2>
            <span className="header-subtitle">{TERMINOLOGY.FINANCE.SUBTITLE}</span>
         </div>
-        <button className="btn-primary flex-center gap-10" onClick={() => setShowSaleModal(true)}>
-            <Finance /> {TERMINOLOGY.FINANCE.LOG_SALE}
-        </button>
+        <div className="flex-center gap-10">
+          <button className="btn-ghost flex-center gap-10" onClick={handleOpenNewTx}>
+              <Plus /> LOG EXPENSE / INCOME
+          </button>
+          <button className="btn-primary flex-center gap-10" onClick={() => setShowSaleModal(true)}>
+              <Finance /> {TERMINOLOGY.FINANCE.LOG_SALE}
+          </button>
+        </div>
       </div>
 
       <div className="profit-grid-header mb-20">
@@ -66,30 +105,12 @@ export const ProfitMatrix = () => {
          <RevenueChart />
       </div>
 
-      <div className="panel-industrial mt-20">
-         <div className="panel-header"><span className="label-industrial">{TERMINOLOGY.FINANCE.LEDGER_HEADER}</span></div>
-         <div className="panel-content no-pad">
-            <table className="inventory-table">
-               <thead>
-                  <tr>
-                    <th>{TERMINOLOGY.FINANCE.TRANSACTION_DATE}</th>
-                    <th>{TERMINOLOGY.GENERAL.BRAND}</th>
-                    <th className="text-right">{TERMINOLOGY.FINANCE.AMOUNT}</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  {transactions.map(t => (
-                     <tr key={t.id} className="inventory-row">
-                        <td className="td-cell text-muted font-small">{formatDate(t.date)}</td>
-                        <td className="td-cell font-bold">{t.description}</td>
-                        <td className={`td-cell text-right font-bold ${t.amount > 0 ? 'text-good' : 'text-warning'}`}>
-                           {formatCurrency(t.amount)}
-                        </td>
-                     </tr>
-                  ))}
-               </tbody>
-            </table>
-         </div>
+      <div className="panel-industrial mt-20 p-20">
+          <TransactionHistory 
+              transactions={transactions} 
+              onEdit={handleEditTx} 
+              onDelete={handleDeleteTx} 
+          />
       </div>
 
       {showSaleModal && (
@@ -99,6 +120,18 @@ export const ProfitMatrix = () => {
           onClose={() => setShowSaleModal(false)}
           isProcessing={isProcessing}
         />
+      )}
+
+      {showTxModal && (
+        <div className="modal-overlay">
+          <div className="modal-window animate-fade-in" style={{ width: '400px' }}>
+            <TransactionForm 
+              initialData={editingTx} 
+              onSubmit={handleTxSubmit} 
+              onCancel={() => { setShowTxModal(false); setEditingTx(null); }} 
+            />
+          </div>
+        </div>
       )}
     </div>
   );

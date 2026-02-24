@@ -1,5 +1,7 @@
+/* src/context/FinancialContext.jsx */
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../supabaseClient';
+import { useInventory } from './InventoryContext'; // <-- ADDED: Needed for material cost calculations
 
 const FinancialContext = createContext();
 
@@ -103,12 +105,13 @@ export const FinancialProvider = ({ children }) => {
   // The Visionary's Metrics Engine
   const metrics = useMemo(() => {
     const totalIncome = transactions
-      .filter(tx => tx.type === 'INCOME')
+      .filter(tx => tx.type === 'INCOME' || tx.type === 'SALE')
       .reduce((sum, tx) => sum + (tx.amount || 0), 0);
       
+    // Expense amounts are often recorded negatively, so we take absolute value for total calculations
     const totalExpense = transactions
       .filter(tx => tx.type === 'EXPENSE')
-      .reduce((sum, tx) => sum + (tx.amount || 0), 0);
+      .reduce((sum, tx) => sum + Math.abs(tx.amount || 0), 0);
 
     const netProfit = totalIncome - totalExpense;
 
@@ -140,4 +143,54 @@ export const useFinancial = () => {
     throw new Error('useFinancial must be used within a FinancialProvider');
   }
   return context;
+};
+
+
+// --- NEWLY DEPLOYED HOOKS ---
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useFinancialStats = () => {
+  const { transactions, metrics, loading } = useFinancial();
+  
+  const totalRev = metrics.totalIncome || 0;
+  const totalCost = metrics.totalExpense || 0;
+  const margin = totalRev > 0 ? ((totalRev - totalCost) / totalRev) * 100 : 0;
+
+  return {
+    totalRev,
+    totalCost,
+    margin,
+    transactions,
+    netProfit: metrics.netProfit || 0,
+    loading
+  };
+};
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useProjectEconomics = (project) => {
+  const { materials } = useInventory();
+  
+  return useMemo(() => {
+    let materialCost = 0;
+    
+    // Calculate accurate material costs based on live inventory pricing
+    if (project?.recipe && project.recipe.length > 0) {
+      project.recipe.forEach(item => {
+        const mat = materials.find(m => m.id === item.matId);
+        if (mat) {
+          materialCost += (mat.costPerUnit * item.reqPerUnit);
+        }
+      });
+    }
+
+    const retailPrice = parseFloat(project?.retailPrice) || 0;
+    const platformFeePercent = project?.economics?.platformFeePercent || 6.5;
+    const platformFixedFee = project?.economics?.platformFixedFee || 0.20;
+
+    const platformFees = retailPrice > 0 ? (retailPrice * (platformFeePercent / 100)) + platformFixedFee : 0;
+    const netProfit = retailPrice - materialCost - platformFees;
+    const marginPercent = retailPrice > 0 ? (netProfit / retailPrice) * 100 : 0;
+
+    return { materialCost, platformFees, netProfit, marginPercent };
+  }, [project, materials]);
 };
