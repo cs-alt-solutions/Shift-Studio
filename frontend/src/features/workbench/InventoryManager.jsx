@@ -8,6 +8,7 @@ import { ImagePlaceholder } from '../../components/ui/ImagePlaceholder';
 import { AssetCard } from '../../components/cards/AssetCard';
 import { VendorCard } from '../../components/cards/VendorCard'; 
 import { IntakeForm } from './components/IntakeForm';
+import { AssetEditForm } from './components/AssetEditForm'; // NEW IMPORT
 import { formatCurrency, getFaviconUrl, getDomainFromUrl } from '../../utils/formatters';
 import { TERMINOLOGY, APP_CONFIG } from '../../utils/glossary';
 
@@ -15,9 +16,10 @@ export const InventoryManager = () => {
   const { materials, activeProjects, manufactureProduct, vendors, addVendor } = useInventory(); 
   
   // Navigation State
-  const [activeTab, setActiveTab] = useState('ASSETS'); // 'ASSETS' or 'VENDORS'
+  const [activeTab, setActiveTab] = useState('ASSETS');
   const [showIntakeForm, setShowIntakeForm] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null); 
+  const [isEditing, setIsEditing] = useState(false); // NEW STATE
   
   // Console State
   const [productionData, setProductionData] = useState({ projectId: '', batchSize: 1 });
@@ -58,6 +60,7 @@ export const InventoryManager = () => {
       setActiveTab(tab);
       setSelectedItem(null);
       setShowIntakeForm(false);
+      setIsEditing(false); // Reset edit state on switch
   };
 
   // --- INTERNAL COMPONENTS FOR CLEAN RENDERING ---
@@ -123,7 +126,7 @@ export const InventoryManager = () => {
                     <div className="separator-line-inv" />
                 </div>
                 <div className="locker-grid animate-fade-in">
-                    {workshopItems.map(m => <AssetCard key={m.id} asset={m} onClick={() => setSelectedItem(m)} isSelected={selectedItem?.id === m.id} />)}
+                    {workshopItems.map(m => <AssetCard key={m.id} asset={m} onClick={() => { setSelectedItem(m); setIsEditing(false); }} isSelected={selectedItem?.id === m.id} />)}
                 </div>
                 </div>
 
@@ -133,7 +136,7 @@ export const InventoryManager = () => {
                     <div className="separator-line-inv" />
                 </div>
                 <div className="locker-grid animate-fade-in">
-                    {logisticsItems.map(m => <AssetCard key={m.id} asset={m} onClick={() => setSelectedItem(m)} isSelected={selectedItem?.id === m.id} />)}
+                    {logisticsItems.map(m => <AssetCard key={m.id} asset={m} onClick={() => { setSelectedItem(m); setIsEditing(false); }} isSelected={selectedItem?.id === m.id} />)}
                 </div>
                 </div>
             </>
@@ -141,7 +144,7 @@ export const InventoryManager = () => {
             <div className="blueprint-section mt-20">
                 <div className="locker-grid animate-fade-in">
                     {vendors.length > 0 ? (
-                        vendors.map(v => <VendorCard key={v.id} vendor={v} onClick={() => setSelectedItem(v)} isSelected={selectedItem?.id === v.id} />)
+                        vendors.map(v => <VendorCard key={v.id} vendor={v} onClick={() => { setSelectedItem(v); setIsEditing(false); }} isSelected={selectedItem?.id === v.id} />)
                     ) : (
                         <div className="text-muted italic">{TERMINOLOGY.GENERAL.NO_DATA}</div>
                     )}
@@ -161,7 +164,7 @@ export const InventoryManager = () => {
                      : TERMINOLOGY.INVENTORY.CONSOLE_HEADER}
            </h3>
            {(showIntakeForm || selectedItem) && (
-               <button onClick={() => {setShowIntakeForm(false); setSelectedItem(null);}} className="btn-icon-hover-clean"><Back /></button>
+               <button onClick={() => {setShowIntakeForm(false); setSelectedItem(null); setIsEditing(false);}} className="btn-icon-hover-clean"><Back /></button>
            )}
         </div>
 
@@ -170,9 +173,9 @@ export const InventoryManager = () => {
               activeTab === 'ASSETS' ? <IntakeForm onClose={() => setShowIntakeForm(false)} /> : <VendorIntakeForm />
           ) : selectedItem ? (
             <div className="sidebar-panel animate-fade-in">
-              {activeTab === 'ASSETS' && <ImagePlaceholder text={TERMINOLOGY.INVENTORY.PHOTO_LABEL} />}
+              {activeTab === 'ASSETS' && !isEditing && <ImagePlaceholder text={TERMINOLOGY.INVENTORY.PHOTO_LABEL} />}
               
-              {activeTab === 'VENDORS' && selectedItem.website && (
+              {activeTab === 'VENDORS' && selectedItem.website && !isEditing && (
                 <div className="pad-20 border-bottom-subtle bg-row-even flex-center">
                     <img 
                         src={getFaviconUrl(selectedItem.website, 128)} 
@@ -183,25 +186,55 @@ export const InventoryManager = () => {
               )}
 
               <div className="sidebar-inner pad-20">
-                <h3 className="detail-title">{selectedItem.name}</h3>
                 
-                {/* DYNAMIC DETAIL VIEW BASED ON TAB */}
-                {activeTab === 'ASSETS' ? (
-                    <div className="history-section mt-20">
-                        <div className="label-industrial text-teal border-bottom-subtle mb-10 pb-5"><History /> {TERMINOLOGY.INVENTORY.HISTORY_LOG}</div>
-                        <div className="history-list flex-col gap-10">
-                            {selectedItem.history?.length > 0 ? (
-                                selectedItem.history.map((log, idx) => (
-                                    <div key={idx} className="flex-between p-10 bg-row-odd border-radius-2 border-subtle">
-                                        <span className="font-small text-muted">{new Date(log.date).toLocaleDateString()}</span>
-                                        <span className={log.qty > 0 ? 'text-good' : 'text-warning'}>
-                                            {log.qty > 0 ? '+' : ''}{log.qty}
-                                        </span>
-                                    </div>
-                                ))
-                            ) : <div className="text-muted italic font-small">{TERMINOLOGY.GENERAL.NO_DATA}</div>}
+                {/* DYNAMIC HEADER: View Title OR Edit Controls */}
+                <div className="flex-between align-start mb-10">
+                    <h3 className="detail-title m-0">{selectedItem.name}</h3>
+                    {activeTab === 'ASSETS' && !isEditing && (
+                        <button onClick={() => setIsEditing(true)} className="btn-icon-hover-clean text-accent font-mono font-small mt-5">
+                            [ EDIT ]
+                        </button>
+                    )}
+                </div>
+                
+                {/* DYNAMIC DETAIL VIEW BASED ON TAB & EDIT STATE */}
+                {isEditing && activeTab === 'ASSETS' ? (
+                    <AssetEditForm 
+                        asset={selectedItem}
+                        onClose={() => { setSelectedItem(null); setIsEditing(false); }}
+                        onCancel={() => setIsEditing(false)}
+                        onComplete={(updatedData) => {
+                            setSelectedItem({ ...selectedItem, ...updatedData });
+                            setIsEditing(false);
+                        }}
+                    />
+                ) : activeTab === 'ASSETS' ? (
+                    <>
+                        <div className="mb-15 mt-10">
+                            <span className="label-industrial">SUPPLIED BY</span>
+                            <div className="mt-5 font-mono text-accent">
+                                {selectedItem.vendorId && vendors.find(v => v.id === selectedItem.vendorId) 
+                                    ? vendors.find(v => v.id === selectedItem.vendorId).name 
+                                    : "NO VENDOR LINKED"}
+                            </div>
                         </div>
-                    </div>
+
+                        <div className="history-section mt-20">
+                            <div className="label-industrial text-teal border-bottom-subtle mb-10 pb-5"><History /> {TERMINOLOGY.INVENTORY.HISTORY_LOG}</div>
+                            <div className="history-list flex-col gap-10">
+                                {selectedItem.history?.length > 0 ? (
+                                    selectedItem.history.map((log, idx) => (
+                                        <div key={idx} className="flex-between p-10 bg-row-odd border-radius-2 border-subtle">
+                                            <span className="font-small text-muted">{new Date(log.date).toLocaleDateString()}</span>
+                                            <span className={log.qty > 0 ? 'text-good' : 'text-warning'}>
+                                                {log.qty > 0 ? '+' : ''}{log.qty}
+                                            </span>
+                                        </div>
+                                    ))
+                                ) : <div className="text-muted italic font-small">{TERMINOLOGY.GENERAL.NO_DATA}</div>}
+                            </div>
+                        </div>
+                    </>
                 ) : (
                     <div className="vendor-details mt-20">
                         <div className="mb-20">

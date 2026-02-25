@@ -135,3 +135,33 @@
 .notes-display {
     white-space: pre-wrap;
 }
+/* --- EDIT STATE BUTTONS --- */
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    color: var(--text-main);
+    padding: 12px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 2px;
+}
+.btn-secondary:hover {
+    border-color: var(--text-main);
+}
+
+.btn-danger {
+    background: transparent;
+    border: 1px solid #ff3366; 
+    color: #ff3366;
+    padding: 12px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 2px;
+}
+.btn-danger:hover {
+    background: rgba(255, 51, 102, 0.1);
+}

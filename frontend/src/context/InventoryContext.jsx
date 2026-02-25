@@ -75,6 +75,12 @@ export const InventoryProvider = ({ children }) => {
     if (error) { console.error("Supabase Error updating item:", error); }
     if (data) { setMaterials(prev => prev.map(item => item.id === id ? data[0] : item)); }
   };
+  const deleteInventoryItem = async (id) => {
+    const { error } = await supabase.from('inventory').delete().eq('id', id);
+    if (error) { console.error("Supabase Error deleting item:", error); return false; }
+    setMaterials(prev => prev.filter(item => item.id !== id));
+    return true;
+  };
 
   // --- PROJECT LOGIC ---
   const addProject = async (newProject) => {
@@ -145,7 +151,7 @@ export const InventoryProvider = ({ children }) => {
   return (
     <InventoryContext.Provider value={{ 
       materials, activeProjects, draftProjects, vendors, loading, 
-      fetchStudioData, addInventoryItem, updateInventoryItem,
+      fetchStudioData, addInventoryItem, updateInventoryItem, deleteInventoryItem,
       addProject, updateProject, deleteProject, manufactureProduct,
       addVendor, updateVendor, deleteVendor
     }}>
