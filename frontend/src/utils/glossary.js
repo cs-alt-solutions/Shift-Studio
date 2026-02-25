@@ -85,7 +85,6 @@ export const TERMINOLOGY = {
     CANCEL: "Cancel",
     DESC_PLACEHOLDER: "e.g. Sale, Supply Run",
     AMOUNT_PLACEHOLDER: "0.00",
-    /* --- NEW RECURRING TERMINOLOGY --- */
     RECURRING_HEADER: "FIXED COSTS & SUBSCRIPTIONS",
     MONTHLY_BURN: "MONTHLY BURN RATE",
     ADD_RECURRING: "ADD FIXED COST",
@@ -135,11 +134,22 @@ export const TERMINOLOGY = {
     HISTORY_LOG: "RESTOCK HISTORY",
     PHOTO_LABEL: "ITEM PHOTO",
     CONSOLE_HEADER: "MANUFACTURING CONSOLE",
+    TAB_ASSETS: "RAW ASSETS",
+    TAB_VENDORS: "SUPPLY CHAIN",
     FILTERS: {
       ALL: "ALL",
       ACTIVE: "ACTIVE",
       DORMANT: "INACTIVE"
     }
+  },
+  VENDOR: {
+    ADD_VENDOR: "ADD VENDOR",
+    WEBSITE: "WEBSITE",
+    LEAD_TIME: "AVG LEAD TIME",
+    CONTACT_INFO: "CONTACT INFO",
+    NOTES: "SOURCING NOTES",
+    RELIABILITY: "RELIABILITY SCORE",
+    URL_PLACEHOLDER: "https://..."
   },
   BLUEPRINT: {
     PHASE_PLAN: "1. THE IDEA",
@@ -239,12 +249,12 @@ export const COMMON_ASSETS = [
   "Black Screw-on Lid",
   "Digital Scale Calibration Weight"
 ];
+// Add this to the bottom of src/utils/glossary.js
 
 export const MARKET_TICKER_DATA = [
-    { label: "SOY WAX", trend: "up", value: "$2.15 PER LB" },
-    { label: "FRAGRANCE OIL", trend: "neutral", value: "$18.50 PER LB" },
-    { label: "SHIPPING (DOMESTIC)", trend: "down", value: "$4.20 PER AVG" },
-    { label: "BEESWAX", trend: "up", value: "$8.50 PER LB" },
-    { label: "GLASS JARS (8oz)", trend: "neutral", value: "$0.85 EA" },
-    { label: "WICKING (CD-12)", trend: "down", value: "$0.05 EA" }
+  { id: 1, symbol: 'SOY WAX (464)', trend: 'up', value: '$45.00/50lb', change: '+1.2%' },
+  { id: 2, symbol: 'BEESWAX', trend: 'down', value: '$18.50/lb', change: '-0.5%' },
+  { id: 3, symbol: '8oz JARS', trend: 'flat', value: '$12.00/doz', change: '0.0%' },
+  { id: 4, symbol: 'SHIPPING BOXES', trend: 'up', value: '$0.85/ea', change: '+4.1%' },
+  { id: 5, symbol: 'FRAGRANCE OIL', trend: 'up', value: '$22.00/16oz', change: '+2.4%' }
 ];

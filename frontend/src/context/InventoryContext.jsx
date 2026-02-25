@@ -8,28 +8,28 @@ export const InventoryProvider = ({ children }) => {
   const [materials, setMaterials] = useState([]);
   const [activeProjects, setActiveProjects] = useState([]);
   const [draftProjects, setDraftProjects] = useState([]);
+  const [vendors, setVendors] = useState([]); // <-- NEW STATE
   const [loading, setLoading] = useState(true); 
 
   const fetchStudioData = useCallback(async () => {
     setLoading(true); 
     
     try {
-      const { data: invData, error: invError } = await supabase
-        .from('inventory')
-        .select('*')
-        .order('name', { ascending: true });
+      // Run Supabase fetches in parallel for speed
+      const [invRes, projRes, vendorRes] = await Promise.all([
+        supabase.from('inventory').select('*').order('name', { ascending: true }),
+        supabase.from('projects').select('*'),
+        supabase.from('vendors').select('*').order('name', { ascending: true }) // <-- NEW FETCH
+      ]);
 
-      if (invError) throw invError;
-      setMaterials(invData || []);
+      if (invRes.error) throw invRes.error;
+      if (projRes.error) throw projRes.error;
+      if (vendorRes.error) throw vendorRes.error;
 
-      const { data: projData, error: projError } = await supabase
-        .from('projects')
-        .select('*');
+      setMaterials(invRes.data || []);
+      setVendors(vendorRes.data || []);
 
-      if (projError) throw projError;
-
-      const allProjects = projData || [];
-      
+      const allProjects = projRes.data || [];
       setActiveProjects(allProjects.filter(p => p.status === 'In Progress' || p.status === 'Completed' || p.status === 'active'));
       setDraftProjects(allProjects.filter(p => p.status === 'Planning' || p.status === 'Draft' || p.status === 'draft' || !p.status));
 
@@ -43,6 +43,25 @@ export const InventoryProvider = ({ children }) => {
   useEffect(() => {
     fetchStudioData();
   }, [fetchStudioData]);
+
+  // --- VENDOR LOGIC ---
+  const addVendor = async (newVendor) => {
+    const { data, error } = await supabase.from('vendors').insert([newVendor]).select();
+    if (error) { console.error("Error adding vendor:", error); return null; }
+    if (data) { setVendors(prev => [...prev, data[0]]); return data[0]; }
+  };
+
+  const updateVendor = async (id, updates) => {
+    const { data, error } = await supabase.from('vendors').update(updates).eq('id', id).select();
+    if (error) console.error("Error updating vendor:", error);
+    if (data) setVendors(prev => prev.map(v => v.id === id ? data[0] : v));
+  };
+
+  const deleteVendor = async (id) => {
+    const { error } = await supabase.from('vendors').delete().eq('id', id);
+    if (error) console.error("Error deleting vendor:", error);
+    else setVendors(prev => prev.filter(v => v.id !== id));
+  };
 
   // --- ASSET LOGIC ---
   const addInventoryItem = async (newItem) => {
@@ -76,13 +95,12 @@ export const InventoryProvider = ({ children }) => {
     fetchStudioData(); return true;
   };
 
-  // --- THE MANUFACTURING ENGINE (NOW WITH HISTORY LOGGING) ---
+  // --- THE MANUFACTURING ENGINE ---
   const manufactureProduct = async (projectId, recipe, batchSize) => {
     try {
       const allProjects = [...activeProjects, ...draftProjects];
       const targetProject = allProjects.find(p => p.id === projectId);
 
-      // 1. Validate sufficient stock
       for (const item of recipe) {
         const invItem = materials.find(m => m.id === item.matId);
         const totalNeeded = item.reqPerUnit * batchSize;
@@ -91,13 +109,11 @@ export const InventoryProvider = ({ children }) => {
         }
       }
 
-      // 2. Deduct materials & Log History
       for (const item of recipe) {
         const invItem = materials.find(m => m.id === item.matId);
         const totalNeeded = item.reqPerUnit * batchSize;
         const newQty = invItem.qty - totalNeeded;
         
-        // Create the usage ledger entry
         const historyEntry = {
             date: new Date().toISOString(),
             qty: -totalNeeded,
@@ -112,7 +128,6 @@ export const InventoryProvider = ({ children }) => {
           .eq('id', item.matId);
       }
 
-      // 3. Add finished products to the project database
       if (targetProject) {
         const newStockQty = (targetProject.stockQty || 0) + batchSize;
         await supabase.from('projects').update({ stockQty: newStockQty }).eq('id', projectId);
@@ -129,9 +144,10 @@ export const InventoryProvider = ({ children }) => {
 
   return (
     <InventoryContext.Provider value={{ 
-      materials, activeProjects, draftProjects, loading, 
+      materials, activeProjects, draftProjects, vendors, loading, 
       fetchStudioData, addInventoryItem, updateInventoryItem,
-      addProject, updateProject, deleteProject, manufactureProduct
+      addProject, updateProject, deleteProject, manufactureProduct,
+      addVendor, updateVendor, deleteVendor
     }}>
       {children}
     </InventoryContext.Provider>
