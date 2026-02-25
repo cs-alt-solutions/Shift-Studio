@@ -183,3 +183,19 @@
 }
 
 .bg-darker { background: rgba(0,0,0,0.3); }
+/* Add to the bottom of ProjectBlueprint.css */
+
+.color-picker-input {
+    width: 60px;
+    height: 42px;
+    padding: 2px;
+    cursor: pointer;
+    border-radius: 2px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-app);
+}
+
+.textarea-tall {
+    min-height: 120px;
+    resize: vertical;
+}

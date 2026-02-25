@@ -8,7 +8,8 @@ import { ImagePlaceholder } from '../../components/ui/ImagePlaceholder';
 import { AssetCard } from '../../components/cards/AssetCard';
 import { VendorCard } from '../../components/cards/VendorCard'; 
 import { IntakeForm } from './components/IntakeForm';
-import { AssetEditForm } from './components/AssetEditForm'; // NEW IMPORT
+import { AssetEditForm } from './components/AssetEditForm';
+import { VendorEditForm } from './components/VendorEditForm'; // NEW IMPORT
 import { formatCurrency, getFaviconUrl, getDomainFromUrl } from '../../utils/formatters';
 import { TERMINOLOGY, APP_CONFIG } from '../../utils/glossary';
 
@@ -16,10 +17,10 @@ export const InventoryManager = () => {
   const { materials, activeProjects, manufactureProduct, vendors, addVendor } = useInventory(); 
   
   // Navigation State
-  const [activeTab, setActiveTab] = useState('ASSETS');
+  const [activeTab, setActiveTab] = useState('ASSETS'); // 'ASSETS' or 'VENDORS'
   const [showIntakeForm, setShowIntakeForm] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null); 
-  const [isEditing, setIsEditing] = useState(false); // NEW STATE
+  const [isEditing, setIsEditing] = useState(false);
   
   // Console State
   const [productionData, setProductionData] = useState({ projectId: '', batchSize: 1 });
@@ -60,7 +61,7 @@ export const InventoryManager = () => {
       setActiveTab(tab);
       setSelectedItem(null);
       setShowIntakeForm(false);
-      setIsEditing(false); // Reset edit state on switch
+      setIsEditing(false);
   };
 
   // --- INTERNAL COMPONENTS FOR CLEAN RENDERING ---
@@ -190,17 +191,27 @@ export const InventoryManager = () => {
                 {/* DYNAMIC HEADER: View Title OR Edit Controls */}
                 <div className="flex-between align-start mb-10">
                     <h3 className="detail-title m-0">{selectedItem.name}</h3>
-                    {activeTab === 'ASSETS' && !isEditing && (
+                    {!isEditing && (
                         <button onClick={() => setIsEditing(true)} className="btn-icon-hover-clean text-accent font-mono font-small mt-5">
                             [ EDIT ]
                         </button>
                     )}
                 </div>
                 
-                {/* DYNAMIC DETAIL VIEW BASED ON TAB & EDIT STATE */}
+                {/* ROUTING LOGIC: Which form or detail view to show? */}
                 {isEditing && activeTab === 'ASSETS' ? (
                     <AssetEditForm 
                         asset={selectedItem}
+                        onClose={() => { setSelectedItem(null); setIsEditing(false); }}
+                        onCancel={() => setIsEditing(false)}
+                        onComplete={(updatedData) => {
+                            setSelectedItem({ ...selectedItem, ...updatedData });
+                            setIsEditing(false);
+                        }}
+                    />
+                ) : isEditing && activeTab === 'VENDORS' ? (
+                    <VendorEditForm 
+                        vendor={selectedItem}
                         onClose={() => { setSelectedItem(null); setIsEditing(false); }}
                         onCancel={() => setIsEditing(false)}
                         onComplete={(updatedData) => {
