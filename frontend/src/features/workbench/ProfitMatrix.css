@@ -11,6 +11,36 @@
 
 .profit-grid-header {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* <-- UPDATED: 4 columns for our new Burn Rate card */
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
+}
+
+/* --- THE CAGE: Lock the chart inside its panel --- */
+.chart-panel-wrapper {
+    width: 100%;
+    min-height: 280px; /* Gives the chart room to breathe */
+    padding: 20px;
+    overflow: hidden; /* ABSOLUTELY NO SPILLING OUT */
+    box-sizing: border-box;
+}
+
+/* --- TABLE CAGE: Ensure tables can scroll without breaking the page --- */
+.table-panel-wrapper {
+    width: 100%;
+    max-height: 400px;
+    overflow-y: auto; /* Scroll inside the panel, don't break the page */
+}
+
+/* Side-by-side ledgers for a cleaner layout */
+.profit-ledgers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+}
+
+@media (max-width: 1100px) {
+    .profit-ledgers-grid {
+        grid-template-columns: 1fr;
+    }
 }

@@ -8,19 +8,17 @@ import { RevenueChart } from '../../components/charts/RevenueChart';
 import { SaleModal } from './components/SaleModal'; 
 import { TransactionHistory } from './components/TransactionHistory';
 import { TransactionForm } from './components/TransactionForm';
-import { RecurringPanel } from './components/RecurringPanel'; // <-- NEW
+import { RecurringPanel } from './components/RecurringPanel';
 import { TERMINOLOGY } from '../../utils/glossary';
 import { formatCurrency } from '../../utils/formatters';
 import { Finance, Plus } from '../../components/Icons';
 import './ProfitMatrix.css';
 
 export const ProfitMatrix = () => {
-  // Upgraded engine pulling in our new recurring metrics
   const { totalRev, totalCost, margin, transactions, recurringCosts, monthlyBurn } = useFinancialStats();
   const { addTransaction, updateTransaction, deleteTransaction } = useFinancial(); 
   const { activeProjects, updateProject } = useInventory();
   
-  // UI State
   const [showSaleModal, setShowSaleModal] = useState(false);
   const [showTxModal, setShowTxModal] = useState(false);
   const [editingTx, setEditingTx] = useState(null);
@@ -28,7 +26,6 @@ export const ProfitMatrix = () => {
 
   const sellableProjects = activeProjects.filter(p => p.stockQty > 0);
 
-  // --- SALE LOGIC ---
   const handleLogSale = async (project, qty, revenue) => {
     setIsProcessing(true);
     try {
@@ -52,7 +49,6 @@ export const ProfitMatrix = () => {
     }
   };
 
-  // --- CRUD LOGIC FOR TRANSACTIONS ---
   const handleOpenNewTx = () => {
     setEditingTx(null);
     setShowTxModal(true);
@@ -101,24 +97,32 @@ export const ProfitMatrix = () => {
          <StatCard label={TERMINOLOGY.FINANCE.REVENUE} value={<AnimatedNumber value={totalRev} formatter={formatCurrency} />} glowColor="teal" />
          <StatCard label={TERMINOLOGY.FINANCE.EXPENSE} value={<AnimatedNumber value={totalCost} formatter={formatCurrency} />} glowColor="orange" />
          <StatCard label={TERMINOLOGY.FINANCE.MARGIN_AVG} value={`${margin.toFixed(1)}%`} glowColor="purple" />
-         {/* NEW: Monthly Burn Rate HUD */}
          <StatCard label={TERMINOLOGY.FINANCIAL.MONTHLY_BURN} value={<AnimatedNumber value={monthlyBurn} formatter={formatCurrency} />} glowColor="red" />
       </div>
 
-      <div className="panel-industrial pad-20">
+      {/* ... top stat cards remain the same ... */}
+
+      {/* STRICT CHART WRAPPER */}
+      <div className="panel-industrial chart-panel-wrapper">
          <RevenueChart />
       </div>
 
-      {/* NEW: The Fixed Costs / Subscription Manager */}
-      <RecurringPanel costs={recurringCosts} />
-
-      <div className="panel-industrial mt-20 p-20">
-          <TransactionHistory 
-              transactions={transactions} 
-              onEdit={handleEditTx} 
-              onDelete={handleDeleteTx} 
-          />
+      {/* SIDE-BY-SIDE LEDGERS WITH SCROLL LOCKS */}
+      <div className="profit-ledgers-grid mt-20">
+          <div className="panel-industrial table-panel-wrapper p-20">
+              <TransactionHistory 
+                  transactions={transactions} 
+                  onEdit={handleEditTx} 
+                  onDelete={handleDeleteTx} 
+              />
+          </div>
+          
+          <div className="panel-industrial table-panel-wrapper p-20">
+              <RecurringPanel costs={recurringCosts} />
+          </div>
       </div>
+
+      {/* ... modals remain the same ... */}
 
       {showSaleModal && (
         <SaleModal 
