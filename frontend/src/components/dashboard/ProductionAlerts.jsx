@@ -19,8 +19,8 @@ export default function ProductionAlerts({ alerts = [], fleet = [] }) {
       <div className="panel-content flex-col gap-10 p-0">
         
         {haltedProjects.length === 0 && alerts.length === 0 && (
-            <div className="p-20 text-muted italic text-center border-bottom-subtle">
-                All systems operational. No critical blockers.
+            <div className="p-20 text-teal font-mono font-small text-center border-bottom-subtle bg-row-odd">
+                {DASHBOARD_STRINGS.emptyAlerts}
             </div>
         )}
 

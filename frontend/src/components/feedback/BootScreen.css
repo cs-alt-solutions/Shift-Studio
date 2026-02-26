@@ -1,13 +1,304 @@
-/* src/components/BootScreen.css */
+/* src/components/feedback/BootScreen.css */
+
 .boot-container {
-    height: 100vh; width: 100vw; background: var(--bg-app);
-    display: flex; align-items: center; justify-content: center; flex-direction: column;
-    font-family: var(--font-mono); color: var(--neon-cyan);
+    height: 100vh; 
+    width: 100vw; 
+    background: var(--bg-app);
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    overflow: hidden; 
+    position: relative;
 }
-.boot-terminal { width: 300px; text-align: left; }
-.boot-line { margin-bottom: 5px; text-shadow: 0 0 5px var(--neon-cyan); }
-.cursor-blink { 
-    display: inline-block; width: 10px; height: 15px; background: var(--neon-cyan);
-    animation: blink 1s step-end infinite; 
+
+/* --- THE AMBIENT NEON SPLATTER --- */
+.ambient-glow {
+    position: fixed;
+    width: 600px; 
+    height: 600px;
+    border-radius: 50%;
+    filter: blur(150px);
+    opacity: 0.2; 
+    z-index: 1; 
+    pointer-events: none; 
+    animation: ambient-pulse 8s infinite ease-in-out;
 }
-@keyframes blink { 50% { opacity: 0; } }
+
+.bg-splatter-1 {
+    top: -200px; right: -200px;
+    background: radial-gradient(circle, var(--neon-orange) 0%, rgba(249, 115, 22, 0) 70%);
+    animation-delay: 0s;
+}
+
+.bg-splatter-2 {
+    bottom: -200px; left: -200px;
+    background: radial-gradient(circle, var(--neon-purple) 0%, rgba(168, 85, 247, 0) 70%);
+    animation-delay: 4s; 
+}
+
+/* --- LOGO & TYPOGRAPHY --- */
+.boot-logo {
+    font-size: 3.5rem; 
+    letter-spacing: 8px; 
+    font-family: var(--font-mono);
+    text-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+}
+
+.boot-subtitle { 
+    letter-spacing: 4px; 
+    font-size: 0.8rem; 
+    font-family: var(--font-mono); 
+}
+
+.boot-enter-btn { 
+    padding: 15px 40px; 
+    font-size: 1.1rem; 
+    letter-spacing: 2px; 
+}
+
+.boot-tagline {
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    max-width: 420px;
+    line-height: 1.6;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    color: var(--neon-purple); 
+    text-shadow: 0 0 10px rgba(168, 85, 247, 0.4); 
+}
+
+/* --- THE SUBTLE DUAL SHIFT EFFECT --- */
+.shift-effect {
+    display: inline-block;
+    position: relative;
+    z-index: 2;
+}
+
+.shift-effect::before,
+.shift-effect::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.8;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.shift-effect::before {
+    color: var(--neon-cyan);
+    animation: subtle-shift-left 2.5s infinite ease-in-out;
+}
+
+.shift-effect::after {
+    color: var(--neon-orange);
+    animation: subtle-shift-right 2.5s infinite ease-in-out;
+}
+
+/* --- THE LOADING SEQUENCE --- */
+.pulse-center { 
+    position: relative; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
+
+.glow-ring {
+    width: 80px; height: 80px; 
+    border: 2px solid var(--neon-cyan);
+    border-radius: 50%; 
+    box-shadow: var(--glow-teal);
+    animation: ring-pulse 2s infinite ease-in-out;
+}
+
+.system-status { 
+    margin-top: 20px; 
+    letter-spacing: 4px; 
+    color: var(--neon-cyan); 
+    font-size: 0.8rem; 
+}
+
+/* --- THE NEW BETA GLASS CARD --- */
+.beta-glass-card {
+    background: rgba(18, 18, 20, 0.4);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 40px;
+    width: 100%;
+    max-width: 520px;
+    text-align: left;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    margin: 0 auto;
+}
+
+.badge-purple {
+    background: rgba(168, 85, 247, 0.15);
+    color: var(--neon-purple);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+}
+
+/* --- VIP ONBOARDING CARDS --- */
+.vip-card-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.vip-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.vip-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.vip-card.border-alert:hover { border-color: rgba(249, 115, 22, 0.4); box-shadow: 0 5px 15px rgba(249, 115, 22, 0.1); }
+.vip-card.border-teal:hover { border-color: rgba(34, 211, 238, 0.4); box-shadow: 0 5px 15px rgba(34, 211, 238, 0.1); }
+.vip-card.border-purple:hover { border-color: rgba(168, 85, 247, 0.4); box-shadow: 0 5px 15px rgba(168, 85, 247, 0.1); }
+
+.vip-card-title {
+    font-weight: 700;
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.vip-card-text {
+    color: var(--text-main);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+/* --- THE NEON CHECKBOX --- */
+.neon-checkbox-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    cursor: pointer;
+    user-select: none;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.neon-checkbox-container:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.neon-checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.neon-checkmark {
+    min-width: 22px;
+    height: 22px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.2s ease;
+    margin-top: 2px;
+}
+
+.neon-checkbox-container input:checked ~ .neon-checkmark {
+    background-color: rgba(34, 211, 238, 0.1);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+}
+
+.neon-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--neon-cyan);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.neon-checkbox-container input:checked ~ .neon-checkmark:after {
+    display: block;
+}
+
+.neon-checkbox-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+}
+
+.neon-checkbox-container input:checked ~ .neon-checkbox-text {
+    color: var(--text-main);
+}
+
+/* --- DISABLED BUTTON STATE --- */
+.btn-disabled {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: not-allowed;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes ring-pulse {
+    0% { transform: scale(0.9); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.5; }
+}
+
+@keyframes ambient-pulse {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.1); }
+}
+
+@keyframes subtle-shift-left {
+    0%, 50%, 100% { transform: translateX(0); }
+    65%, 80% { transform: translateX(-2px); }
+    90% { transform: translateX(1px); }
+}
+
+@keyframes subtle-shift-right {
+    0%, 50%, 100% { transform: translateX(0); }
+    65%, 80% { transform: translateX(2px); }
+    90% { transform: translateX(-1px); }
+}
+/* --- THE CINEMATIC EXIT TRANSITION --- */
+.fade-out-main {
+    animation: cinematic-fade 0.8s forwards ease-in-out;
+}
+
+@keyframes cinematic-fade {
+    0% { 
+        opacity: 1; 
+        filter: blur(0px); 
+    }
+    100% { 
+        opacity: 0; 
+        filter: blur(10px); /* Adds a subtle camera-focus blur as it fades */
+        visibility: hidden; 
+    }
+}

@@ -1,17 +1,38 @@
 /* src/utils/glossary.js */
 import { DashboardIcon, WorkshopIcon, Box, Finance, Radar } from '../components/Icons';
 
+/* Inside src/utils/glossary.js */
 export const TERMINOLOGY = {
   BOOT: {
-    KERNEL: "LOADING WORKSPACE...",
-    MARKET: "SYNCING DATA...",
-    SECURE: "PREPARING DASHBOARD...",
-    ASSETS: "LOADING INVENTORY...",
-    GRANTED: "WELCOME BACK."
+    KERNEL: "GATHERING MATERIALS...",
+    MARKET: "SYNCING INVENTORY...",
+    SECURE: "ORGANIZING WORKBENCH...",
+    ASSETS: "PREPARING TOOLS...",
+    GRANTED: "READY TO BUILD."
+  },
+  // NEW: The Workshop Manifesto
+  BETA_AGREEMENT: {
+    TITLE: "Welcome to the Workshop",
+    SUBTITLE: "Your space to build, test, and master your craft.",
+    
+    // The 3 VIP Cards
+    THE_PROBLEM_TITLE: "Ditch the Duct-Tape",
+    THE_PROBLEM_TEXT: "No more tracking supplies in one place and profits in another. Say goodbye to the chaos.",
+    
+    THE_SOLUTION_TITLE: "Seamless Flow",
+    THE_SOLUTION_TEXT: "Everything is connected. When your inventory moves, your profit updates instantly.",
+    
+    THE_MISSION_TITLE: "Push the Limits",
+    THE_MISSION_TEXT: "You're an early builder. Test the boundaries, find the friction, and help us shape the ultimate tool.",
+    
+    // The Checkbox
+    CONFIRMATION: "I'm ready to build. I understand this is an early-access workspace and features are still evolving."
   },
   GENERAL: {
     APP_NAME: "SHIFT STUDIO",
-    VERSION: "v2.2",
+    VERSION: "v1.0-BETA",
+    // NEW: The Mission Statement
+    TAGLINE: "Change your mindset. Master your craft.",
     SYSTEMS_LABEL: "DASHBOARD",
     SAVE: "SAVE PROJECT",
     CLOSE: "CLOSE",
@@ -29,10 +50,9 @@ export const TERMINOLOGY = {
     CONFIRM: "CONFIRM"
   },
   DASHBOARD: {
-    TELEMETRY: "AT A GLANCE",
+    TELEMETRY: "STATUS",          // Scrubbed from "SYSTEM ACTIVE" / "TELEMETRY"
     LIVE_FEED: "CURRENT INVENTORY",
-    MARKET_PULSE: "MARKET OVERVIEW",
-    UPTIME: "SYSTEM ACTIVE",
+    MARKET_PULSE: "MARKET OVERVIEW", // Scrubbed from "MARKET PULSE"
     SYNC: "SHOP SYNC",
     LOAD: "DATA LOADED"
   },
@@ -181,7 +201,7 @@ export const TERMINOLOGY = {
   MARKET: {
     HEADER: "COMPETITION TRACKER",
     SUBTITLE: "Keep an eye on the market",
-    SCANNING: "UPDATING...",
+    SCANNING: "UPDATING...", // Scrubbed from "SCANNING"
     TARGET: "ADD COMPETITOR",
     TARGET_NAME_LABEL: "SHOP / BRAND NAME",
     TARGET_PLACEHOLDER: "Enter brand name...",
@@ -249,7 +269,6 @@ export const COMMON_ASSETS = [
   "Black Screw-on Lid",
   "Digital Scale Calibration Weight"
 ];
-// Add this to the bottom of src/utils/glossary.js
 
 export const MARKET_TICKER_DATA = [
   { id: 1, symbol: 'SOY WAX (464)', trend: 'up', value: '$45.00/50lb', change: '+1.2%' },
@@ -258,11 +277,12 @@ export const MARKET_TICKER_DATA = [
   { id: 4, symbol: 'SHIPPING BOXES', trend: 'up', value: '$0.85/ea', change: '+4.1%' },
   { id: 5, symbol: 'FRAGRANCE OIL', trend: 'up', value: '$22.00/16oz', change: '+2.4%' }
 ];
+
 export const DASHBOARD_STRINGS = {
-  telemetryTitle: "SYSTEM TELEMETRY",
+  telemetryTitle: "KEY METRICS",          // Scrubbed from "SYSTEM TELEMETRY"
   quickActions: "QUICK COMMANDS",
   bottleneckRadar: "PRODUCTION ALERTS",
-  dailyBriefing: "ACTIVE MISSIONS",
+  dailyBriefing: "ACTION ITEMS",
   draftRunway: "R&D PIPELINE",
   profitMonitor: "PROFIT VELOCITY",
   actionIntake: "QUICK INTAKE",
@@ -273,5 +293,9 @@ export const DASHBOARD_STRINGS = {
   runwayIdea: "IDEA",
   runwaySOP: "SOP BUILT",
   runwayPriced: "PRICED",
-  runwayReady: "READY FOR LAUNCH"
+  runwayReady: "READY TO LAUNCH",
+  
+  // NEW: Grounded Empty States
+  emptyAlerts: "PRODUCTION LINES CLEAR // NO SHORTAGES",
+  emptyBriefing: "ALL CAUGHT UP // NO PENDING ACTIONS"
 };
