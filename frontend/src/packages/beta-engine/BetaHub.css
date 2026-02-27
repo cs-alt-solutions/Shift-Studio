@@ -1,0 +1,148 @@
+/* src/packages/beta-engine/BetaHub.css */
+
+.beta-hub-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(9, 9, 11, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.beta-hub-window {
+    width: 100%;
+    max-width: 1000px;
+    height: 90vh;
+    background: var(--bg-panel);
+    border: 1px solid var(--neon-orange);
+    border-radius: 4px;
+    box-shadow: 0 0 50px rgba(251, 146, 60, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    animation: bootUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes bootUp {
+    0% { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- HUB HEADER & EVOLUTION BAR --- */
+.hub-header {
+    padding: 20px 30px;
+    background: var(--bg-panel-header);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.evolution-container {
+    flex: 1;
+    margin: 0 40px;
+}
+
+.evolution-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--neon-orange);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.evolution-track {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-row-odd);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+}
+
+.evolution-fill {
+    height: 100%;
+    background: var(--neon-orange);
+    width: 34%; /* Hardcoded for now, will map to XP later */
+    box-shadow: 0 0 10px var(--neon-orange);
+    transition: width 1s ease-in-out;
+}
+
+/* --- HUB CONTENT --- */
+.hub-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.hub-sidebar {
+    width: 250px;
+    background: var(--bg-panel-header);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+}
+
+.hub-tab {
+    padding: 20px;
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.hub-tab:hover {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-main);
+}
+
+.hub-tab.active {
+    border-left-color: var(--neon-orange);
+    color: var(--neon-orange);
+    background: rgba(251, 146, 60, 0.05);
+}
+
+.hub-main-panel {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+/* --- MANIFESTO SPECIFICS --- */
+.manifesto-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.manifesto-body {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    max-width: 600px;
+}
+
+.manifesto-body p {
+    margin-bottom: 20px;
+}
+
+.manifesto-signature {
+    margin-top: 40px;
+    font-family: var(--font-mono);
+    color: var(--neon-teal);
+    font-size: 0.9rem;
+}
