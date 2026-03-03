@@ -1,0 +1,52 @@
+/* src/components/ui/StatusBadge.css */
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid transparent;
+    font-family: var(--font-mono); 
+    display: inline-block;
+}
+
+/* 1. Active Theme: Teal */
+.status-badge.status-active {
+    background: rgba(45, 212, 191, 0.15); 
+    border-color: var(--neon-teal);
+    color: var(--neon-teal);
+    box-shadow: 0 0 10px rgba(45, 212, 191, 0.2);
+}
+
+/* 2. Draft Theme: Amber */
+.status-badge.status-draft {
+    background: rgba(251, 191, 36, 0.15); 
+    border-color: #fbbf36; 
+    color: #fbbf36;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+}
+
+/* 3. Idea Theme: Purple (NEW) */
+.status-badge.status-idea {
+    background: rgba(167, 139, 250, 0.15);
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.2);
+}
+
+/* Fallback/Completed */
+.status-badge.status-planning,
+.status-badge.status-completed {
+    background: rgba(167, 139, 250, 0.15);
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+}
+
+/* Dormant / Other */
+.status-badge.status-dormant,
+.status-badge.status-on_hold {
+    background: rgba(161, 161, 170, 0.15);
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+}

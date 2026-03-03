@@ -199,3 +199,83 @@
     min-height: 120px;
     resize: vertical;
 }
+/* Custom Color Picker Swatch */
+.color-swatch-wrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: transform 0.1s ease, border-color 0.2s ease;
+}
+
+.color-swatch-wrapper:hover {
+  transform: scale(1.05);
+  border-color: var(--neon-teal);
+}
+
+.invisible-color-picker {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 65px;
+  height: 65px;
+  opacity: 0;
+  cursor: pointer;
+}
+/* --- ENGINEERING PANEL LIST FIXES --- */
+
+/* Ensures the item text on the left in the BOM list can shrink and wrap */
+.bom-item-text {
+    flex: 1; /* Take all available space */
+    min-width: 0; /* Important flex fix to allow shrinking */
+    padding-right: 15px; /* Hard space before the cost/trash column starts */
+}
+
+/* Ensure step numbers and text have their own space */
+.flex-center.gap-15 .step-num {
+    flex-shrink: 0; /* Number never squishes */
+}
+
+.instruction-item-text {
+    flex: 1; /* Step description takes all space */
+    min-width: 0; /* Important flex fix for wrapping */
+    padding-right: 10px; /* Space before the trash button starts */
+}
+
+/* Update the row hover state to look slightly better */
+.flex-between.bg-darker:hover {
+    border-color: var(--text-muted) !important;
+}
+/* --- GATEKEEPER UI --- */
+.gatekeeper-status {
+    min-width: 200px;
+    justify-content: flex-end;
+}
+
+.border-left-subtle {
+    border-left: 1px solid var(--border-subtle);
+}
+
+.btn-activate {
+    background: transparent;
+    border: 1px solid var(--neon-teal);
+    color: var(--neon-teal);
+    padding: 10px 20px;
+    border-radius: 2px;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.btn-activate:hover {
+    background: var(--neon-teal);
+    color: #000;
+    box-shadow: var(--glow-teal);
+    transform: translateY(-1px);
+}

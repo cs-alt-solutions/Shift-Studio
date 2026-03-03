@@ -1,122 +1,150 @@
 /* src/components/cards/ProjectCard.css */
 
-.folder-container {
+.project-card-container {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   height: 100%;
-  margin-top: 10px; 
-}
-
-.folder-tab {
-  width: 50%; 
-  background: var(--bg-panel); 
-  height: 25px;
-  border: 1px solid var(--border-subtle);
-  border-bottom: none; 
-  border-radius: 4px 12px 0 0; 
-  display: flex;
-  align-items: center;
-  padding-left: 15px;
-  margin-bottom: -1px; 
-  z-index: 5; 
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
   position: relative;
+  cursor: pointer;
+  border-top: 3px solid transparent; 
 }
 
-.folder-tab-text {
-  font-family: var(--font-mono); 
-  font-size: 0.6rem;
-  color: var(--text-muted);
-  letter-spacing: 1px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.folder-body.card-hover-effect {
-  background: var(--bg-panel); 
-  border: 1px solid var(--border-subtle);
-  border-radius: 0 4px 4px 4px; 
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: visible; 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.folder-body.card-hover-effect:hover {
+.project-card-container:hover {
   transform: translateY(-4px);
-  border-color: var(--text-muted);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
   z-index: 10;
 }
 
-.folder-content {
-  padding: 24px;
+/* --- THEME 1: ACTIVE (TEAL) --- */
+.project-card-container.status-active {
+    border-top-color: var(--neon-teal);
+}
+
+.project-card-container.status-active .project-title {
+    color: var(--text-main);
+}
+
+.project-card-container.status-active .retail-price-display,
+.project-card-container.status-active .stock-units {
+    color: var(--neon-teal);
+}
+
+/* --- THEME 2: DRAFT (AMBER) --- */
+.project-card-container.status-draft {
+    border-top-color: #fbbf36; /* Amber */
+}
+
+.project-card-container.status-draft .project-title {
+    color: var(--text-muted);
+}
+
+.project-card-container.status-draft .retail-price-display,
+.project-card-container.status-draft .stock-units {
+    color: #fbbf36; /* Amber */
+}
+/* Add this right under your /* --- THEME 2: DRAFT (AMBER) --- */ section in ProjectCard.css */
+
+/* --- THEME 3: IDEA (PURPLE) --- */
+.project-card-container.status-idea {
+    border-top-color: var(--neon-purple);
+}
+
+.project-card-container.status-idea .project-title {
+    color: var(--text-muted); /* Keeps it feeling like a raw thought */
+}
+
+.project-card-container.status-idea .retail-price-display,
+.project-card-container.status-idea .stock-units {
+    color: var(--neon-purple);
+}
+
+/* --- LAYOUT STRUCTURE --- */
+.project-card-header {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center; 
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.project-card-body {
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.folder-title {
+.project-title {
   margin: 0;
-  font-size: 1.3rem; 
-  font-weight: 800;
-  color: var(--text-main);
-  letter-spacing: 0.5px;
-  line-height: 1.2;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.2px; 
+  flex-grow: 1;
 }
 
-/* FIX: Clean Delete Button Protocol */
+.project-metrics {
+    display: flex;
+    justify-content: space-between;
+    background: transparent; 
+    padding: 0;
+    margin-bottom: 15px;
+    border: none;
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.metric-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.project-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid var(--border-subtle); 
+}
+
+.font-large {
+    font-size: 1.2rem;
+}
+
 .btn-icon-hover-clean {
   background: transparent !important;
   border: none !important;
   color: var(--text-muted);
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   cursor: pointer;
-  line-height: 0.5;
-  padding: 0;
-  transition: all 0.2s;
+  padding: 6px;
+  margin: -6px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   outline: none;
+  flex-shrink: 0;
 }
 
 .btn-icon-hover-clean:hover { 
   color: var(--neon-red); 
-  transform: scale(1.1); 
-  filter: drop-shadow(0 0 5px var(--neon-red));
-}
-
-.metrics-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    background: var(--bg-row-odd);
-    padding: 12px;
-    border-radius: 4px;
-    border: 1px solid var(--border-subtle);
-}
-
-.metric-box {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.metric-value {
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    font-weight: 700;
-}
-
-.border-top-dashed {
-    border-top: 1px dashed var(--border-subtle);
-}
-/* --- STATUS STAMP POSITIONING --- */
-.status-stamp-wrapper {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 10;
+  background: rgba(239, 68, 68, 0.1);
 }

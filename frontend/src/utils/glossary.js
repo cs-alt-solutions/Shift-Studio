@@ -59,6 +59,7 @@ export const TERMINOLOGY = {
   STATUS: {
     ACTIVE: "IN PRODUCTION",
     DRAFT: "DRAFT",
+    IDEA: "IDEA",
     COMPLETED: "CATALOGED",
     ON_HOLD: "ON HOLD", 
     LOW_STOCK: "RUNNING LOW",
@@ -196,7 +197,14 @@ export const TERMINOLOGY = {
     RAW_MATERIALS: "Material Cost:",
     PLATFORM_FEES: "Est. Fees:",
     SHIPPING_LABEL: "Shipping Cost:",
-    ADD_MATERIAL: "-- Select a Material --"
+    ADD_MATERIAL: "-- Select a Material --",
+    ACTIVATE_PROJECT: "ACTIVATE PROJECT",
+    REQ_TITLE: "TITLE",
+    REQ_BOM: "MATERIALS",
+    REQ_SOP: "SOP",
+    REQ_PRICE: "PRICE",
+    READY_TO_ACTIVATE: "READY TO LAUNCH",
+    MISSING_REQS: "MISSING TO LAUNCH:"
   },
   MARKET: {
     HEADER: "COMPETITION TRACKER",

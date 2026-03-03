@@ -11,17 +11,16 @@ export const BrandingPanel = ({
   netProfit,
   marginPercent
 }) => {
-  // Safely default these objects so the app never crashes if a new project is blank
   const { economics = {}, brand_specs = {} } = localProject;
 
   return (
     <div className="engineering-grid-v2 h-full">
       
       {/* --- LEFT COLUMN: PROFIT SIMULATOR --- */}
-      <div className="blueprint-card m-0 flex-col">
+      <div className="blueprint-card no-margin flex-col h-full">
         <div className="blueprint-card-title">{TERMINOLOGY.BLUEPRINT.PROFIT_SIMULATOR}</div>
         
-        <div className="flex-center flex-col mb-20">
+        <div className="flex-center flex-col mb-20 w-full">
            <label className="label-industrial text-center w-full mb-10">{TERMINOLOGY.BLUEPRINT.RETAIL}</label>
            <input 
               type="number" 
@@ -33,8 +32,8 @@ export const BrandingPanel = ({
            />
         </div>
 
-        <div className="grid-2-col gap-15 mb-20">
-           <div className="lab-form-group">
+        <div className="flex-between gap-20 mb-20">
+           <div className="flex-col w-full">
               <label className="label-industrial">SHIPPING COST TO YOU</label>
               <input 
                   type="number" 
@@ -44,7 +43,7 @@ export const BrandingPanel = ({
                   onChange={e => handleUpdate('economics', parseFloat(e.target.value) || 0, 'shippingCost')} 
               />
            </div>
-           <div className="lab-form-group">
+           <div className="flex-col w-full">
               <label className="label-industrial">PLATFORM FEE (%)</label>
               <input 
                   type="number" 
@@ -85,11 +84,11 @@ export const BrandingPanel = ({
       </div>
 
       {/* --- RIGHT COLUMN: BRANDING & SPECS --- */}
-      <div className="blueprint-card m-0 flex-col">
+      <div className="blueprint-card no-margin flex-col h-full">
          <div className="blueprint-card-title">{TERMINOLOGY.WORKSHOP.BRAND_SPECS}</div>
 
-         <div className="grid-2-col gap-15 mb-15">
-             <div className="lab-form-group">
+         <div className="flex-between gap-20 mb-20">
+             <div className="flex-col w-full">
                 <label className="label-industrial">{TERMINOLOGY.WORKSHOP.LABEL_SIZE}</label>
                 <input 
                     type="text" 
@@ -99,7 +98,7 @@ export const BrandingPanel = ({
                     onChange={e => handleUpdate('brand_specs', e.target.value, 'label_size')} 
                 />
              </div>
-             <div className="lab-form-group">
+             <div className="flex-col w-full">
                 <label className="label-industrial">{TERMINOLOGY.WORKSHOP.PRIMARY_FONT}</label>
                 <input 
                     type="text" 
@@ -111,15 +110,20 @@ export const BrandingPanel = ({
              </div>
          </div>
 
-         <div className="lab-form-group mb-15">
+         <div className="flex-col w-full mb-20">
             <label className="label-industrial">{TERMINOLOGY.WORKSHOP.HEX_COLOR}</label>
-            <div className="flex gap-10">
-                <input 
-                    type="color" 
-                    className="color-picker-input" 
-                    value={brand_specs.hex_code || '#ffffff'} 
-                    onChange={e => handleUpdate('brand_specs', e.target.value, 'hex_code')} 
-                />
+            <div className="flex-center gap-10">
+                <div 
+                  className="color-swatch-wrapper" 
+                  style={{ backgroundColor: brand_specs.hex_code || '#ffffff' }}
+                >
+                    <input 
+                        type="color" 
+                        className="invisible-color-picker clickable" 
+                        value={brand_specs.hex_code || '#ffffff'} 
+                        onChange={e => handleUpdate('brand_specs', e.target.value, 'hex_code')} 
+                    />
+                </div>
                 <input 
                     type="text" 
                     className="input-industrial flex-1 font-mono uppercase" 
@@ -129,7 +133,7 @@ export const BrandingPanel = ({
             </div>
          </div>
 
-         <div className="lab-form-group mb-20 flex-1 flex-col">
+         <div className="flex-col w-full h-full">
             <label className="label-industrial">{TERMINOLOGY.WORKSHOP.MAKER_NOTES}</label>
             <textarea 
                 className="input-industrial textarea-tall flex-1" 

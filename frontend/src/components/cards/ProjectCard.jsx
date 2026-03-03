@@ -5,74 +5,71 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 import { TERMINOLOGY } from '../../utils/glossary';
 import { StatusBadge } from '../ui/StatusBadge';
 import { ProgressBar } from '../ui/ProgressBar';
-import { CloseIcon } from '../Icons';
+import { TrashIcon } from '../Icons';
 
 export const ProjectCard = ({ project, onClick, onDelete, readOnly = false, showStatus = true }) => {
-  const { title, status, retailPrice, updated_at, stockQty, recipe } = project;
-  const isDraft = status === 'draft' || status === 'Planning' || !status;
+  const { title, status = 'draft', retailPrice, updated_at, stockQty, recipe } = project;
+  const isDraft = status === 'draft' || status === 'idea' || status === 'Planning';
+  const normalizedStatus = status.toLowerCase();
 
   return (
-    <div className="folder-container" onClick={onClick}>
-      <div className="folder-tab">
-        <span className="folder-tab-text">
+    <div className={`project-card-container card-hover-effect status-${normalizedStatus}`} onClick={onClick}>
+      
+      <div className="project-card-header">
+        {showStatus ? (
+          <StatusBadge status={status} />
+        ) : (
+          <span className="text-muted font-small font-mono">
             {TERMINOLOGY.GENERAL.ID_LABEL}: {project.id ? project.id.toString().slice(-4) : 'NEW'}
-        </span>
-      </div>
-
-      <div className={`folder-body card-hover-effect ${status === 'completed' ? 'catalog-mode' : ''}`}>
-        
-        {showStatus && (
-          <div className="status-stamp-wrapper">
-             <StatusBadge status={status || 'draft'} />
-          </div>
+          </span>
         )}
 
-        <div className="folder-content">
-          <h3 className="folder-title mb-20">{title || 'UNTITLED BUILD'}</h3>
-          
-          <div className="metrics-grid mb-15">
-              <div className="metric-box">
-                  <span className="label-industrial">{TERMINOLOGY.WORKSHOP.BOM_HEADER}</span>
-                  <div className="metric-value">{recipe?.length || 0} ITEMS</div>
-              </div>
-              <div className="metric-box">
-                  <span className="label-industrial">{TERMINOLOGY.BLUEPRINT.STOCK}</span>
-                  <div className="metric-value text-accent">{stockQty || 0} {TERMINOLOGY.GENERAL.UNITS}</div>
-              </div>
-          </div>
+        <h3 className="project-title">{title || 'Untitled Project'}</h3>
+        
+        {!readOnly && onDelete && (
+          <button 
+            className="btn-icon-hover-clean z-layer-top" 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              onDelete(project.id); 
+            }}
+            title={TERMINOLOGY.GENERAL.DELETE}
+          >
+            <TrashIcon />
+          </button>
+        )}
+      </div>
 
-          {!isDraft && (
+      <div className="project-card-body">
+        <div className="project-metrics">
+            <div className="metric-item">
+                <span className="metric-label">{TERMINOLOGY.WORKSHOP.BOM_HEADER}</span>
+                <span className="metric-value">{recipe?.length || 0} Items</span>
+            </div>
+            <div className="metric-item text-right">
+                <span className="metric-label">{TERMINOLOGY.BLUEPRINT.STOCK}</span>
+                <span className="metric-value stock-units">{stockQty || 0} {TERMINOLOGY.GENERAL.UNITS}</span>
+            </div>
+        </div>
+
+        {!isDraft && (
+            <div className="mt-10 mb-10">
               <ProgressBar 
                   value={status === 'completed' ? 100 : 45} 
                   colorVar={status === 'active' ? '--neon-teal' : '--neon-purple'}
               />
-          )}
-
-          <div className="flex-between mt-20 pt-15 border-top-dashed">
-             <div>
-                <span className="label-industrial">{TERMINOLOGY.WORKSHOP.TARGET_RETAIL}</span>
-                <div className="text-good font-bold">{formatCurrency(retailPrice || 0)}</div>
-             </div>
-             <div className="text-right">
-                <span className="label-industrial">{TERMINOLOGY.WORKSHOP.LAST_EDIT}</span>
-                <div className="text-muted font-small">{updated_at ? formatDate(updated_at) : 'JUST NOW'}</div>
-             </div>
-          </div>
-          
-          {!readOnly && onDelete && (
-            <div className="flex-end mt-10">
-              <button 
-                className="btn-icon-hover-clean" 
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  onDelete(project.id); 
-                }}
-                title={TERMINOLOGY.GENERAL.DELETE}
-              >
-                <CloseIcon />
-              </button>
             </div>
-          )}
+        )}
+
+        <div className="project-footer mt-20 pt-15">
+           <div>
+              <span className="metric-label">{TERMINOLOGY.WORKSHOP.TARGET_RETAIL}</span>
+              <div className="retail-price-display font-bold font-large">{formatCurrency(retailPrice || 0)}</div>
+           </div>
+           <div className="text-right">
+              <span className="metric-label">{TERMINOLOGY.WORKSHOP.LAST_EDIT}</span>
+              <div className="text-muted font-small">{updated_at ? formatDate(updated_at) : 'Just Now'}</div>
+           </div>
         </div>
       </div>
     </div>

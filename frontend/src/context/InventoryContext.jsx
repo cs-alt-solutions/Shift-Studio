@@ -8,7 +8,7 @@ export const InventoryProvider = ({ children }) => {
   const [materials, setMaterials] = useState([]);
   const [activeProjects, setActiveProjects] = useState([]);
   const [draftProjects, setDraftProjects] = useState([]);
-  const [vendors, setVendors] = useState([]); // <-- NEW STATE
+  const [vendors, setVendors] = useState([]); 
   const [loading, setLoading] = useState(true); 
 
   const fetchStudioData = useCallback(async () => {
@@ -19,7 +19,7 @@ export const InventoryProvider = ({ children }) => {
       const [invRes, projRes, vendorRes] = await Promise.all([
         supabase.from('inventory').select('*').order('name', { ascending: true }),
         supabase.from('projects').select('*'),
-        supabase.from('vendors').select('*').order('name', { ascending: true }) // <-- NEW FETCH
+        supabase.from('vendors').select('*').order('name', { ascending: true }) 
       ]);
 
       if (invRes.error) throw invRes.error;
@@ -30,8 +30,12 @@ export const InventoryProvider = ({ children }) => {
       setVendors(vendorRes.data || []);
 
       const allProjects = projRes.data || [];
+      
+      // Route Active Lineup
       setActiveProjects(allProjects.filter(p => p.status === 'In Progress' || p.status === 'Completed' || p.status === 'active'));
-      setDraftProjects(allProjects.filter(p => p.status === 'Planning' || p.status === 'Draft' || p.status === 'draft' || !p.status));
+      
+      // Route Drafts & Ideas Lineup (NEW: Added p.status === 'idea')
+      setDraftProjects(allProjects.filter(p => p.status === 'Planning' || p.status === 'Draft' || p.status === 'draft' || p.status === 'idea' || !p.status));
 
     } catch (error) {
       console.error("Supabase Error fetching studio telemetry:", error);
@@ -159,6 +163,5 @@ export const InventoryProvider = ({ children }) => {
     </InventoryContext.Provider>
   );
 };
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const useInventory = () => useContext(InventoryContext);
