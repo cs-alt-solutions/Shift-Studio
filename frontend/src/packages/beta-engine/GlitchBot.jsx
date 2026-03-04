@@ -1,47 +1,39 @@
-/* src/packages/beta-engine/GlitchBot.jsx */
-import React, { useState } from 'react';
+/* packages/beta-engine/GlitchBot.jsx */
+import React, { useState, useEffect } from 'react';
 import './GlitchBot.css';
 import { BotCore } from './components/BotCore';
 import { DialogueMenu } from './components/DialogueMenu';
 
-/**
- * GLITCHBOT: The primary state manager for the diagnostic companion.
- * @param {string} currentContext - Tells the bot where it is (e.g., 'DASHBOARD').
- * @param {string} mode - 'floating', 'cinematic', or 'docked'.
- * @param {string} layout - 'anchor-bottom', 'zone-push', etc. (Handles positioning physics).
- */
 export const GlitchBot = ({ 
   currentContext = "APP", 
   mode = "floating", 
-  layout = "anchor-bottom" 
+  layout = "anchor-bottom",
+  autoGreet = false // New prop to trigger a greeting on first load
 }) => {
-  // State for managing the dialogue matrix
   const [isOpen, setIsOpen] = useState(false);
   const [activeDialogue, setActiveDialogue] = useState(null);
+
+  // Automatically open the greeting if autoGreet is passed (e.g., on Dashboard mount)
+  useEffect(() => {
+    if (autoGreet) {
+      const timer = setTimeout(() => setIsOpen(true), 2000); // 2s delay after loading
+      return () => clearTimeout(timer);
+    }
+  }, [autoGreet]);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
     setActiveDialogue(null); 
   };
 
-  const handleReactionClick = (type) => {
-    setActiveDialogue(type);
-  };
-
-  const handleCancel = () => {
-    setActiveDialogue(null);
-  };
-
+  const handleReactionClick = (type) => setActiveDialogue(type);
+  const handleCancel = () => setActiveDialogue(null);
+  
   const handleSubmit = (feedbackData) => {
-    // Logic for lifting state to the Lab Tab will go here
     console.log("🔥 GLITCHBOT CAPTURED FEEDBACK:", feedbackData);
-    
     setIsOpen(false);
     setActiveDialogue(null);
   };
-
-  // Cinematic mode automatically hides diagnostic HUD
-  const showBadge = mode !== "cinematic";
 
   return (
     <div className={`glitchbot-wrapper mode-${mode} layout-${layout}`}>
@@ -56,8 +48,8 @@ export const GlitchBot = ({
       )}
       <BotCore 
         onClick={handleToggle} 
-        showBadge={showBadge}
-        scale={mode === "cinematic" ? "large" : "normal"}
+        showBadge={mode !== "cinematic"}
+        scale="normal"
       />
     </div>
   );

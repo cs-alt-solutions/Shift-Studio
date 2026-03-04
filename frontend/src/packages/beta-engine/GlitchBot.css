@@ -1,60 +1,214 @@
-/* packages/beta-engine/GlitchBot.css */
+/* src/packages/beta-engine/GlitchBot.css */
 
-/* --- STANDARDIZED SCALING --- */
 
-/* Normal scale: Dropped from 60px to 45px for a non-intrusive dashboard presence */
-.scale-normal .glitchbot-core-mascot {
-    width: 45px; 
-    height: auto;
-}
 
-/* Large scale: Dropped from 130px to 90px for cleaner Onboarding/Blueprint layouts */
-.scale-large .glitchbot-core-mascot {
-    width: 90px; 
-    height: auto;
-}
-
-/* --- THE UI NAMEPLATE --- */
-.bot-id-badge {
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    background: rgba(0, 0, 0, 0.85);
-    border: 1px solid var(--neon-teal);
-    color: var(--neon-teal);
-    letter-spacing: 1px;
-    white-space: nowrap;
-    z-index: 10;
-}
-
-/* Scaled down to match the new micro-bot */
-.scale-normal .bot-id-badge {
-    font-size: 6px; 
-    padding: 1px 4px;
-    margin-top: 3px;
-}
-
-.scale-large .bot-id-badge {
-    font-size: 9px;
-    padding: 2px 8px;
-    margin-top: 8px;
-}
-
-/* --- POSITIONING ZONES --- */
-
-/* Zone: Standard Dashboard Floating */
-.glitchbot-wrapper.layout-anchor-bottom {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1000;
-}
-
-/* Zone: Cinematic Interaction (Used in Onboarding) */
-.glitchbot-wrapper.layout-zone-push {
+/* --- THE PERMANENT MIRROR --- */
+.bot-orientation-flip {
+    /* Mirror the chassis so the video faces the Dashboard (Left) */
+    transform: rotateY(180deg);
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* --- THE "LOOK AT APP" IDLE PHYSICS --- */
+@keyframes bot-idle-float {
+    /* Slight tilt up toward the dashboard data (4-6deg) */
+    0%, 100% { transform: translateY(0) rotate(4deg); } 
+    50% { transform: translateY(-8px) rotate(6deg); }
+}
+
+.glitchbot-core-mascot {
+    animation: bot-idle-float 4s ease-in-out infinite;
+    /* Buttery smooth transition for the "Perk Up" hover effect */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* --- THE "OH, HEY!" HOVER INTERACTION --- */
+.glitchbot-wrapper:hover .glitchbot-core-mascot {
+    /* Lifts head (rotate 12deg) and leans in (scale 1.2) */
+    transform: scale(1.2) rotate(12deg); 
+    filter: drop-shadow(0 0 25px rgba(6, 182, 212, 0.6));
+}
+
+/* --- THE "ROACH" FOOTPRINT --- */
+.scale-normal .glitchbot-core-mascot {
+    width: 120px; 
+}
+
+/* --- THE GHOST HUD (Hidden until hover) --- */
+.bot-id-badge {
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(15px);
+    pointer-events: none;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 900;
+    color: var(--brand-primary);
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid var(--brand-primary);
+    padding: 3px 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 15px;
+    clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0% 30%);
+}
+
+.glitchbot-wrapper:hover .bot-id-badge {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- THE SPEECH BUBBLE (SCREEN-SAFE HUD) --- */
+.glitchbot-dialogue {
+    position: absolute;
+    bottom: 130%; /* Lifted to clear the tail and the hover-zoom */
+    
+    /* THE SHIFT: Anchor right to the bot to keep it on-screen */
+    right: 0; 
+    left: auto;
+    transform: none; 
+    
+    width: 320px; 
+    background: rgba(9, 9, 11, 0.98);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--neon-teal);
+    padding: 24px;
+    border-radius: 20px; /* Softer, organic bubble feel */
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9), 0 0 20px rgba(45, 212, 191, 0.15);
+    animation: bubble-pop-right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 2100;
+}
+
+/* THE BUBBLE TAIL (Points at bot center) */
+.glitchbot-dialogue::after {
+    content: '';
+    position: absolute;
+    top: 100%; 
+    right: 50px; /* Centered over the 120px bot chassis */
+    left: auto;
+    transform: translateX(50%);
+    border-width: 12px;
+    border-style: solid;
+    border-color: var(--neon-teal) transparent transparent transparent; 
+}
+
+/* Internal fill for the tail */
+.glitchbot-dialogue::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 50px;
+    left: auto;
+    transform: translateX(50%);
+    border-width: 10px;
+    border-style: solid;
+    border-color: rgba(9, 9, 11, 0.98) transparent transparent transparent;
+    z-index: 1;
+}
+
+@keyframes bubble-pop-right {
+    0% { transform: scale(0.85) translateY(15px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* --- INTERACTIVE BUTTONS --- */
+.reaction-btn {
+    width: 100%;
+    background: rgba(45, 212, 191, 0.05);
+    border: 1px solid rgba(45, 212, 191, 0.2);
+    color: var(--text-main);
+    padding: 10px 15px;
+    border-radius: 12px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-align: left;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.reaction-btn:hover {
+    background: rgba(45, 212, 191, 0.15);
+    border-color: var(--neon-teal);
+    transform: translateX(4px);
+}
+
+/* --- GLOBAL POSITIONING --- */
+.glitchbot-wrapper.layout-anchor-bottom {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2000;
+    pointer-events: none; 
+}
+
+.glitchbot-core-mascot, .glitchbot-dialogue {
+    pointer-events: auto;
+    cursor: pointer;
+}
+/* src/packages/beta-engine/GlitchBot.css */
+
+.glitchbot-core-mascot {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    background: #000; /* Matches your video background */
+    border: 1px solid var(--neon-teal); /* The "HUD" Border */
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+    overflow: hidden;
+    /* transition for the hover "perk up" */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* THE "HUD" SCANLINE: Makes the video look like a screen */
+.glitchbot-core-mascot::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+    ), linear-gradient(
+        90deg, 
+        rgba(255, 0, 0, 0.06), 
+        rgba(0, 255, 0, 0.02), 
+        rgba(0, 0, 255, 0.06)
+    );
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* HUD CORNER BRACKETS */
+.bot-orientation-flip::before {
+    content: '[';
+    position: absolute;
+    top: 5px; left: 5px;
+    color: var(--neon-teal);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    z-index: 3;
+}
+
+.bot-orientation-flip::after {
+    content: ']';
+    position: absolute;
+    bottom: 5px; right: 5px;
+    color: var(--neon-teal);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    z-index: 3;
+}
+
+.bot-video-render {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures he fills the "portal" */
+    /* Remove the blend-mode since we want the black box now */
+    filter: brightness(110%) contrast(110%);
 }

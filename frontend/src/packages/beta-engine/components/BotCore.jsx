@@ -1,26 +1,34 @@
 /* packages/beta-engine/components/BotCore.jsx */
 import React from 'react';
-import { GLITCHBOT_DICT } from '../dictionary';
 
-export const BotCore = ({ onClick, scale = "normal", interactive = true, showBadge = true }) => {
-  const containerClass = `glitchbot-core-container scale-${scale} ${interactive ? 'interactive' : ''}`;
+export const BotCore = ({ 
+  onClick, 
+  scale = "normal", 
+  expression = "idle", // Default to idle
+  interactive = true 
+}) => {
+  const containerClass = `glitchbot-core-container scale-${scale} state-${expression}`;
   
+  // The system now looks for MP4 snippets
+  const videoSource = `/glitchbot_${expression}.mp4`;
+
   return (
     <div className={containerClass}>
       <div className="glitchbot-core-mascot" onClick={interactive ? onClick : undefined}>
-          <img 
-            src="/glitchbot_mascot.png" 
-            alt="GLITCH_BOT" 
-            className="bot-image-render"
-          />
+          <div className="bot-orientation-flip">
+              {/* THE VIDEO ENGINE */}
+              <video 
+                key={videoSource} 
+                className="bot-video-render"
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+              >
+                <source src={videoSource} type="video/mp4" />
+              </video>
+          </div>
       </div>
-
-      {/* Renders the nameplate only when diagnostic mode is active */}
-      {showBadge && (
-        <div className="bot-id-badge">
-            ID: {GLITCHBOT_DICT.UI.BADGE.replace('[', '').replace(']', '')}
-        </div>
-      )}
     </div>
   );
 };

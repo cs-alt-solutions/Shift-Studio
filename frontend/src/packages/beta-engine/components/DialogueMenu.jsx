@@ -2,19 +2,30 @@
 import React, { useState } from 'react';
 import { GLITCHBOT_DICT } from '../dictionary';
 
-export const DialogueMenu = ({ currentContext = "APP", activeDialogue, onReactionClick, onSubmit, onCancel }) => {
+/**
+ * DIALOGUE_MENU: Refactored to eliminate unused variables and 
+ * connect submission logic to the UI.
+ */
+export const DialogueMenu = ({ 
+  currentContext = "APP", 
+  activeDialogue, 
+  onReactionClick, 
+  onSubmit, 
+  onCancel // Prop now fully utilized to reset state
+}) => {
   const [text, setText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // UPGRADED: The Bulletproof Translator Engine
-  // We force the incoming string to UPPERCASE and trim spaces so it always matches the dictionary keys.
+  // Context Translator
   const normalizedContext = currentContext.toUpperCase().trim();
   const friendlyContext = GLITCHBOT_DICT.CONTEXT_MAP[normalizedContext] || currentContext.toLowerCase();
 
+  // Submission logic for the feedback form
   const handleSend = () => {
     if (!text.trim()) return;
     setIsSubmitting(true);
     
+    // Simulate a secure sync to the lab
     setTimeout(() => {
       onSubmit({ type: activeDialogue, text, context: currentContext });
       setIsSubmitting(false);
@@ -22,69 +33,84 @@ export const DialogueMenu = ({ currentContext = "APP", activeDialogue, onReactio
     }, 1500);
   };
 
-  // State 3: The Loading/Success Screen
+  // --- STATE: SYNCING DATA ---
   if (isSubmitting) {
       return (
           <div className="glitchbot-dialogue">
-              <div className="dialogue-text text-center text-teal font-mono border-none">
-                  {GLITCHBOT_DICT.UI.LOGGING} <br/>
-                  <span className="text-main font-small">{GLITCHBOT_DICT.UI.XP_GAIN}</span>
+              <div className="text-center py-10">
+                  <div className="font-mono text-teal mb-5">{GLITCHBOT_DICT.UI.LOGGING}</div>
+                  <div className="text-main font-tiny opacity-60">{GLITCHBOT_DICT.UI.XP_GAIN}</div>
               </div>
           </div>
       );
   }
 
-  // State 2: The Text Input Form
+  // --- STATE: FEEDBACK FORM (Visible after a reaction is clicked) ---
   if (activeDialogue) {
-      const colorClass = activeDialogue === 'OOF' ? 'text-orange' : activeDialogue === 'EYESORE' ? 'text-red' : 'text-teal';
-
       return (
-          <div className="glitchbot-dialogue form-mode">
-              <div className="dialogue-text mb-15">
-                  <span className={`font-bold font-mono ${colorClass}`}>
-                      {GLITCHBOT_DICT.REACTIONS[activeDialogue]}
-                  </span>
-              </div>
-              
-              <textarea
-                  className="feedback-textarea"
-                  placeholder={GLITCHBOT_DICT.UI.INPUT_PLACEHOLDER}
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  autoFocus
-              />
-              
-              <div className="feedback-actions">
-                  <button className="btn-cancel" onClick={onCancel}>
-                      {GLITCHBOT_DICT.UI.BTN_CANCEL}
-                  </button>
-                  <button className="btn-submit" onClick={handleSend} disabled={!text.trim()}>
-                      {GLITCHBOT_DICT.UI.BTN_SUBMIT}
-                  </button>
+          <div className="glitchbot-dialogue">
+              <div className="dialogue-inner">
+                  <div className="mb-15">
+                      <span className="font-bold font-mono text-tiny text-teal">
+                          // FEEDBACK_MODE: {activeDialogue}
+                      </span>
+                  </div>
+                  
+                  <textarea
+                      className="feedback-textarea"
+                      placeholder={GLITCHBOT_DICT.UI.INPUT_PLACEHOLDER}
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      autoFocus
+                  />
+                  
+                  <div className="flex gap-10 mt-15">
+                      {/* ESLint Fix: onCancel is now wired to the button */}
+                      <button className="btn-cancel flex-1 py-8 font-tiny" onClick={onCancel}>
+                          {GLITCHBOT_DICT.UI.BTN_CANCEL}
+                      </button>
+                      {/* ESLint Fix: handleSend is now wired to the button */}
+                      <button 
+                        className="btn-submit flex-1 py-8 font-tiny" 
+                        onClick={handleSend}
+                        disabled={!text.trim()}
+                      >
+                          {GLITCHBOT_DICT.UI.BTN_SUBMIT}
+                      </button>
+                  </div>
               </div>
           </div>
       );
   }
 
-  // State 1: The Base Reaction Menu 
+  // --- STATE: BASE COMMUNICATOR (Speech Bubble) ---
   return (
       <div className="glitchbot-dialogue">
-        <div className="dialogue-text">
-           <span className="text-teal font-bold font-mono">{GLITCHBOT_DICT.UI.NAME}</span>
-           <br/>
-           {GLITCHBOT_DICT.PROMPTS.START} 
-           <strong className="text-accent">{friendlyContext}</strong> 
-           {GLITCHBOT_DICT.PROMPTS.END}
+        <div className="dialogue-inner">
+            <div className="text-teal font-mono text-tiny font-bold mb-10 opacity-60">
+                {GLITCHBOT_DICT.UI.NAME}
+            </div>
+            
+            <div className="mb-20">
+               <p className="m-0 text-main font-small line-height-1-6">
+                  {GLITCHBOT_DICT.PROMPTS.START} 
+                  <span className="text-accent font-bold">{friendlyContext}</span> 
+                  {GLITCHBOT_DICT.PROMPTS.END}
+               </p>
+            </div>
+
+            <div className="reaction-list flex-col">
+                <button className="reaction-btn" onClick={() => onReactionClick('OOF')}>
+                    {GLITCHBOT_DICT.REACTIONS.OOF}
+                </button>
+                <button className="reaction-btn" onClick={() => onReactionClick('EYESORE')}>
+                    {GLITCHBOT_DICT.REACTIONS.EYESORE}
+                </button>
+                <button className="reaction-btn" onClick={() => onReactionClick('IDEA')}>
+                    {GLITCHBOT_DICT.REACTIONS.IDEA}
+                </button>
+            </div>
         </div>
-        <button className="reaction-btn oof" onClick={() => onReactionClick('OOF')}>
-            {GLITCHBOT_DICT.REACTIONS.OOF}
-        </button>
-        <button className="reaction-btn eyesore" onClick={() => onReactionClick('EYESORE')}>
-            {GLITCHBOT_DICT.REACTIONS.EYESORE}
-        </button>
-        <button className="reaction-btn lightbulb" onClick={() => onReactionClick('IDEA')}>
-            {GLITCHBOT_DICT.REACTIONS.IDEA}
-        </button>
       </div>
   );
 };

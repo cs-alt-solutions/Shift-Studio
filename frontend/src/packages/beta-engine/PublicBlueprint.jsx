@@ -2,7 +2,7 @@
 import React from 'react';
 import { GLITCHBOT_DICT } from './dictionary';
 import { BotCore } from './components/BotCore';
-import './tabs/BlueprintTab.css'; // You can rename this CSS file to BlueprintTab.css later
+import './tabs/BlueprintTab.css'; 
 
 export const PublicBlueprint = () => {
   const { BLUEPRINT } = GLITCHBOT_DICT.HUB;
@@ -45,10 +45,11 @@ export const PublicBlueprint = () => {
             </div>
         </div>
 
-        {/* SECTION 3: THE LORE */}
+        {/* SECTION 3: THE LORE (THE INTRODUCTION) */}
         <div className="panel-industrial p-30 flex gap-30 align-center mb-40 bg-darker">
           <div className="flex-shrink-0">
-            <BotCore scale="large" interactive={true} />
+            {/* LARGE scale for the primary branding introduction */}
+            <BotCore scale="large" interactive={false} />
           </div>
           
           <div>
