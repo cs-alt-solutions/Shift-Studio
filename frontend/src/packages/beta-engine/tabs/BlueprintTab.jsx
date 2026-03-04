@@ -2,7 +2,7 @@
 import React from 'react';
 import { GLITCHBOT_DICT } from '../dictionary';
 import { BotCore } from '../components/BotCore';
-import './ManifestoTab.css';
+import './BlueprintTab.css';
 
 export const ManifestoTab = () => {
   const { MANIFESTO } = GLITCHBOT_DICT.HUB;

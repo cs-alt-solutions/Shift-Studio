@@ -3,19 +3,21 @@ import React, { useState } from 'react';
 import './BetaHub.css';
 import { GLITCHBOT_DICT } from './dictionary';
 
-import { ManifestoTab } from './tabs/ManifestoTab';
+import { BlueprintTab } from './tabs/BlueprintTab'; // UPDATED
 import { LabTab } from './tabs/LabTab';
 import { VaultTab } from './tabs/VaultTab';
+import { TheBridge } from './admin/TheBridge'; 
 import { GlitchBot } from './GlitchBot';
 
 export const BetaHub = ({ onClose }) => {
-  const [activeTab, setActiveTab] = useState('MANIFESTO');
+  const [activeTab, setActiveTab] = useState('BLUEPRINT'); // UPDATED
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'MANIFESTO': return <ManifestoTab />;
+      case 'BLUEPRINT': return <BlueprintTab />;
       case 'LAB':       return <LabTab />;
       case 'VAULT':     return <VaultTab />;
+      case 'BRIDGE':    return <TheBridge />;
       default:          return null;
     }
   };
@@ -32,7 +34,6 @@ export const BetaHub = ({ onClose }) => {
           <div className="evolution-container">
             <div className="evolution-label">
               <span>{GLITCHBOT_DICT.HUB.EVOLUTION_PHASE}</span>
-              {/* UPGRADED: RPG XP Tracker */}
               <span>{GLITCHBOT_DICT.HUB.XP_PROGRESS}</span>
             </div>
             <div className="evolution-track">
@@ -48,11 +49,12 @@ export const BetaHub = ({ onClose }) => {
         <div className="hub-content">
           
           <div className="hub-sidebar">
+            {/* UPDATED: class is now tab-blueprint */}
             <button 
-              className={`hub-tab tab-manifesto ${activeTab === 'MANIFESTO' ? 'active' : ''}`}
-              onClick={() => setActiveTab('MANIFESTO')}
+              className={`hub-tab tab-blueprint ${activeTab === 'BLUEPRINT' ? 'active' : ''}`}
+              onClick={() => setActiveTab('BLUEPRINT')}
             >
-              // {GLITCHBOT_DICT.HUB.TABS.MANIFESTO}
+              // {GLITCHBOT_DICT.HUB.TABS.BLUEPRINT}
             </button>
             <button 
               className={`hub-tab tab-lab ${activeTab === 'LAB' ? 'active' : ''}`}
@@ -65,6 +67,13 @@ export const BetaHub = ({ onClose }) => {
               onClick={() => setActiveTab('VAULT')}
             >
               // {GLITCHBOT_DICT.HUB.TABS.VAULT}
+            </button>
+            
+            <button 
+              className={`hub-tab tab-admin text-orange ${activeTab === 'BRIDGE' ? 'active' : ''}`}
+              onClick={() => setActiveTab('BRIDGE')}
+            >
+              // {GLITCHBOT_DICT.HUB.TABS.BRIDGE}
             </button>
 
             <GlitchBot mode="docked" currentContext={`HUB: ${activeTab}`} />

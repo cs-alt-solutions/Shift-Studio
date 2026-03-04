@@ -68,7 +68,6 @@
 .evolution-fill {
     height: 100%;
     background: var(--neon-orange);
-    /* UPGRADED: Represents 340/500 XP mock data */
     width: 68%; 
     box-shadow: 0 0 10px var(--neon-orange);
     transition: width 1s ease-in-out;
@@ -108,7 +107,7 @@
 }
 
 /* Multi-Color Tab States */
-.hub-tab.tab-manifesto.active {
+.hub-tab.tab-blueprint.active {  /* UPDATED */
     border-left-color: var(--neon-teal);
     color: var(--neon-teal);
     background: rgba(45, 212, 191, 0.05);
@@ -132,8 +131,8 @@
     overflow-y: auto;
 }
 
-/* --- MANIFESTO SPECIFICS --- */
-.manifesto-title {
+/* --- BLUEPRINT SPECIFICS --- */ /* UPDATED */
+.blueprint-title {
     font-size: 2rem;
     font-weight: 800;
     color: var(--text-main);
@@ -142,18 +141,18 @@
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
-.manifesto-body {
+.blueprint-body {
     font-size: 1.1rem;
     line-height: 1.8;
     color: var(--text-muted);
     max-width: 700px;
 }
 
-.manifesto-body p {
+.blueprint-body p {
     margin-bottom: 20px;
 }
 
-.manifesto-signature {
+.blueprint-signature {
     margin-top: 40px;
     font-family: var(--font-mono);
     color: var(--neon-teal);
