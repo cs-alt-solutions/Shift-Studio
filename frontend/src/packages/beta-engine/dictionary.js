@@ -8,7 +8,6 @@ export const GLITCHBOT_DICT = {
     BADGE: "[ GLITCH_BOT_Lvl.1 ]", 
     LOGGING: "UPDATING LOGS...", 
     XP_GAIN: "+50 XP SYNCED", 
-    TRIGGER_LABEL: "BETA_ACTIVE // HUB",
     INPUT_PLACEHOLDER: "What's on your mind?...",
     BTN_SUBMIT: "SYNC TO LAB",
     BTN_CANCEL: "DISMISS"
@@ -27,11 +26,22 @@ export const GLITCHBOT_DICT = {
   },
   PROMPTS: {
     START: "Hey! I'm here to help. Once you're inside ",
-    END: ", I'll give you the full tour. Let's get going—hit that button and enter the workshop."
+    END: ", I'll give you the full tour.",
+    // Removed the ALL CAPS and underscores
+    BOOT_SEQUENCE: "Comms link established. GlitchBot online. Awaiting workspace entry."
   },
-  REACTIONS: {
-    OOF: "[ OOF ] Workflow Bump",
-    EYESORE: "[ EYESORE ] UI/UX Note",
-    IDEA: "[ LIGHTBULB ] Bright Idea"
+  ERRORS: {
+    GENERIC: "Oof. We hit a snag. Let me log this.",
+    NETWORK: "Comms link unstable. Reconnecting..."
+  },
+  ACTIONS: {
+    MINIMIZE: "Minimizing to Hub...",
+    WAKE: "System awake. What's the play?"
+  },
+  COMMAND_DECK: {
+    // Cleaned up the button labels
+    FEEDBACK: "Feedback",
+    COMMUNITY: "Beta Hub",
+    HELP: "Help"
   }
 };

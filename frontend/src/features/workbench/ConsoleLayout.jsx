@@ -12,7 +12,7 @@ import { MarketRadar } from './MarketRadar';
 // NEW: Import the Trigger component alongside the others
 import { GlitchBot } from '../../packages/beta-engine/GlitchBot';
 import { BetaHub } from '../../packages/beta-engine/BetaHub';
-import { BetaTrigger } from '../../packages/beta-engine/BetaTrigger';
+
 
 export const ConsoleLayout = () => {
   const [activeView, setActiveView] = useState('dashboard'); 
@@ -75,7 +75,7 @@ export const ConsoleLayout = () => {
           
           <div className="ticker-container flex-1 overflow-hidden flex-center justify-start">
             <div className="ticker-fixed-label bg-panel-header px-20 font-mono font-tiny text-teal border-right-subtle h-full flex-center z-layer-top">
-              STREET_PRICES //
+              STREET PRICES
             </div>
 
             <div className="ticker-scroll-window flex-1 overflow-hidden relative">
@@ -94,8 +94,8 @@ export const ConsoleLayout = () => {
           </div>
 
           <div className="top-bar-actions flex-center gap-15 pl-20 border-left-subtle">
-            {/* NEW: We just drop the package component in here */}
-            <BetaTrigger onClick={() => setShowBetaHub(true)} />
+    
+
           </div>
         </div>
       </div>

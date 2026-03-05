@@ -1,34 +1,29 @@
-/* packages/beta-engine/components/BotCore.jsx */
+/* src/packages/beta-engine/components/BotCore.jsx */
 import React from 'react';
 
 export const BotCore = ({ 
   onClick, 
-  scale = "normal", 
-  expression = "idle", // Default to idle
+  expression = "idle", 
   interactive = true 
 }) => {
-  const containerClass = `glitchbot-core-container scale-${scale} state-${expression}`;
-  
-  // The system now looks for MP4 snippets
+  // Points directly to the public folder snippet
   const videoSource = `/glitchbot_${expression}.mp4`;
 
   return (
-    <div className={containerClass}>
-      <div className="glitchbot-core-mascot" onClick={interactive ? onClick : undefined}>
-          <div className="bot-orientation-flip">
-              {/* THE VIDEO ENGINE */}
-              <video 
-                key={videoSource} 
-                className="bot-video-render"
-                autoPlay 
-                loop 
-                muted 
-                playsInline
-              >
-                <source src={videoSource} type="video/mp4" />
-              </video>
-          </div>
-      </div>
+    <div className="glitchbot-core-mascot" onClick={interactive ? onClick : undefined}>
+        <div className="bot-orientation-flip">
+            {/* THE RAW VIDEO FEED */}
+            <video 
+              key={videoSource} 
+              className="bot-video-render-clean" 
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+            >
+              <source src={videoSource} type="video/mp4" />
+            </video>
+        </div>
     </div>
   );
 };
