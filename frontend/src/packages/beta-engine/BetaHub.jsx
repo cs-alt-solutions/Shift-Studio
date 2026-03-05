@@ -1,91 +1,118 @@
-/* src/packages/beta-engine/BetaHub.jsx */
+/* src/packages/beta-engine/GlitchBot.jsx */
 import React, { useState } from 'react';
-import './BetaHub.css';
+import { BotCore } from './components/BotCore';
+import { DialogueMenu } from './components/DialogueMenu';
+import { BetaHub } from './BetaHub';
 import { GLITCHBOT_DICT } from './dictionary';
+import './GlitchBot.css';
 
-import { BlueprintTab } from './tabs/BlueprintTab'; // UPDATED
-import { LabTab } from './tabs/LabTab';
-import { VaultTab } from './tabs/VaultTab';
-import { TheBridge } from './admin/TheBridge'; 
-import { GlitchBot } from './GlitchBot';
+export const GlitchBot = ({ 
+    currentContext = "APP", 
+    autoGreet = false, 
+    layout = "anchor-bottom" 
+}) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(autoGreet); 
+  const [isMinimized, setIsMinimized] = useState(false); 
+  const [activeMenuType, setActiveMenuType] = useState(null); 
+  const [showFullHub, setShowFullHub] = useState(false); // Controls the massive Hub overlay
 
-export const BetaHub = ({ onClose }) => {
-  const [activeTab, setActiveTab] = useState('BLUEPRINT'); // UPDATED
+  // --- THE SMART COMMAND ROUTER ---
+  const handleCommandClick = (type) => {
+      if (type === 'HUB') {
+          // Launch the full Hub and close the tiny menu
+          setShowFullHub(true);
+          setIsMenuOpen(false);
+          setActiveMenuType(null);
+      } else {
+          // Open the tiny context menus (Feedback / Help)
+          setActiveMenuType(type);
+          setIsMenuOpen(true);
+      }
+  };
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'BLUEPRINT': return <BlueprintTab />;
-      case 'LAB':       return <LabTab />;
-      case 'VAULT':     return <VaultTab />;
-      case 'BRIDGE':    return <TheBridge />;
-      default:          return null;
-    }
+  // --- THE SUBMISSION HANDLER ---
+  const handleDialogueSubmit = (payload) => {
+      // 1. Log the payload like a high-performance terminal
+      console.group("🤖 GLITCHBOT // INCOMING TRANSMISSION");
+      console.log(`[ACTION]:  ${payload.type}`);
+      console.log(`[SYS_LOC]: ${payload.context.toUpperCase()}`);
+      console.log(`[FLAG]:    ${payload.category.toUpperCase()}`);
+      console.log(`[DATA]:    "${payload.text}"`);
+      console.groupEnd();
+
+      // 2. TODO: Inject Supabase insertion logic here in the future
+
+      // 3. Reset the UI back to idle
+      setActiveMenuType(null);
+      setIsMenuOpen(false);
   };
 
   return (
-    <div className="beta-hub-overlay">
-      <div className="beta-hub-window">
-        
-        <div className="hub-header">
-          <div className="font-mono font-bold text-orange">
-            {GLITCHBOT_DICT.HUB.TITLE}
-          </div>
+    <div className={`glitchbot-wrapper layout-${layout}`}>
+      
+      {/* THE DYNAMIC DIALOGUE BUBBLE */}
+      {isMenuOpen && (
+        <DialogueMenu 
+            currentContext={currentContext} 
+            menuType={activeMenuType} 
+            onCancel={() => {
+                setActiveMenuType(null);
+                setIsMenuOpen(false);
+            }}
+            onSubmit={handleDialogueSubmit} 
+        />
+      )}
+
+      {/* THE UNIFIED COMMAND MODULE */}
+      <div className="space-terminal-container animate-slide-up">
           
-          <div className="evolution-container">
-            <div className="evolution-label">
-              <span>{GLITCHBOT_DICT.HUB.EVOLUTION_PHASE}</span>
-              <span>{GLITCHBOT_DICT.HUB.XP_PROGRESS}</span>
-            </div>
-            <div className="evolution-track">
-              <div className="evolution-fill"></div>
-            </div>
+          <div className="space-terminal-header">
+              <span className="terminal-title text-teal text-tiny">GlitchBot Comm Link</span>
+              <button 
+                  className="terminal-minimize-btn" 
+                  onClick={() => setIsMinimized(!isMinimized)}
+                  title={isMinimized ? "Expand Feed" : "Collapse Feed"}
+              >
+                  {isMinimized ? '□' : '−'}
+              </button>
           </div>
 
-          <button className="btn-icon-hover-clean text-main font-large" onClick={onClose}>
-            ×
-          </button>
-        </div>
+          {/* THE VIDEO FEED */}
+          {!isMinimized && (
+              <div className="space-terminal-screen">
+                  <BotCore expression="idle" interactive={false} />
+              </div>
+          )}
 
-        <div className="hub-content">
-          
-          <div className="hub-sidebar">
-            {/* UPDATED: class is now tab-blueprint */}
-            <button 
-              className={`hub-tab tab-blueprint ${activeTab === 'BLUEPRINT' ? 'active' : ''}`}
-              onClick={() => setActiveTab('BLUEPRINT')}
-            >
-              // {GLITCHBOT_DICT.HUB.TABS.BLUEPRINT}
-            </button>
-            <button 
-              className={`hub-tab tab-lab ${activeTab === 'LAB' ? 'active' : ''}`}
-              onClick={() => setActiveTab('LAB')}
-            >
-              // {GLITCHBOT_DICT.HUB.TABS.LAB}
-            </button>
-            <button 
-              className={`hub-tab tab-vault ${activeTab === 'VAULT' ? 'active' : ''}`}
-              onClick={() => setActiveTab('VAULT')}
-            >
-              // {GLITCHBOT_DICT.HUB.TABS.VAULT}
-            </button>
-            
-            <button 
-              className={`hub-tab tab-admin text-orange ${activeTab === 'BRIDGE' ? 'active' : ''}`}
-              onClick={() => setActiveTab('BRIDGE')}
-            >
-              // {GLITCHBOT_DICT.HUB.TABS.BRIDGE}
-            </button>
-
-            <GlitchBot mode="docked" currentContext={`HUB: ${activeTab}`} />
-
+          {/* THE HORIZONTAL COMMAND DECK */}
+          <div className="space-terminal-command-deck">
+              <button 
+                  className={`command-btn text-accent ${activeMenuType === 'FEEDBACK' ? 'active' : ''}`}
+                  onClick={() => handleCommandClick('FEEDBACK')}
+              >
+                  {GLITCHBOT_DICT.COMMAND_DECK.FEEDBACK}
+              </button>
+              
+              <button 
+                  className={`command-btn text-teal ${showFullHub ? 'active' : ''}`}
+                  onClick={() => handleCommandClick('HUB')}
+              >
+                  {GLITCHBOT_DICT.COMMAND_DECK.COMMUNITY}
+              </button>
+              
+              <button 
+                  className={`command-btn text-main ${activeMenuType === 'HELP' ? 'active' : ''}`}
+                  onClick={() => handleCommandClick('HELP')}
+              >
+                  {GLITCHBOT_DICT.COMMAND_DECK.HELP}
+              </button>
           </div>
 
-          <div className="hub-main-panel">
-            {renderContent()}
-          </div>
-
-        </div>
       </div>
+
+      {/* THE MASSIVE BETA HUB OVERLAY */}
+      {showFullHub && <BetaHub onClose={() => setShowFullHub(false)} />}
+      
     </div>
   );
 };

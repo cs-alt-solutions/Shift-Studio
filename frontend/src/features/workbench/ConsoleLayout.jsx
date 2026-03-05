@@ -9,15 +9,13 @@ import { InventoryManager } from './InventoryManager';
 import { ProfitMatrix } from './ProfitMatrix';
 import { MarketRadar } from './MarketRadar';
 
-// NEW: Import the Trigger component alongside the others
+// The Single Source for our AI Co-Pilot
 import { GlitchBot } from '../../packages/beta-engine/GlitchBot';
-import { BetaHub } from '../../packages/beta-engine/BetaHub';
-
 
 export const ConsoleLayout = () => {
   const [activeView, setActiveView] = useState('dashboard'); 
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [showBetaHub, setShowBetaHub] = useState(false);
+  // Ghost state for showBetaHub has been eradicated.
 
   const handleNavigate = (view) => setActiveView(view);
 
@@ -74,8 +72,10 @@ export const ConsoleLayout = () => {
         <div className="global-bottom-bar bg-panel flex-between align-center px-20 border-top-subtle">
           
           <div className="ticker-container flex-1 overflow-hidden flex-center justify-start">
+            
+            {/* NO HARDCODING: Sourced directly from glossary.js */}
             <div className="ticker-fixed-label bg-panel-header px-20 font-mono font-tiny text-teal border-right-subtle h-full flex-center z-layer-top">
-              STREET PRICES
+              {TERMINOLOGY.MARKET.TICKER_LABEL}
             </div>
 
             <div className="ticker-scroll-window flex-1 overflow-hidden relative">
@@ -95,7 +95,6 @@ export const ConsoleLayout = () => {
 
           <div className="top-bar-actions flex-center gap-15 pl-20 border-left-subtle">
     
-
           </div>
         </div>
       </div>
@@ -103,7 +102,7 @@ export const ConsoleLayout = () => {
       {/* --- INJECT THE BETA ENGINE COMPONENTS --- */}
       <GlitchBot currentContext={activeView} />
       
-      {showBetaHub && <BetaHub onClose={() => setShowBetaHub(false)} />}
+      {/* Ghost BetaHub component removed entirely */}
 
     </div>
   );

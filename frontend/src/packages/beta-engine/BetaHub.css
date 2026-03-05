@@ -1,160 +1,104 @@
 /* src/packages/beta-engine/BetaHub.css */
-
 .beta-hub-overlay {
     position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(9, 9, 11, 0.95);
-    backdrop-filter: blur(10px);
-    z-index: 2000;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
     display: flex;
-    align-items: center;
     justify-content: center;
-    padding: 20px; 
+    align-items: center;
+    z-index: 9998; /* Just under GlitchBot so he sits on top! */
 }
 
 .beta-hub-window {
-    width: 95%; 
-    max-width: 1400px; 
-    height: 90vh;
-    background: var(--bg-panel);
-    border: 1px solid var(--neon-purple);
-    box-shadow: 0 0 50px rgba(167, 139, 250, 0.15);
+    width: 90%;
+    max-width: 1200px;
+    height: 85vh;
+    background: var(--bg-deep);
+    border: 1px solid var(--neon-teal);
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    position: relative;
-    animation: bootUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(6, 182, 212, 0.15);
 }
 
-@keyframes bootUp {
-    0% { transform: scale(0.95); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-/* --- HUB HEADER & EVOLUTION BAR --- */
 .hub-header {
-    padding: 20px 30px;
-    background: var(--bg-panel-header);
-    border-bottom: 1px solid var(--border-subtle);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 15px 25px;
+    background: rgba(6, 182, 212, 0.05);
+    border-bottom: 1px solid rgba(6, 182, 212, 0.3);
 }
 
 .evolution-container {
     flex: 1;
-    margin: 0 40px;
+    max-width: 300px;
+    margin: 0 30px;
 }
 
 .evolution-label {
     display: flex;
     justify-content: space-between;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--neon-orange);
-    margin-bottom: 8px;
-    letter-spacing: 1px;
+    margin-bottom: 5px;
 }
 
 .evolution-track {
-    width: 100%;
-    height: 8px;
-    background: var(--bg-row-odd);
-    border-radius: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
     overflow: hidden;
-    border: 1px solid var(--border-subtle);
 }
 
 .evolution-fill {
+    width: 15%; /* Static for now */
     height: 100%;
-    background: var(--neon-orange);
-    width: 68%; 
-    box-shadow: 0 0 10px var(--neon-orange);
-    transition: width 1s ease-in-out;
+    background: var(--neon-teal);
+    box-shadow: 0 0 10px var(--neon-teal);
 }
 
-/* --- HUB CONTENT --- */
 .hub-content {
-    flex: 1;
     display: flex;
+    flex: 1;
     overflow: hidden;
 }
 
 .hub-sidebar {
-    width: 250px;
-    background: var(--bg-panel-header);
-    border-right: 1px solid var(--border-subtle);
+    width: 220px;
+    background: rgba(0, 0, 0, 0.3);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 20px;
     display: flex;
     flex-direction: column;
+    gap: 10px;
 }
 
 .hub-tab {
-    padding: 20px;
     background: transparent;
     border: none;
-    border-left: 3px solid transparent;
     color: var(--text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
     text-align: left;
+    padding: 10px;
     cursor: pointer;
-    transition: all 0.2s;
+    border-radius: 4px;
+    transition: all 0.2s ease;
 }
 
 .hub-tab:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(255, 255, 255, 0.05);
     color: var(--text-main);
+    padding-left: 15px;
 }
 
-/* Multi-Color Tab States */
-.hub-tab.tab-blueprint.active {  /* UPDATED */
-    border-left-color: var(--neon-teal);
+.hub-tab.active {
+    background: rgba(6, 182, 212, 0.1);
     color: var(--neon-teal);
-    background: rgba(45, 212, 191, 0.05);
-}
-
-.hub-tab.tab-lab.active {
-    border-left-color: var(--neon-blue);
-    color: var(--neon-blue);
-    background: rgba(96, 165, 250, 0.05);
-}
-
-.hub-tab.tab-vault.active {
-    border-left-color: var(--neon-purple);
-    color: var(--neon-purple);
-    background: rgba(167, 139, 250, 0.05);
+    border-left: 2px solid var(--neon-teal);
 }
 
 .hub-main-panel {
     flex: 1;
-    padding: 30px; 
+    padding: 30px;
     overflow-y: auto;
-}
-
-/* --- BLUEPRINT SPECIFICS --- */ /* UPDATED */
-.blueprint-title {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--text-main);
-    letter-spacing: 2px;
-    margin-bottom: 20px;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-}
-
-.blueprint-body {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: var(--text-muted);
-    max-width: 700px;
-}
-
-.blueprint-body p {
-    margin-bottom: 20px;
-}
-
-.blueprint-signature {
-    margin-top: 40px;
-    font-family: var(--font-mono);
-    color: var(--neon-teal);
-    font-size: 0.9rem;
 }

@@ -1,116 +1,117 @@
 /* src/packages/beta-engine/components/DialogueMenu.jsx */
 import React, { useState } from 'react';
 import { GLITCHBOT_DICT } from '../dictionary';
+import './DialogueMenu.css';
 
-/**
- * DIALOGUE_MENU: Refactored to eliminate unused variables and 
- * connect submission logic to the UI.
- */
-export const DialogueMenu = ({ 
-  currentContext = "APP", 
-  activeDialogue, 
-  onReactionClick, 
-  onSubmit, 
-  onCancel // Prop now fully utilized to reset state
-}) => {
-  const [text, setText] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export const DialogueMenu = ({ currentContext, menuType, onCancel, onSubmit }) => {
+    const [feedbackType, setFeedbackType] = useState('bug');
+    const [feedbackText, setFeedbackText] = useState('');
 
-  // Context Translator
-  const normalizedContext = currentContext.toUpperCase().trim();
-  const friendlyContext = GLITCHBOT_DICT.CONTEXT_MAP[normalizedContext] || currentContext.toLowerCase();
+    const handleFeedbackSubmit = () => {
+        if (!feedbackText.trim()) return;
+        onSubmit({ 
+            type: 'FEEDBACK_LOGGED', 
+            category: feedbackType, 
+            text: feedbackText, 
+            context: currentContext 
+        });
+    };
 
-  // Submission logic for the feedback form
-  const handleSend = () => {
-    if (!text.trim()) return;
-    setIsSubmitting(true);
-    
-    // Simulate a secure sync to the lab
-    setTimeout(() => {
-      onSubmit({ type: activeDialogue, text, context: currentContext });
-      setIsSubmitting(false);
-      setText('');
-    }, 1500);
-  };
+    // --- 1. THE SMART FEEDBACK FORM ---
+    const renderFeedbackForm = () => {
+        // Translate the raw context ID (e.g., 'matrix') to the readable name. 
+        // Fallback to "Main Console" if unknown.
+        const readableContext = GLITCHBOT_DICT.CONTEXT_MAP[currentContext] || "Main Console";
 
-  // --- STATE: SYNCING DATA ---
-  if (isSubmitting) {
-      return (
-          <div className="glitchbot-dialogue">
-              <div className="text-center py-10">
-                  <div className="font-mono text-teal mb-5">{GLITCHBOT_DICT.UI.LOGGING}</div>
-                  <div className="text-main font-tiny opacity-60">{GLITCHBOT_DICT.UI.XP_GAIN}</div>
-              </div>
-          </div>
-      );
-  }
+        return (
+            <div className="dialogue-panel animate-fade-in">
+                <h4 className="dialogue-title text-accent">{GLITCHBOT_DICT.DIALOGUE.FEEDBACK_TITLE}</h4>
+                
+                {/* THE CONTEXT-AWARE GREETING */}
+                <p className="dialogue-subtitle">
+                    {GLITCHBOT_DICT.DIALOGUE.FEEDBACK_GREETING_1}
+                    <strong className="text-teal">{readableContext}</strong>
+                    {GLITCHBOT_DICT.DIALOGUE.FEEDBACK_GREETING_2}
+                </p>
+                
+                <div className="feedback-type-selector mt-15">
+                    <button 
+                        className={`type-btn ${feedbackType === 'bug' ? 'active' : ''}`} 
+                        onClick={() => setFeedbackType('bug')}
+                    >
+                        {GLITCHBOT_DICT.DIALOGUE.FEEDBACK_BTN_BUG}
+                    </button>
+                    <button 
+                        className={`type-btn ${feedbackType === 'idea' ? 'active' : ''}`} 
+                        onClick={() => setFeedbackType('idea')}
+                    >
+                        {GLITCHBOT_DICT.DIALOGUE.FEEDBACK_BTN_IDEA}
+                    </button>
+                </div>
 
-  // --- STATE: FEEDBACK FORM (Visible after a reaction is clicked) ---
-  if (activeDialogue) {
-      return (
-          <div className="glitchbot-dialogue">
-              <div className="dialogue-inner">
-                  <div className="mb-15">
-                      <span className="font-bold font-mono text-tiny text-teal">
-                          // FEEDBACK_MODE: {activeDialogue}
-                      </span>
-                  </div>
-                  
-                  <textarea
-                      className="feedback-textarea"
-                      placeholder={GLITCHBOT_DICT.UI.INPUT_PLACEHOLDER}
-                      value={text}
-                      onChange={(e) => setText(e.target.value)}
-                      autoFocus
-                  />
-                  
-                  <div className="flex gap-10 mt-15">
-                      {/* ESLint Fix: onCancel is now wired to the button */}
-                      <button className="btn-cancel flex-1 py-8 font-tiny" onClick={onCancel}>
-                          {GLITCHBOT_DICT.UI.BTN_CANCEL}
-                      </button>
-                      {/* ESLint Fix: handleSend is now wired to the button */}
-                      <button 
-                        className="btn-submit flex-1 py-8 font-tiny" 
-                        onClick={handleSend}
-                        disabled={!text.trim()}
-                      >
-                          {GLITCHBOT_DICT.UI.BTN_SUBMIT}
-                      </button>
-                  </div>
-              </div>
-          </div>
-      );
-  }
+                <textarea 
+                    className="feedback-textarea" 
+                    placeholder={GLITCHBOT_DICT.DIALOGUE.FEEDBACK_PLACEHOLDER}
+                    value={feedbackText}
+                    onChange={(e) => setFeedbackText(e.target.value)}
+                />
 
-  // --- STATE: BASE COMMUNICATOR (Speech Bubble) ---
-  return (
-      <div className="glitchbot-dialogue">
-        <div className="dialogue-inner">
-            <div className="text-teal font-mono text-tiny font-bold mb-10 opacity-60">
-                {GLITCHBOT_DICT.UI.NAME}
+                <div className="dialogue-actions">
+                    <button className="btn-cancel" onClick={onCancel}>{GLITCHBOT_DICT.DIALOGUE.CANCEL}</button>
+                    <button className="btn-submit" onClick={handleFeedbackSubmit}>
+                        {GLITCHBOT_DICT.DIALOGUE.FEEDBACK_SUBMIT}
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
+    // --- 2. THE BETA HUB VIEW ---
+    const renderHubView = () => (
+        <div className="dialogue-panel animate-fade-in">
+            <h4 className="dialogue-title text-teal">{GLITCHBOT_DICT.DIALOGUE.HUB_TITLE}</h4>
+            <p className="dialogue-subtitle">{GLITCHBOT_DICT.DIALOGUE.HUB_DESC}</p>
+            
+            <div className="hub-placeholder-card">
+                <span className="text-muted text-tiny font-mono">{GLITCHBOT_DICT.DIALOGUE.HUB_VERSION}</span>
             </div>
             
-            <div className="mb-20">
-               <p className="m-0 text-main font-small line-height-1-6">
-                  {GLITCHBOT_DICT.PROMPTS.START} 
-                  <span className="text-accent font-bold">{friendlyContext}</span> 
-                  {GLITCHBOT_DICT.PROMPTS.END}
-               </p>
-            </div>
-
-            <div className="reaction-list flex-col">
-                <button className="reaction-btn" onClick={() => onReactionClick('OOF')}>
-                    {GLITCHBOT_DICT.REACTIONS.OOF}
-                </button>
-                <button className="reaction-btn" onClick={() => onReactionClick('EYESORE')}>
-                    {GLITCHBOT_DICT.REACTIONS.EYESORE}
-                </button>
-                <button className="reaction-btn" onClick={() => onReactionClick('IDEA')}>
-                    {GLITCHBOT_DICT.REACTIONS.IDEA}
-                </button>
+            <div className="dialogue-actions mt-15">
+                <button className="btn-cancel w-full" onClick={onCancel}>{GLITCHBOT_DICT.DIALOGUE.CANCEL}</button>
             </div>
         </div>
-      </div>
-  );
+    );
+
+    // --- 3. THE SYSTEM HELP VIEW ---
+    const renderHelpView = () => (
+        <div className="dialogue-panel animate-fade-in">
+            <h4 className="dialogue-title text-main">{GLITCHBOT_DICT.DIALOGUE.HELP_TITLE}</h4>
+            <p className="dialogue-subtitle">{GLITCHBOT_DICT.DIALOGUE.HELP_DESC}</p>
+            
+            <div className="help-links">
+                <button className="help-link-btn">{GLITCHBOT_DICT.DIALOGUE.HELP_DOCS}</button>
+                <button className="help-link-btn">{GLITCHBOT_DICT.DIALOGUE.HELP_SUPPORT}</button>
+            </div>
+            
+            <div className="dialogue-actions mt-15">
+                <button className="btn-cancel w-full" onClick={onCancel}>{GLITCHBOT_DICT.DIALOGUE.CANCEL}</button>
+            </div>
+        </div>
+    );
+
+    // --- ROUTER ---
+    const renderContent = () => {
+        switch (menuType) {
+            case 'FEEDBACK': return renderFeedbackForm();
+            case 'HUB': return renderHubView();
+            case 'HELP': return renderHelpView();
+            default: return null;
+        }
+    };
+
+    return (
+        <div className="glitchbot-dialogue z-layer-top">
+            {renderContent()}
+        </div>
+    );
 };

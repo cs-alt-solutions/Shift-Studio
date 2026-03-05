@@ -19,6 +19,24 @@ export const GlitchBot = ({
       setIsMenuOpen(true);
   };
 
+  // --- THE NEW SUBMISSION HANDLER ---
+  const handleDialogueSubmit = (payload) => {
+      // 1. Log the payload like a high-performance terminal
+      console.group("🤖 GLITCHBOT // INCOMING TRANSMISSION");
+      console.log(`[ACTION]:  ${payload.type}`);
+      console.log(`[SYS_LOC]: ${payload.context.toUpperCase()}`);
+      console.log(`[FLAG]:    ${payload.category.toUpperCase()}`);
+      console.log(`[DATA]:    "${payload.text}"`);
+      console.groupEnd();
+
+      // 2. TODO: Inject Supabase insertion logic here in the future
+      // const { error } = await supabase.from('beta_feedback').insert({...})
+
+      // 3. Reset the UI back to idle
+      setActiveMenuType(null);
+      setIsMenuOpen(false);
+  };
+
   return (
     <div className={`glitchbot-wrapper layout-${layout}`}>
       
@@ -30,17 +48,12 @@ export const GlitchBot = ({
                 setActiveMenuType(null);
                 setIsMenuOpen(false);
             }}
-            onSubmit={(data) => {
-                console.log("Action completed:", data);
-                setActiveMenuType(null);
-                setIsMenuOpen(false);
-            }}
+            onSubmit={handleDialogueSubmit} // Wired up the new handler!
         />
       )}
 
       <div className="space-terminal-container animate-slide-up">
           
-          {/* Cleaned header, removed font-mono and // */}
           <div className="space-terminal-header">
               <span className="terminal-title text-teal text-tiny">GlitchBot Comm Link</span>
               <button 
@@ -48,7 +61,6 @@ export const GlitchBot = ({
                   onClick={() => setIsMinimized(!isMinimized)}
                   title={isMinimized ? "Expand Feed" : "Collapse Feed"}
               >
-                  {/* Swapped the underscore for a clean minus sign */}
                   {isMinimized ? '□' : '−'}
               </button>
           </div>
