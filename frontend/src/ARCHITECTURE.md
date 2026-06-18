@@ -48,3 +48,13 @@
 ## 10. SMART TAXONOMY & TAX AWARENESS
 * **Concept:** Data must be structured for immediate business insights and tax preparation.
 * **Execution:** Every material must map to a 3-tier taxonomy (Category > Type > Unit). Every expense logged in the Profit Tracker must map to an IRS-standard deduction category.
+
+## 11. STRICT SECRET MANAGEMENT
+* **Concept:** API Keys, Supabase URLs, and Stripe Secrets are high-value targets. 
+* **Execution:** Absolute zero-tolerance for hardcoded secrets in the source code. All external connections MUST route through environment variables (`import.meta.env.VITE_...`).
+* **Enforcement:** Ensure `.env` and `.env.local` are firmly established in the `.gitignore` file.
+
+## 12. DATA ISOLATION (MULTI-TENANCY)
+* **Concept:** We use Logical Isolation. A user must never interact with another user's "Tech Tax" dots.
+* **Execution:** Every database query, without exception, must include the global filter: `WHERE user_id = current_user`.
+* **The "Founding" Flag:** User profiles contain an `is_founding_member: boolean` flag. This flag is the sole source of truth for granting legacy pricing and early-access feature unlocks.

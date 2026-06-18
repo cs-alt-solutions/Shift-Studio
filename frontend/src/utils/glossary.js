@@ -9,6 +9,12 @@ export const TERMINOLOGY = {
     ASSETS: "PREPARING TOOLS...",
     GRANTED: "READY TO BUILD."
   },
+  AUTH: {
+    TITLE: "RESTRICTED ACCESS",
+    PROMPT: "ENTER COMMAND PIN",
+    SUBMIT: "AUTHORIZE",
+    DENIED: "ACCESS DENIED"
+  },
   BETA_AGREEMENT: {
     TITLE: "Welcome to the Workshop",
     SUBTITLE: "Your space to build, test, and master your craft.",

@@ -1,19 +1,21 @@
-/* src/App.jsx */
 import React, { useState } from 'react';
 import { ConsoleLayout } from './features/workbench/ConsoleLayout';
 import { InventoryProvider } from './context/InventoryContext';
 import { FinancialProvider } from './context/FinancialContext';
-/* PATH RECALIBRATED: Moved to feedback folder */
-import { BootScreen } from './components/feedback/BootScreen'; 
+import { BootScreen } from './components/feedback/BootScreen';
+import { PinGate } from './components/auth/PinGate'; // New Import
 import './styles/global.css';
 
 function App() {
+  const [verified, setVerified] = useState(false); // New Security State
   const [booted, setBooted] = useState(false);
 
   return (
     <InventoryProvider>
       <FinancialProvider>
-        {!booted ? (
+        {!verified ? (
+          <PinGate onVerify={() => setVerified(true)} />
+        ) : !booted ? (
           <BootScreen onComplete={() => setBooted(true)} />
         ) : (
           <ConsoleLayout />
@@ -22,5 +24,4 @@ function App() {
     </InventoryProvider>
   );
 }
-
 export default App;
